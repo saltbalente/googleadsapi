@@ -1,10 +1,10 @@
 {
-  "builds": [
-    {
-      "src": "app.py",
-      "use": "@vercel/python"
+  "functions": {
+    "app.py": {
+      "runtime": "python3.9",
+      "maxDuration": 300
     }
-  ],
+  },
   "routes": [
     {
       "src": "/(.*)",
@@ -13,10 +13,5 @@
   ],
   "env": {
     "PYTHONPATH": "."
-  },
-  "functions": {
-    "app.py": {
-      "maxDuration": 300
-    }
   }
 }
