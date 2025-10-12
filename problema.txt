@@ -1,0 +1,221 @@
+@staticmethod
+def get_esoteric_services_prompt(
+    keywords: List[str],
+    num_headlines: int = 15,
+    num_descriptions: int = 4,
+    tone: str = "profesional"
+) -> str:
+    """
+    Prompt especializado MEJORADO para servicios esotéricos
+    Incluye análisis psicológico y contexto emocional
+    """
+    
+    # Análisis inteligente de keywords
+    analysis = AdPromptTemplates.analyze_keywords(keywords)
+    keywords_str = ", ".join(keywords)
+    
+    # Generar componentes contextuales
+    power_verbs = AdPromptTemplates.get_power_verbs(
+        analysis['business_type'],
+        analysis['intent']
+    )
+    
+    urgency_phrases = AdPromptTemplates.get_urgency_phrases(
+        analysis['urgency_type'],
+        analysis['service_modality']
+    )
+    
+    credibility = AdPromptTemplates.get_credibility_markers(
+        analysis['competitive_angle']
+    )
+    
+    # ✅ CALCULAR VARIABLES ANTES DEL F-STRING
+    main_intent = analysis['intent'][0] if analysis['intent'] else 'general'
+    pain_points_str = ", ".join(analysis['pain_points']) if analysis['pain_points'] else "problemas comunes"
+    solutions_str = ", ".join(analysis['solutions']) if analysis['solutions'] else "soluciones efectivas"
+    modality_str = ', '.join(analysis['service_modality']) if analysis['service_modality'] else 'presencial/online'
+    
+    # ✅ MAPEO DE TONO POR EMOCIÓN (FUERA DEL F-STRING)
+    tone_by_emotion = {
+        'alto': 'Empático, comprensivo, esperanzador pero realista',
+        'medio': 'Profesional, confiable, directo',
+        'bajo': 'Informativo, claro, objetivo'
+    }
+    emotion_tone_description = tone_by_emotion.get(analysis['emotion_level'], 'Profesional, confiable, directo')
+    
+    # Construir contexto emocional
+    emotional_context = ""
+    if analysis['emotion_level'] == 'alto':
+        emotional_context = """
+**CONTEXTO EMOCIONAL CRÍTICO:**
+El usuario está pasando por una situación emocional difícil (pérdida, separación, dolor).
+Los anuncios deben ser:
+- Empáticos y comprensivos
+- Ofrecer esperanza realista
+- Transmitir profesionalismo y seriedad
+- Evitar aprovecharse del dolor ajeno
+"""
+    
+    # Convertir listas a strings para el prompt
+    power_verbs_str = ', '.join(power_verbs[:10])
+    urgency_phrases_str = ', '.join(urgency_phrases)
+    credibility_str = ', '.join(credibility[:8])
+    
+    # ✅ AHORA SÍ, CONSTRUIR EL PROMPT
+    return f"""Eres un MAESTRO copywriter especializado en servicios esotéricos con certificaciones en:
+- Psicología del consumidor
+- Marketing emocional ético
+- Compliance de Google Ads
+- Redacción persuasiva AIDA (Atención, Interés, Deseo, Acción)
+
+**ANÁLISIS CONTEXTUAL DEL GRUPO:**
+- Tipo de servicio: {analysis['business_type']}
+- Intención principal: {main_intent}
+- Nivel emocional: {analysis['emotion_level']}
+- Urgencia: {analysis['urgency_type']}
+- Pain points del cliente: {pain_points_str}
+- Soluciones que ofrecemos: {solutions_str}
+- Modalidad: {modality_str}
+
+**KEYWORDS DEL GRUPO (INTEGRACIÓN OBLIGATORIA):**
+{keywords_str}
+
+{emotional_context}
+
+**FRAMEWORK DE CREACIÓN DE TÍTULOS ({num_headlines} requeridos):**
+
+**FÓRMULA GANADORA:**
+[VERBO POTENTE] + [BENEFICIO EMOCIONAL] + [URGENCIA/MODALIDAD]
+
+**VERBOS DE ACCIÓN CONTEXTUALES (usar estos):**
+{power_verbs_str}
+
+**ESTRUCTURA POR CATEGORÍA:**
+
+A) TÍTULOS DE BENEFICIO DIRECTO (5 títulos):
+   - Enfoque: Resultado emocional tangible
+   - Patrón: "Recupera tu amor en 24h" / "Atrae pareja ideal hoy"
+   - Longitud: 20-28 caracteres (ÓPTIMO para visibilidad)
+   - Integrar: 1 keyword + 1 verbo + 1 beneficio + 1 urgencia
+
+B) TÍTULOS DE SOLUCIÓN INMEDIATA (4 títulos):
+   - Enfoque: Resolver problema específico
+   - Patrón: "Amarres efectivos online" / "Tarot certero ahora"
+   - Longitud: 22-30 caracteres
+   - Integrar: 1 keyword + 1 adjetivo de efectividad + 1 modalidad
+
+C) TÍTULOS DE LLAMADO A ACCIÓN (3 títulos):
+   - Enfoque: Impulsar contacto inmediato
+   - Patrón: "Consulta amor disponible" / "Llama brujo experto ya"
+   - Longitud: 20-26 caracteres
+   - Integrar: 1 verbo acción + 1 keyword + 1 urgencia
+
+D) TÍTULOS DE CREDIBILIDAD (3 títulos):
+   - Enfoque: Transmitir confianza y experiencia
+   - Patrón: "Brujo experto en amor" / "Amarres con resultados"
+   - Longitud: 21-28 caracteres
+   - Integrar: 1 keyword + 1 marcador credibilidad
+
+**FRASES DE URGENCIA CONTEXTUAL:**
+{urgency_phrases_str}
+
+**MARCADORES DE CREDIBILIDAD:**
+{credibility_str}
+
+**REGLAS ESTRICTAS DE CARACTERES:**
+- Mínimo: 20 caracteres (títulos muy cortos no convierten)
+- Máximo ABSOLUTO: 30 caracteres (límite Google Ads)
+- Óptimo: 24-28 caracteres (balance visibilidad/impacto)
+
+**PROHIBICIONES CRÍTICAS:**
+❌ NO garantías absolutas ("100% garantizado", "siempre funciona")
+❌ NO promesas médicas ("cura", "sana enfermedades")
+❌ NO manipulación extrema ("última oportunidad", "te arrepentirás")
+❌ NO afirmaciones inverificables ("poder divino", "milagros")
+❌ NO mayúsculas consecutivas (USA ✅, AMOR ❌)
+❌ NO signos: ! ? ¡ ¿
+❌ NO emojis
+❌ NO mencionar a personas específicas por nombre
+
+**FRAMEWORK DE DESCRIPCIONES ({num_descriptions} requeridas):**
+
+**FÓRMULA P.A.S.C.A:**
+- **P**roblema (¿Qué duele?)
+- **A**tención (Hook emocional)
+- **S**olución (Qué ofrecemos)
+- **C**redibilidad (Por qué confiar)
+- **A**cción (Qué hacer ahora)
+
+**ESTRUCTURA (50-90 caracteres):**
+
+Descripción 1 - PROBLEMA + SOLUCIÓN + CTA:
+"¿Perdiste a tu amor? Amarres efectivos online. Consulta discreta 27/7"
+(Identifica dolor → Ofrece solución → Facilita acción)
+
+Descripción 2 - BENEFICIO + CREDIBILIDAD + URGENCIA:
+"Recupera tu relación con rituales reales. Años de experiencia. Llama ya"
+(Promesa clara → Respaldo → Impulso inmediato)
+
+Descripción 3 - DIFERENCIADOR + MODALIDAD + CTA:
+"Tarot del amor certero online. Respuestas claras ahora. Consulta gratis"
+(Qué nos hace únicos → Cómo → Incentivo)
+
+Descripción 4 - EMOCIONAL + PROFESIONAL + DISPONIBILIDAD:
+"¿Quieres volver con tu ex? Amarres discretos y efectivos. Disponible 24h"
+(Pregunta empática → Solución específica → Accesibilidad)
+
+**KEYWORDS EN DESCRIPCIONES:**
+- Cada descripción debe incluir mínimo 1 keyword del grupo
+- Integración natural en el contexto de la frase
+- Variar las keywords entre descripciones
+
+**TONO SEGÚN EMOCIÓN:**
+- Nivel emocional {analysis['emotion_level']}: {emotion_tone_description}
+
+**POLÍTICAS GOOGLE ADS - CHECKLIST:**
+✅ Servicios de consulta/asesoramiento esotérico
+✅ Mencionar servicios sin garantías absolutas
+✅ Testimonios generales ("clientes satisfechos")
+✅ Urgencia moderada ("disponible ahora")
+✅ Modalidad clara ("online", "presencial")
+
+❌ Resultados garantizados con personas específicas
+❌ Afirmaciones médicas o legales
+❌ Manipulación emocional extrema
+❌ Superlativos sin respaldo ("el mejor", "el único")
+
+**EJEMPLOS CONTEXTUALES PERFECTOS:**
+
+Para limpias espirituales:
+1. "Limpia espiritual ahora" (23 chars) ✅
+2. "Limpieza energética 24h" (23 chars) ✅
+3. "Renueva tu energía hoy" (22 chars) ✅
+4. "Protección espiritual" (21 chars) ✅
+5. "Libera negatividad ya" (21 chars) ✅
+
+**FORMATO DE RESPUESTA (JSON PURO):**
+{{
+  "headlines": [
+    "Título 1 (20-30 chars)",
+    "Título 2 (20-30 chars)",
+    ...exactamente {num_headlines} títulos
+  ],
+  "descriptions": [
+    "Descripción 1 con P.A.S.C.A (50-90 chars)",
+    "Descripción 2 con P.A.S.C.A (50-90 chars)",
+    ...exactamente {num_descriptions} descripciones
+  ]
+}}
+
+**CHECKLIST PRE-ENVÍO (VERIFICAR ANTES DE RESPONDER):**
+□ Cada título entre 20-30 caracteres (contar manualmente)
+□ Cada descripción entre 50-90 caracteres
+□ Todas las keywords integradas naturalmente
+□ Variedad de enfoques (beneficio/solución/CTA/credibilidad)
+□ Sin garantías absolutas
+□ Sin mayúsculas consecutivas
+□ Sin signos prohibidos
+□ Tono {tone} mantenido consistentemente
+□ Cumplimiento 100% políticas Google Ads
+
+**AHORA GENERA EL ANUNCIO PERFECTO.**"""

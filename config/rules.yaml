@@ -1,0 +1,265 @@
+# Alert Rules Configuration
+# This file defines the rules and conditions for generating alerts in the Google Ads Dashboard
+
+# Global Alert Settings
+global_settings:
+  enabled: true
+  check_frequency_minutes: 30  # Check alerts every 30 minutes
+  max_alerts_per_hour: 50
+  alert_retention_days: 30
+  
+# Default Alert Priorities
+priorities:
+  low:
+    color: "#28a745"
+    notification: false
+    auto_resolve_hours: 24
+  
+  medium:
+    color: "#ffc107"
+    notification: true
+    auto_resolve_hours: 12
+  
+  high:
+    color: "#fd7e14"
+    notification: true
+    auto_resolve_hours: 6
+  
+  critical:
+    color: "#dc3545"
+    notification: true
+    auto_resolve_hours: 2
+
+# Performance Alert Rules
+performance_rules:
+  # Click-Through Rate (CTR) Alerts
+  low_ctr:
+    enabled: true
+    name: "Low Click-Through Rate"
+    description: "Campaign CTR is below acceptable threshold"
+    condition: "ctr < 2.0"
+    threshold: 2.0
+    metric: "ctr"
+    operator: "less_than"
+    priority: "medium"
+    min_impressions: 1000
+    lookback_days: 7
+  
+  # Cost Per Click (CPC) Alerts
+  high_cpc:
+    enabled: true
+    name: "High Cost Per Click"
+    description: "Campaign CPC is above acceptable threshold"
+    condition: "avg_cpc > 5.0"
+    threshold: 5.0
+    metric: "avg_cpc"
+    operator: "greater_than"
+    priority: "high"
+    min_clicks: 100
+    lookback_days: 7
+  
+  # Conversion Rate Alerts
+  low_conversion_rate:
+    enabled: true
+    name: "Low Conversion Rate"
+    description: "Campaign conversion rate is below threshold"
+    condition: "conversion_rate < 1.0"
+    threshold: 1.0
+    metric: "conversion_rate"
+    operator: "less_than"
+    priority: "medium"
+    min_clicks: 500
+    lookback_days: 14
+  
+  # Return on Ad Spend (ROAS) Alerts
+  low_roas:
+    enabled: true
+    name: "Low Return on Ad Spend"
+    description: "Campaign ROAS is below profitable threshold"
+    condition: "roas < 2.0"
+    threshold: 2.0
+    metric: "roas"
+    operator: "less_than"
+    priority: "high"
+    min_conversions: 10
+    lookback_days: 14
+
+# Budget Alert Rules
+budget_rules:
+  # Budget Depletion
+  budget_depletion:
+    enabled: true
+    name: "Budget Nearly Depleted"
+    description: "Campaign budget is nearly exhausted"
+    condition: "budget_utilization > 90"
+    threshold: 90
+    metric: "budget_utilization"
+    operator: "greater_than"
+    priority: "high"
+    
+  # Budget Overspend
+  budget_overspend:
+    enabled: true
+    name: "Budget Overspend"
+    description: "Campaign has exceeded its allocated budget"
+    condition: "budget_utilization > 100"
+    threshold: 100
+    metric: "budget_utilization"
+    operator: "greater_than"
+    priority: "critical"
+  
+  # Underspend Alert
+  budget_underspend:
+    enabled: true
+    name: "Budget Underspend"
+    description: "Campaign is significantly underspending"
+    condition: "budget_utilization < 50"
+    threshold: 50
+    metric: "budget_utilization"
+    operator: "less_than"
+    priority: "medium"
+    time_of_month_threshold: 20  # Only alert after 20th day of month
+
+# Campaign Status Alert Rules
+status_rules:
+  # Paused Campaigns
+  paused_campaigns:
+    enabled: true
+    name: "Campaign Paused"
+    description: "Active campaign has been paused"
+    condition: "status == 'PAUSED'"
+    priority: "medium"
+    
+  # Disapproved Ads
+  disapproved_ads:
+    enabled: true
+    name: "Ads Disapproved"
+    description: "One or more ads have been disapproved"
+    condition: "disapproved_ads > 0"
+    priority: "high"
+    
+  # Limited by Budget
+  limited_by_budget:
+    enabled: true
+    name: "Limited by Budget"
+    description: "Campaign performance is limited by budget"
+    condition: "limited_by_budget == true"
+    priority: "medium"
+
+# Anomaly Detection Rules
+anomaly_rules:
+  # Spend Anomaly
+  spend_anomaly:
+    enabled: true
+    name: "Unusual Spend Pattern"
+    description: "Detected unusual spending pattern"
+    threshold_percentage: 50  # 50% deviation from normal
+    lookback_days: 14
+    priority: "high"
+    
+  # Traffic Anomaly
+  traffic_anomaly:
+    enabled: true
+    name: "Unusual Traffic Pattern"
+    description: "Detected unusual traffic pattern"
+    threshold_percentage: 40  # 40% deviation from normal
+    lookback_days: 7
+    priority: "medium"
+    
+  # Conversion Anomaly
+  conversion_anomaly:
+    enabled: true
+    name: "Unusual Conversion Pattern"
+    description: "Detected unusual conversion pattern"
+    threshold_percentage: 60  # 60% deviation from normal
+    lookback_days: 14
+    priority: "high"
+
+# Quality Score Alert Rules
+quality_rules:
+  low_quality_score:
+    enabled: true
+    name: "Low Quality Score"
+    description: "Keywords have low quality scores"
+    condition: "quality_score < 5"
+    threshold: 5
+    metric: "quality_score"
+    operator: "less_than"
+    priority: "medium"
+    min_impressions: 1000
+
+# Competitive Alert Rules
+competitive_rules:
+  impression_share_loss:
+    enabled: true
+    name: "Impression Share Loss"
+    description: "Significant loss in impression share"
+    condition: "impression_share_change < -10"
+    threshold: -10
+    metric: "impression_share_change"
+    operator: "less_than"
+    priority: "high"
+    lookback_days: 7
+
+# Custom Alert Rules
+custom_rules:
+  # Example: High-value keyword performance
+  - name: "High-Value Keyword Alert"
+    description: "Monitor performance of high-value keywords"
+    enabled: false
+    conditions:
+      - "keyword_value > 100"
+      - "ctr < 3.0"
+    priority: "high"
+    
+  # Example: Weekend performance drop
+  - name: "Weekend Performance Drop"
+    description: "Performance drops significantly on weekends"
+    enabled: false
+    conditions:
+      - "day_of_week IN ['Saturday', 'Sunday']"
+      - "performance_drop > 30"
+    priority: "medium"
+
+# Notification Settings
+notifications:
+  email:
+    enabled: true
+    recipients:
+      - "admin@company.com"
+      - "marketing@company.com"
+    template: "default"
+    
+  slack:
+    enabled: false
+    webhook_url: ""
+    channel: "#ads-alerts"
+    
+  dashboard:
+    enabled: true
+    show_resolved: false
+    max_display: 20
+
+# Alert Grouping and Suppression
+grouping:
+  enabled: true
+  group_by:
+    - "campaign_id"
+    - "alert_type"
+  max_group_size: 5
+  
+suppression:
+  enabled: true
+  duplicate_window_minutes: 60
+  max_alerts_per_campaign_per_hour: 5
+
+# Escalation Rules
+escalation:
+  enabled: true
+  rules:
+    - condition: "priority == 'critical' AND age_minutes > 30"
+      action: "escalate_to_manager"
+    - condition: "priority == 'high' AND age_minutes > 120"
+      action: "escalate_to_manager"
+    - condition: "unresolved_count > 10"
+      action: "escalate_to_admin"

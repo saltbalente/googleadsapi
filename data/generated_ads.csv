@@ -1,0 +1,2 @@
+id,timestamp,user,provider,model,keywords,tone,num_ads,num_headlines,num_descriptions,headlines,descriptions,validation_status,valid_headlines,invalid_headlines,valid_descriptions,invalid_descriptions,validation_errors,published,campaign_id,ad_group_id,published_at
+AD_20250112001418123456,2025-01-12T00:14:18,saltbalente,OpenAI,gpt-4,"[""zapatos"",""running""]",profesional,1,15,4,"[""Titulo 1"",""Titulo 2"",...]","[""Desc 1"",""Desc 2"",...]",valid,15,0,4,0,[],False,,,

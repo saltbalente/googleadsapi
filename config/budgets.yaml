@@ -1,0 +1,136 @@
+# Budget Configuration
+# This file defines budget settings, thresholds, and alerts for Google Ads campaigns
+
+# Global Budget Settings
+global_settings:
+  default_currency: "USD"
+  budget_period: "DAILY"  # DAILY, MONTHLY, QUARTERLY, YEARLY
+  alert_threshold_percentage: 80  # Alert when 80% of budget is spent
+  critical_threshold_percentage: 95  # Critical alert when 95% of budget is spent
+  
+# Budget Alert Configuration
+alerts:
+  enabled: true
+  check_frequency_minutes: 60  # Check every hour
+  notification_channels:
+    - email
+    - dashboard
+  
+  # Alert Types
+  types:
+    budget_depletion:
+      enabled: true
+      threshold_percentage: 90
+      priority: "high"
+    
+    overspend:
+      enabled: true
+      threshold_percentage: 100
+      priority: "critical"
+    
+    underspend:
+      enabled: true
+      threshold_percentage: 50  # Alert if less than 50% spent by end of period
+      priority: "medium"
+    
+    daily_limit_reached:
+      enabled: true
+      priority: "high"
+
+# Campaign Budget Templates
+budget_templates:
+  small_campaign:
+    daily_budget: 50
+    monthly_budget: 1500
+    alert_threshold: 80
+    
+  medium_campaign:
+    daily_budget: 200
+    monthly_budget: 6000
+    alert_threshold: 85
+    
+  large_campaign:
+    daily_budget: 500
+    monthly_budget: 15000
+    alert_threshold: 90
+    
+  enterprise_campaign:
+    daily_budget: 1000
+    monthly_budget: 30000
+    alert_threshold: 95
+
+# Account-Level Budget Limits
+account_limits:
+  # Maximum daily spend across all campaigns
+  max_daily_spend: 5000
+  
+  # Maximum monthly spend across all campaigns
+  max_monthly_spend: 150000
+  
+  # Emergency stop threshold (percentage of monthly budget)
+  emergency_stop_threshold: 120
+
+# Budget Optimization Settings
+optimization:
+  enabled: true
+  
+  # Automatic budget reallocation
+  auto_reallocation:
+    enabled: false
+    min_performance_threshold: 2.0  # Minimum ROAS
+    reallocation_percentage: 10
+  
+  # Budget recommendations
+  recommendations:
+    enabled: true
+    frequency_days: 7
+    min_data_days: 14
+
+# Reporting Configuration
+reporting:
+  # Budget utilization reports
+  utilization_reports:
+    enabled: true
+    frequency: "daily"
+    recipients:
+      - "admin@company.com"
+  
+  # Spend forecasting
+  forecasting:
+    enabled: true
+    forecast_days: 30
+    confidence_interval: 0.95
+
+# Custom Budget Rules
+custom_rules:
+  # Example: Pause campaigns that exceed budget by 20%
+  - name: "Auto-pause overspend campaigns"
+    condition: "spend_percentage > 120"
+    action: "pause_campaign"
+    enabled: false
+  
+  # Example: Increase budget for high-performing campaigns
+  - name: "Increase budget for high ROAS"
+    condition: "roas > 4.0 AND spend_percentage > 80"
+    action: "increase_budget_10_percent"
+    enabled: false
+
+# Integration Settings
+integrations:
+  # Google Sheets integration for budget tracking
+  google_sheets:
+    enabled: false
+    spreadsheet_id: ""
+    worksheet_name: "Budget Tracking"
+  
+  # Slack notifications
+  slack:
+    enabled: false
+    webhook_url: ""
+    channel: "#ads-alerts"
+
+# Historical Data Retention
+data_retention:
+  budget_history_days: 365
+  alert_history_days: 90
+  performance_data_days: 180

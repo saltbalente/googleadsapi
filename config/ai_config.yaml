@@ -1,0 +1,150 @@
+# ========================================
+# PROVEEDORES DE IA - ACTUALIZADO 2025
+# ========================================
+# Última actualización: 2025-01-12
+# Usuario: saltbalente
+# Modelos actualizados según API.txt
+# ========================================
+
+# Ruta de almacenamiento
+# null = usar directorio home del usuario (~//dashboard-google-ads-data/)
+# string = ruta personalizada (ej: "/Users/saltbalente/mis-anuncios/generated_ads.csv")
+storage_path: null
+
+# ========================================
+# PROVEEDORES DE IA
+# ========================================
+providers:
+  openai:
+    enabled: true
+    default_model: "gpt-4o"  # ✅ Nuevo modelo más rápido y barato
+    temperature: 0.7
+    max_tokens: 3000
+    top_p: 1.0
+    frequency_penalty: 0.3
+    presence_penalty: 0.3
+    available_models:
+      - "gpt-4o"              # ✅ GPT-4 Optimizado (Mayo 2024+)
+      - "gpt-4o-mini"         # ✅ Versión mini más barata
+      - "gpt-4o-2024-11-20"   # ✅ Latest GPT-4o snapshot (Nov 2024)
+      - "gpt-4-turbo"         # GPT-4 Turbo (128k context)
+      - "gpt-4"               # GPT-4 clásico
+      - "gpt-3.5-turbo"       # GPT-3.5 (más barato)
+      - "gpt-3.5-turbo-16k"   # GPT-3.5 con más contexto
+    
+    fallback_model: "gpt-3.5-turbo"
+    retry_attempts: 3
+    timeout_seconds: 60
+  
+  gemini:
+    enabled: true
+    default_model: "gemini-2.0-flash-exp"  # ✅ Gemini 2.0 (Dic 2024)
+    temperature: 0.7
+    max_tokens: 3000
+    top_k: 40
+    top_p: 0.95
+    available_models:
+      - "gemini-2.0-flash-exp"      # ✅ Gemini 2.0 Flash Experimental (2025)
+      - "gemini-2.0-flash-thinking-exp-01-21" # ✅ Gemini 2.0 Flash Thinking (Ene 2025)
+      - "gemini-1.5-pro"             # ✅ Gemini 1.5 Pro (1M tokens)
+      - "gemini-1.5-flash"           # ✅ Gemini 1.5 Flash (rápido)
+      - "gemini-1.5-flash-8b"        # ✅ Versión 8B más barata
+      - "gemini-pro"                 # Gemini Pro clásico (deprecado)
+    
+    fallback_model: "gemini-1.5-flash"
+    retry_attempts: 3
+    timeout_seconds: 60
+
+# ========================================
+# CONFIGURACIÓN DE GENERACIÓN
+# ========================================
+generation:
+  # Configuración por defecto
+  default_num_headlines: 15
+  default_num_descriptions: 4
+  default_tone: "profesional"
+  
+  # Límites de Google Ads
+  limits:
+    headline_max_chars: 30
+    description_max_chars: 90
+    headline_min_chars: 15
+    description_min_chars: 40
+  
+  # Validación
+  validation:
+    min_headlines: 3
+    min_descriptions: 2
+    enforce_limits: true
+    truncate_if_exceeded: true
+
+# ========================================
+# CONFIGURACIÓN DE LOGGING
+# ========================================
+logging:
+  level: "INFO"
+  detailed_errors: true
+  log_api_calls: true
+  log_token_usage: true
+
+# ========================================
+# CONFIGURACIÓN DE CACHE
+# ========================================
+cache:
+  enabled: true
+  ttl_hours: 24
+  max_entries: 1000
+
+# ========================================
+# CONFIGURACIÓN DE RATE LIMITING
+# ========================================
+rate_limiting:
+  openai:
+    requests_per_minute: 50
+    tokens_per_minute: 40000
+  gemini:
+    requests_per_minute: 60
+    tokens_per_minute: 32000
+
+# ========================================
+# CONFIGURACIÓN DE BUSINESS TYPES
+# ========================================
+business_types:
+  auto_detection:
+    enabled: true
+    esoteric_keywords:
+      - "tarot"
+      - "hechizo"
+      - "amor"
+      - "brujería"
+      - "magia"
+      - "ritual"
+      - "esotérico"
+      - "espiritual"
+      - "vidente"
+      - "médium"
+      - "astrología"
+      - "numerología"
+      - "chakras"
+      - "energía"
+      - "sanación"
+  
+  prompts:
+    esoteric:
+      focus: "Google Ads policy compliance"
+      restrictions: "No medical claims, no guarantees"
+      tone_adjustment: "Spiritual but professional"
+    
+    generic:
+      focus: "Standard marketing approach"
+      restrictions: "Standard Google Ads policies"
+      tone_adjustment: "Business-focused"
+
+# ========================================
+# CONFIGURACIÓN DE TESTING
+# ========================================
+testing:
+  connection_test_enabled: true
+  test_prompt: "Test connection"
+  test_max_tokens: 5
+  validate_models_on_startup: true

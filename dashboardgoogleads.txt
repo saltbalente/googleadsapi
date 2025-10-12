@@ -1,0 +1,81 @@
+
+
+DASHBOARD GOOGLE ADS — Diseño Mejorado (Streamlit)
+
+Objetivo
+- Monitorear cuentas, facturación, campañas y métricas clave con auto-refresh, alertas y exportación.
+
+Arquitectura por capas
+- UI (Streamlit, pages): Resumen, Facturación, Campañas, Reportes, Alertas, Configuración.
+- Servicios (lógica de negocio): auth, cliente Google Ads, facturación, campañas, reportes, alertas.
+- Datos (persistencia/cache): SQLite/Parquet opcional, caché local, exportaciones.
+- Configuración y seguridad: YAML/JSON, .env, manejo de secretos, logging/monitorización.
+- Utilidades: rate limit/backoff, formateo, filtros, helpers.
+- Tests: unitarios e integración.
+
+Estructura del Proyecto
+
+google-ads-dashboard/
+├── app.py                          # Punto de entrada Streamlit
+├── pages/                          # Páginas de UI (Streamlit multipage)
+│   ├── 1_overview.py               # Vista general y KPIs
+│   ├── 2_billing.py                # Facturación y presupuestos
+│   ├── 3_campaigns.py              # Campañas y rendimiento
+│   ├── 4_reports.py                # Reportes y exportación
+│   ├── 5_alerts.py                 # Alertas y notificaciones
+│   └── 6_settings.py               # Configuración (cuentas/reglas)
+├── modules/
+│   ├── __init__.py
+│   ├── auth.py                     # OAuth 2.0 y tokens
+│   ├── google_ads_client.py        # Wrapper de Google Ads API
+│   └── models.py                   # Esquemas/DTOs (métricas, facturas)
+├── services/
+│   ├── billing_service.py          # Invoices, presupuestos, spend
+│   ├── campaign_service.py         # Campañas, estados, métricas
+│   ├── report_service.py           # Consultas GAQL, agregaciones
+│   └── alert_service.py            # Reglas, thresholds, disparadores
+├── utils/
+│   ├── cache.py                    # TTL, caché por customer_id
+│   ├── rate_limit.py               # Backoff/paginación/concurrencia
+│   ├── logger.py                   # Logging estructurado (JSON)
+│   └── formatters.py               # Formateo, filtros y helpers
+├── config/
+│   ├── google-ads.yaml             # Config API (developer_token, etc.)
+│   ├── client_secret.json          # Credenciales OAuth
+│   ├── budgets.yaml                # Presupuestos por cuenta
+│   ├── rules.yaml                  # Reglas de alertas/umbrales
+│   └── .env.example                # Variables de entorno
+├── data/
+│   ├── accounts.txt                # Lista de Customer IDs
+│   ├── cache/                      # Caché local (JSON/Parquet)
+│   └── exports/                    # CSV/Excel
+├── tests/
+│   ├── unit/                       # Tests unitarios
+│   └── integration/                # Tests integración API
+└── requirements.txt
+
+Flujos clave
+1) Autenticación: OAuth → guardar/renovar tokens → cliente por customer_id.
+2) Métricas: GAQL → normalizar → cache TTL → UI (tablas/Plotly) → exportación.
+3) Facturación: invoices/spend → comparar con budgets.yaml → alertas.
+4) Campañas: estado, CTR, CPC, conv, ROAS → filtros y segmentación.
+5) Alertas: rules.yaml → thresholds por cuenta → email/local notification.
+
+Rendimiento y robustez
+- Caché por consulta y por cuenta, TTL configurable.
+- Paginación y backoff exponencial ante rate limits/errores.
+- Concurrencia controlada (thread pool) para multi-cuentas.
+
+Seguridad y configuración
+- Secretos fuera del repo; usar .env y variables de entorno.
+- Logging estructurado, métricas de llamadas y tiempos.
+
+KPIs principales en Overview
+- Coste, Impresiones, Clics, CTR, CPC, Conversiones, CPA, ROAS.
+
+Comandos
+- Desarrollo: streamlit run app.py
+- Tests: pytest
+- Opcional: Dockerfile y docker-compose para ejecución local.
+
+

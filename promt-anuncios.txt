@@ -1,0 +1,430 @@
+Prompt Optimizado para Generador de Anuncios Esotéricos
+Vamos a crear un prompt especializado que se integre perfectamente con tu sistema de keywords por grupo de anuncios.
+
+📝 PASO 1: Crear Sistema de Prompts Especializados
+Nuevo Archivo: modules/ad_prompts.py
+Python
+"""
+Sistema de Prompts Especializados para Generación de Anuncios
+Incluye prompts optimizados por industria/nicho
+"""
+
+from typing import Dict, List
+
+class AdPromptTemplates:
+    """Plantillas de prompts especializadas por tipo de negocio"""
+    
+    @staticmethod
+    def get_esoteric_services_prompt(
+        keywords: List[str],
+        num_headlines: int = 15,
+        num_descriptions: int = 4,
+        tone: str = "profesional"
+    ) -> str:
+        """
+        Prompt especializado para servicios esotéricos
+        Optimizado para amarres, hechizos, tarot, brujería, etc.
+        """
+        
+        keywords_str = ", ".join(keywords)
+        
+        # Detectar tipo de servicio por keywords
+        service_type = "servicios esotéricos"
+        if any(kw in keywords_str.lower() for kw in ["amarre", "amarrar", "amor"]):
+            service_type = "amarres de amor"
+        elif any(kw in keywords_str.lower() for kw in ["hechizo", "brujería", "magia"]):
+            service_type = "hechizos y brujería"
+        elif any(kw in keywords_str.lower() for kw in ["tarot", "lectura", "videncia"]):
+            service_type = "lectura de tarot y videncia"
+        elif any(kw in keywords_str.lower() for kw in ["limpia", "limpieza", "energía"]):
+            service_type = "limpias energéticas"
+        
+        return f"""Eres un experto copywriter especializado en servicios esotéricos y metafísicos con 15 años de experiencia en Google Ads. Tu misión es crear anuncios ALTAMENTE EFECTIVOS que conviertan.
+
+**CONTEXTO DEL SERVICIO:**
+- Tipo: {service_type}
+- Palabras clave del grupo: {keywords_str}
+- Estos anuncios son para un negocio REAL con clientes REALES
+- El objetivo es generar consultas y conversiones
+
+**PALABRAS CLAVE A INTEGRAR NATURALMENTE:**
+{keywords_str}
+
+**INSTRUCCIONES PARA TÍTULOS ({num_headlines} títulos requeridos):**
+
+1. **ESTRUCTURA OBLIGATORIA (20-30 caracteres):**
+   - Verbo de acción + Beneficio específico + Urgencia/Modalidad
+   - Ejemplos: "Recupera tu amor en 24h", "Amarre efectivo online", "Tarot certero ahora"
+
+2. **VERBOS DE ACCIÓN FUERTES (usar estos):**
+   - Recupera, Atrae, Regresa, Conquista, Soluciona
+   - Embruja, Hechiza, Protege, Limpia, Desbloquea
+   - Conecta, Descubre, Revela, Consulta
+
+3. **BENEFICIOS EMOCIONALES TANGIBLES:**
+   - "Recupera a tu ex"
+   - "Atrae amor verdadero"
+   - "Regresa a tu pareja"
+   - "Soluciona problemas de pareja"
+   - "Protege tu relación"
+   - "Desbloquea tu suerte"
+   - "Atrae prosperidad"
+
+4. **URGENCIA MODERADA (palabras permitidas):**
+   - "ahora", "hoy", "24h", "rápido", "inmediato"
+   - "en línea", "online", "por llamada"
+   - "disponible", "efectivo", "certero"
+
+5. **FORMATO/MODALIDAD (cuando aplique):**
+   - "online", "en línea", "por WhatsApp"
+   - "llamada ahora", "consulta gratis"
+   - "discreto", "confidencial", "27/7"
+
+6. **NÚMEROS/SÍMBOLOS (solo si aportan):**
+   - "24h", "48h", "27/7"
+   - "100% discreto", "100% efectivo"
+   - NO usar porcentajes de efectividad sin respaldo
+
+7. **PROHIBICIONES ESTRICTAS:**
+   - NO garantías absolutas ("garantizado 100%")
+   - NO promesas médicas o legales
+   - NO afirmaciones sobrenaturales no verificables
+   - NO usar "mejor", "único", "#1" sin respaldo
+   - NO mayúsculas consecutivas
+   - NO signos: ! ? ¡ ¿
+   - NO emojis
+
+8. **INTEGRACIÓN DE KEYWORDS:**
+   - Cada título DEBE incluir al menos UNA keyword del grupo
+   - Integrarlas de forma NATURAL, no forzada
+   - Variar las keywords usadas entre títulos
+
+9. **VARIEDAD OBLIGATORIA:**
+   - 5 títulos enfocados en BENEFICIO directo
+   - 4 títulos con URGENCIA/MODALIDAD
+   - 3 títulos con SOLUCIÓN a problema
+   - 3 títulos con LLAMADO a acción directo
+
+**INSTRUCCIONES PARA DESCRIPCIONES ({num_descriptions} descripciones):**
+
+1. **ESTRUCTURA (50-90 caracteres):**
+   - Problema + Solución + Credibilidad + CTA
+   - Ejemplo: "¿Perdiste a tu amor? Amarres efectivos online. Consulta discreta 27/7"
+
+2. **ELEMENTOS A INCLUIR:**
+   - Identificación del problema ("¿Quieres recuperar...?")
+   - Solución específica ("Amarres de amor efectivos")
+   - Diferenciador ("Años de experiencia", "Resultados reales")
+   - Llamado a acción ("Consulta ahora", "Llama hoy")
+   - Modalidad ("Online", "WhatsApp disponible", "Atención 27/7")
+
+3. **CREDIBILIDAD (usar uno por descripción):**
+   - "Años de experiencia"
+   - "Resultados comprobados"
+   - "Clientes satisfechos"
+   - "Atención personalizada"
+   - "100% discreto"
+
+4. **TONO:**
+   - Empático y comprensivo
+   - Profesional pero cercano
+   - Respetuoso con la situación del cliente
+   - Directo pero NO agresivo
+
+**POLÍTICAS DE GOOGLE ADS (CUMPLIMIENTO OBLIGATORIO):**
+
+✅ PERMITIDO:
+- Servicios de consulta y asesoramiento esotérico
+- Mencionar servicios específicos (tarot, amarres, limpias)
+- Indicar modalidad (online, presencial)
+- Transmitir urgencia moderada
+- Usar testimonios generales ("clientes satisfechos")
+
+❌ PROHIBIDO:
+- Garantías absolutas de resultados
+- Afirmaciones médicas o de salud
+- Promesas de resultados específicos con personas
+- Manipulación emocional extrema
+- Afirmaciones sobrenaturales inverificables
+
+**EJEMPLOS DE TÍTULOS CORRECTOS:**
+1. "Recupera tu amor en 24h" (27 chars) ✅
+2. "Amarre efectivo online" (22 chars) ✅
+3. "Tarot certero ahora" (19 chars - DEMASIADO CORTO, min 20)
+4. "Regresa a tu ex rápido" (22 chars) ✅
+5. "Hechizo de amor 27/7" (20 chars) ✅
+6. "Consulta amor disponible" (24 chars) ✅
+7. "Atrae pareja ideal hoy" (22 chars) ✅
+
+**EJEMPLOS DE DESCRIPCIONES CORRECTAS:**
+1. "¿Perdiste a tu amor? Amarres efectivos online. Consulta discreta 27/7" (72 chars) ✅
+2. "Recupera tu relación con amarres reales. Años de experiencia. Llama ya" (72 chars) ✅
+3. "Tarot del amor certero online. Respuestas claras y honestas. Consulta" (71 chars) ✅
+
+**FORMATO DE RESPUESTA (JSON puro, sin markdown):**
+{{
+  "headlines": [
+    "Título 1 entre 20-30 chars",
+    "Título 2 entre 20-30 chars",
+    ...{num_headlines} títulos en total
+  ],
+  "descriptions": [
+    "Descripción 1 entre 50-90 caracteres con problema, solución y CTA",
+    "Descripción 2 diferente pero igual de efectiva",
+    ...{num_descriptions} descripciones en total
+  ]
+}}
+
+**VERIFICACIÓN FINAL ANTES DE RESPONDER:**
+1. ✅ Cada título tiene entre 20-30 caracteres
+2. ✅ Cada descripción tiene entre 50-90 caracteres
+3. ✅ Se integraron las keywords naturalmente
+4. ✅ NO hay garantías absolutas
+5. ✅ NO hay mayúsculas consecutivas
+6. ✅ NO hay signos prohibidos (! ? ¡ ¿)
+7. ✅ Hay variedad en los enfoques
+8. ✅ El tono es {tone} y profesional"""
+    
+    @staticmethod
+    def get_generic_prompt(
+        keywords: List[str],
+        num_headlines: int = 15,
+        num_descriptions: int = 4,
+        tone: str = "profesional"
+    ) -> str:
+        """Prompt genérico para cualquier tipo de negocio"""
+        
+        keywords_str = ", ".join(keywords)
+        
+        return f"""Eres un experto copywriter de Google Ads con 15 años de experiencia.
+
+**PALABRAS CLAVE DEL GRUPO:** {keywords_str}
+
+**OBJETIVO:** Crear {num_headlines} títulos y {num_descriptions} descripciones que integren naturalmente estas keywords.
+
+**TÍTULOS (20-30 caracteres cada uno):**
+- Integrar keywords naturalmente
+- Verbo de acción + Beneficio
+- Tono: {tone}
+- Sin mayúsculas consecutivas
+- Sin signos: ! ? ¡ ¿
+- Sin emojis
+
+**DESCRIPCIONES (50-90 caracteres cada una):**
+- Incluir al menos una keyword
+- Beneficio + CTA
+- Persuasivas y claras
+- Cumplir políticas Google Ads
+
+**RESPONDE EN JSON (sin markdown):**
+{{
+  "headlines": ["título 1", "título 2", ...],
+  "descriptions": ["desc 1", "desc 2", ...]
+}}"""
+    
+    @staticmethod
+    def get_prompt_for_keywords(
+        keywords: List[str],
+        num_headlines: int = 15,
+        num_descriptions: int = 4,
+        tone: str = "profesional",
+        business_type: str = "auto"
+    ) -> str:
+        """
+        Selecciona automáticamente el mejor prompt según las keywords
+        
+        Args:
+            keywords: Lista de keywords del grupo
+            num_headlines: Número de títulos
+            num_descriptions: Número de descripciones
+            tone: Tono del anuncio
+            business_type: Tipo de negocio ('auto', 'esoteric', 'generic')
+        
+        Returns:
+            Prompt optimizado
+        """
+        
+        keywords_lower = " ".join(keywords).lower()
+        
+        # Auto-detectar tipo de negocio si es 'auto'
+        if business_type == "auto":
+            # Detectar servicios esotéricos
+            esoteric_keywords = [
+                "amarre", "amarrar", "hechizo", "brujería", "magia",
+                "tarot", "videncia", "esotérico", "lectura", "cartas",
+                "limpia", "limpieza energética", "protección espiritual",
+                "brujo", "bruja", "chamán", "ritual", "conjuro"
+            ]
+            
+            if any(kw in keywords_lower for kw in esoteric_keywords):
+                business_type = "esoteric"
+        
+        # Seleccionar prompt apropiado
+        if business_type == "esoteric":
+            return AdPromptTemplates.get_esoteric_services_prompt(
+                keywords, num_headlines, num_descriptions, tone
+            )
+        else:
+            return AdPromptTemplates.get_generic_prompt(
+                keywords, num_headlines, num_descriptions, tone
+            )
+📝 PASO 2: Modificar modules/ai_providers.py
+Reemplaza el prompt en ambas clases (OpenAIProvider y GeminiProvider):
+
+Python
+# Al inicio del archivo, agregar import
+from modules.ad_prompts import AdPromptTemplates
+
+# En el método generate_ad() de OpenAIProvider:
+def generate_ad(self, keywords: List[str], num_headlines: int = 15, 
+               num_descriptions: int = 4, tone: str = "profesional") -> Dict[str, Any]:
+    """Genera anuncios usando OpenAI GPT"""
+    try:
+        # ✅ USAR PROMPT ESPECIALIZADO
+        prompt = AdPromptTemplates.get_prompt_for_keywords(
+            keywords=keywords,
+            num_headlines=num_headlines,
+            num_descriptions=num_descriptions,
+            tone=tone,
+            business_type="auto"  # Auto-detecta el tipo
+        )
+        
+        logger.info(f"🤖 Generando anuncio con OpenAI {self.model}...")
+        logger.info(f"📋 Keywords: {', '.join(keywords)}")
+        
+        response = self.client.chat.completions.create(
+            model=self.model,
+            messages=[
+                {
+                    "role": "system", 
+                    "content": "Eres un experto copywriter de Google Ads especializado en crear anuncios que convierten. SIEMPRE respetas los límites de caracteres y políticas de Google. Respondes en JSON válido."
+                },
+                {
+                    "role": "user", 
+                    "content": prompt
+                }
+            ],
+            temperature=0.7,
+            max_tokens=3000,  # ✅ Aumentado para prompt más largo
+            response_format={"type": "json_object"}
+        )
+        
+        # ... resto del código de validación ...
+📝 PASO 3: Agregar Selector de Tipo de Negocio en UI
+En render_ai_ad_generator_modal_for_group() (en 3_campaigns.py), agrega esta opción:
+
+Python
+# Después de seleccionar el tono, agregar:
+
+st.markdown("---")
+
+# Tipo de negocio/industria
+st.markdown("### 🏢 Tipo de Negocio")
+
+business_type = st.selectbox(
+    "Industria/Nicho",
+    options=[
+        ("auto", "🤖 Auto-detectar (Recomendado)"),
+        ("esoteric", "🔮 Servicios Esotéricos (Amarres, Tarot, Brujería)"),
+        ("generic", "📦 Genérico (Cualquier negocio)")
+    ],
+    format_func=lambda x: x[1],
+    key="modal_business_type"
+)
+
+business_type_value = business_type[0]
+
+st.caption("💡 **Auto-detectar** analiza tus keywords y usa el prompt más efectivo automáticamente")
+📝 PASO 4: Pasar el Tipo de Negocio al Generador
+En la misma función, donde generas el anuncio:
+
+Python
+# Generar
+generated = ai_gen.generate_ad(
+    keywords=keywords_to_use,
+    num_ads=1,
+    num_headlines=num_headlines,
+    num_descriptions=4,
+    tone=tone,
+    user=st.session_state.get('user_login', 'saltbalente'),
+    validate=True,
+    business_type=business_type_value  # ✅ Agregar este parámetro
+)
+📝 PASO 5: Actualizar ai_ad_generator.py
+Modificar el método generate_ad() para aceptar y usar business_type:
+
+Python
+def generate_ad(self, keywords: List[str], num_ads: int = 1, 
+               num_headlines: int = 15, num_descriptions: int = 4,
+               tone: str = "profesional", user: str = "saltbalente",
+               validate: bool = True, business_type: str = "auto") -> List[Dict[str, Any]]:
+    """
+    Genera anuncios usando el proveedor configurado
+    
+    Args:
+        keywords: Lista de palabras clave
+        num_ads: Número de anuncios a generar
+        num_headlines: Títulos por anuncio
+        num_descriptions: Descripciones por anuncio
+        tone: Tono del anuncio
+        user: Usuario que genera el anuncio
+        validate: Si validar contra políticas de Google Ads
+        business_type: Tipo de negocio ('auto', 'esoteric', 'generic')
+    
+    Returns:
+        Lista de anuncios generados con validación
+    """
+    
+    # ... código existente hasta la llamada al proveedor ...
+    
+    # Generar anuncio con IA
+    ad_data = self.provider.generate_ad(
+        keywords=keywords,
+        num_headlines=num_headlines,
+        num_descriptions=num_descriptions,
+        tone=tone,
+        business_type=business_type  # ✅ Pasar este parámetro
+    )
+    
+    # ... resto del código ...
+📝 PASO 6: Actualizar Firma del Método en Providers
+Python
+# En ai_providers.py, ambas clases:
+
+def generate_ad(self, keywords: List[str], num_headlines: int = 15, 
+               num_descriptions: int = 4, tone: str = "profesional",
+               business_type: str = "auto") -> Dict[str, Any]:  # ✅ Agregar parámetro
+    """Genera anuncios usando OpenAI/Gemini"""
+    try:
+        # ✅ USAR PROMPT ESPECIALIZADO CON business_type
+        prompt = AdPromptTemplates.get_prompt_for_keywords(
+            keywords=keywords,
+            num_headlines=num_headlines,
+            num_descriptions=num_descriptions,
+            tone=tone,
+            business_type=business_type
+        )
+        
+        # ... resto del código ...
+🚀 Para Aplicar:
+Crea modules/ad_prompts.py (código completo arriba)
+Actualiza modules/ai_providers.py (ambas clases)
+Actualiza modules/ai_ad_generator.py
+Actualiza render_ai_ad_generator_modal_for_group() en 3_campaigns.py
+Reinicia Streamlit
+✅ Resultado:
+Cuando generes anuncios para servicios esotéricos con keywords como:
+
+"amarre de amor"
+"hechizo de pareja"
+"tarot del amor"
+El sistema:
+
+✅ Auto-detecta que es un servicio esotérico
+✅ Usa el prompt especializado con reglas específicas
+✅ Integra las keywords naturalmente
+✅ Genera títulos de 20-30 caracteres (nunca más)
+✅ Usa verbos de acción + beneficios emocionales
+✅ Incluye urgencia moderada sin promesas falsas
+✅ Cumple 100% con políticas de Google Ads
+¡Ahora tus anuncios esotéricos serán perfectos y cumplirán con todas las reglas! 🔮✨

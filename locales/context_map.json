@@ -1,0 +1,2577 @@
+{
+  "subheaders.cuenta_activa_2580": {
+    "file": "app.py",
+    "category": "subheaders",
+    "original": "📋 Cuenta Activa"
+  },
+  "subheaders.navigation_1117": {
+    "file": "app.py",
+    "category": "subheaders",
+    "original": "🧭 Navigation"
+  },
+  "subheaders.quick_actions_2880": {
+    "file": "pages/1_overview.py",
+    "category": "subheaders",
+    "original": "⚡ Quick Actions"
+  },
+  "subheaders.ℹ_system_info_6158": {
+    "file": "app.py",
+    "category": "subheaders",
+    "original": "ℹ️ System Info"
+  },
+  "markdown.iniciar_autenticación_2577": {
+    "file": "app.py",
+    "category": "markdown",
+    "original": "### 🚀 Iniciar Autenticación"
+  },
+  "markdown.haz_clic_en_6157": {
+    "file": "app.py",
+    "category": "markdown",
+    "original": "### 🔗 Haz clic en el enlace para continuar:"
+  },
+  "markdown.ℹ_sobre_el_490": {
+    "file": "app.py",
+    "category": "markdown",
+    "original": "### ℹ️ Sobre el mensaje de verificación de Google"
+  },
+  "markdown.selecciona_una_cuenta_1952": {
+    "file": "app.py",
+    "category": "markdown",
+    "original": "## 🎯 Selecciona una Cuenta de Google Ads"
+  },
+  "messages.info.no_new_alerts_868": {
+    "file": "app.py",
+    "category": "messages.info",
+    "original": "No new alerts found."
+  },
+  "messages.info.verifica_que_el_6328": {
+    "file": "app.py",
+    "category": "messages.info",
+    "original": "💡 Verifica que el archivo config/client_secret.json exista y sea válido."
+  },
+  "messages.info.tip_puedes_cambiar_8967": {
+    "file": "app.py",
+    "category": "messages.info",
+    "original": "💡 **Tip:** Puedes cambiar de cuenta en cualquier momento desde el sidebar"
+  },
+  "messages.warning.google_ads_api_3050": {
+    "file": "app.py",
+    "category": "messages.warning",
+    "original": "⚠️ Google Ads API not connected. Please check your configuration."
+  },
+  "messages.warning.por_favor_autentícate_2968": {
+    "file": "app.py",
+    "category": "messages.warning",
+    "original": "🔐 Por favor autentícate con la API de Google Ads para continuar"
+  },
+  "messages.warning.importante_después_de_7558": {
+    "file": "app.py",
+    "category": "messages.warning",
+    "original": "⚠️ **Importante:** Después de completar la autenticación en Google, **regresa a esta página y recárgala (F5)**"
+  },
+  "messages.error.failed_to_connect_7197": {
+    "file": "app.py",
+    "category": "messages.error",
+    "original": "❌ Failed to connect to Google Ads API. Please check your configuration."
+  },
+  "messages.error.error_al_generar_2523": {
+    "file": "app.py",
+    "category": "messages.error",
+    "original": "❌ Error al generar URL de autorización. Verifica tu archivo client_secret.json."
+  },
+  "messages.error.error_al_inicializar_3453": {
+    "file": "app.py",
+    "category": "messages.error",
+    "original": "Error al inicializar los servicios"
+  },
+  "messages.error.no_se_encontraron_4469": {
+    "file": "app.py",
+    "category": "messages.error",
+    "original": "⚠️ No se encontraron cuentas de Google Ads"
+  },
+  "messages.success.datos_actualizados_394": {
+    "file": "app.py",
+    "category": "messages.success",
+    "original": "✅ Datos actualizados"
+  },
+  "messages.success.servidor_de_autenticación_5066": {
+    "file": "app.py",
+    "category": "messages.success",
+    "original": "✅ ¡Servidor de autenticación iniciado!"
+  },
+  "buttons.cambiar_cuenta_width_8501": {
+    "file": "app.py",
+    "category": "buttons",
+    "original": "🔄 Cambiar Cuenta\", width='stretch"
+  },
+  "buttons.refresh_data_width_7825": {
+    "file": "app.py",
+    "category": "buttons",
+    "original": "🔄 Refresh Data\", width='stretch"
+  },
+  "buttons.check_alerts_width_197": {
+    "file": "app.py",
+    "category": "buttons",
+    "original": "📊 Check Alerts\", width='stretch"
+  },
+  "buttons.iniciar_autenticación_con_9462": {
+    "file": "app.py",
+    "category": "buttons",
+    "original": "🔑 Iniciar Autenticación con Google Ads\", width='stretch', type=\"primary"
+  },
+  "buttons.continuar_con_esta_3881": {
+    "file": "app.py",
+    "category": "buttons",
+    "original": "✅ Continuar con esta cuenta\", width='stretch', type=\"primary"
+  },
+  "buttons.restart_application_6474": {
+    "file": "app.py",
+    "category": "buttons",
+    "original": "🔄 Restart Application"
+  },
+  "logs.info.cache_cleared_successfully_2914": {
+    "file": "utils/cache.py",
+    "category": "logs.info",
+    "original": "Cache cleared successfully"
+  },
+  "logs.info.healthscorecalculator_inicializado_5051": {
+    "file": "scripts/calculate_health_scores.py",
+    "category": "logs.info",
+    "original": "HealthScoreCalculator inicializado"
+  },
+  "logs.info.iniciando_cálculo_de_5640": {
+    "file": "scripts/calculate_health_scores.py",
+    "category": "logs.info",
+    "original": "Iniciando cálculo de health scores para todas las cuentas"
+  },
+  "logs.info.iniciando_cálculo_de_1941": {
+    "file": "scripts/calculate_health_scores.py",
+    "category": "logs.info",
+    "original": "🚀 Iniciando cálculo de health scores..."
+  },
+  "logs.info.cálculo_de_health_65": {
+    "file": "scripts/calculate_health_scores.py",
+    "category": "logs.info",
+    "original": "🎉 ¡Cálculo de health scores completado exitosamente!"
+  },
+  "logs.info.próximos_pasos_6326": {
+    "file": "scripts/init_database.py",
+    "category": "logs.info",
+    "original": "📋 Próximos pasos:"
+  },
+  "logs.info.1_verificar_el_9926": {
+    "file": "scripts/populate_keyword_data.py",
+    "category": "logs.info",
+    "original": "   1. Verificar el dashboard de Keyword Health"
+  },
+  "logs.info.2_activar_el_9517": {
+    "file": "scripts/populate_keyword_data.py",
+    "category": "logs.info",
+    "original": "   2. Activar el scheduler para actualizaciones automáticas"
+  },
+  "logs.info.3_revisar_las_312": {
+    "file": "scripts/calculate_health_scores.py",
+    "category": "logs.info",
+    "original": "   3. Revisar las recomendaciones de optimización"
+  },
+  "logs.warning.no_se_calcularon_7906": {
+    "file": "scripts/calculate_health_scores.py",
+    "category": "logs.warning",
+    "original": "⚠️ No se calcularon health scores. Verifica que existan métricas en la base de datos."
+  },
+  "logs.info.realdatareplacer_inicializado_5583": {
+    "file": "scripts/replace_test_data_with_real.py",
+    "category": "logs.info",
+    "original": "RealDataReplacer inicializado"
+  },
+  "logs.info.iniciando_reemplazo_de_5800": {
+    "file": "scripts/replace_test_data_with_real.py",
+    "category": "logs.info",
+    "original": "🧹 Iniciando reemplazo de datos de prueba con datos reales..."
+  },
+  "logs.info.limpiando_datos_de_2124": {
+    "file": "scripts/replace_test_data_with_real.py",
+    "category": "logs.info",
+    "original": "🧹 Limpiando datos de prueba genéricos..."
+  },
+  "logs.info.limpieza_de_datos_3687": {
+    "file": "scripts/replace_test_data_with_real.py",
+    "category": "logs.info",
+    "original": "✅ Limpieza de datos de prueba completada"
+  },
+  "logs.info.verificando_datos_reales_7126": {
+    "file": "scripts/replace_test_data_with_real.py",
+    "category": "logs.info",
+    "original": "🔍 Verificando datos reales..."
+  },
+  "logs.info.iniciando_reemplazo_de_6400": {
+    "file": "scripts/replace_test_data_with_real.py",
+    "category": "logs.info",
+    "original": "🚀 Iniciando reemplazo de datos de prueba con datos reales"
+  },
+  "logs.info.reemplazo_de_datos_4267": {
+    "file": "scripts/replace_test_data_with_real.py",
+    "category": "logs.info",
+    "original": "🎉 ¡Reemplazo de datos completado exitosamente!"
+  },
+  "logs.warning.no_se_encontraron_2665": {
+    "file": "scripts/clean_and_sync_real_keywords.py",
+    "category": "logs.warning",
+    "original": "No se encontraron cuentas activas"
+  },
+  "logs.error.error_en_el_393": {
+    "file": "scripts/replace_test_data_with_real.py",
+    "category": "logs.error",
+    "original": "❌ Error en el reemplazo de datos"
+  },
+  "logs.info.keyworddatapopulator_inicializado_6432": {
+    "file": "scripts/populate_keyword_data.py",
+    "category": "logs.info",
+    "original": "KeywordDataPopulator inicializado"
+  },
+  "logs.info.verificando_si_necesitamos_6309": {
+    "file": "scripts/populate_keyword_data.py",
+    "category": "logs.info",
+    "original": "Verificando si necesitamos crear datos de ejemplo..."
+  },
+  "logs.info.ya_existen_datos_1357": {
+    "file": "scripts/populate_keyword_data.py",
+    "category": "logs.info",
+    "original": "Ya existen datos reales, no se crearán datos de ejemplo"
+  },
+  "logs.info.no_se_encontraron_908": {
+    "file": "scripts/populate_keyword_data.py",
+    "category": "logs.info",
+    "original": "No se encontraron datos reales, creando datos de ejemplo..."
+  },
+  "logs.info.datos_de_ejemplo_5743": {
+    "file": "scripts/populate_keyword_data.py",
+    "category": "logs.info",
+    "original": "✅ Datos de ejemplo creados exitosamente"
+  },
+  "logs.info.iniciando_población_de_1633": {
+    "file": "scripts/populate_keyword_data.py",
+    "category": "logs.info",
+    "original": "🚀 Iniciando población de datos de keywords..."
+  },
+  "logs.info.intentando_obtener_datos_9655": {
+    "file": "scripts/populate_keyword_data.py",
+    "category": "logs.info",
+    "original": "📊 Intentando obtener datos reales desde Google Ads API..."
+  },
+  "logs.info.no_se_encontraron_520": {
+    "file": "scripts/populate_keyword_data.py",
+    "category": "logs.info",
+    "original": "📝 No se encontraron datos reales, creando datos de ejemplo..."
+  },
+  "logs.info.población_de_datos_8452": {
+    "file": "scripts/populate_keyword_data.py",
+    "category": "logs.info",
+    "original": "🎉 ¡Población de datos completada exitosamente!"
+  },
+  "logs.info.3_revisar_las_5657": {
+    "file": "scripts/populate_keyword_data.py",
+    "category": "logs.info",
+    "original": "   3. Revisar las primeras recomendaciones de optimización"
+  },
+  "logs.info.finalkeywordcleaner_inicializado_2100": {
+    "file": "scripts/clean_test_keywords_final.py",
+    "category": "logs.info",
+    "original": "FinalKeywordCleaner inicializado"
+  },
+  "logs.info.iniciando_limpieza_completa_8470": {
+    "file": "scripts/clean_test_keywords_final.py",
+    "category": "logs.info",
+    "original": "🧹 Iniciando limpieza completa de datos de prueba..."
+  },
+  "logs.info.sincronizando_solo_keywords_1594": {
+    "file": "scripts/clean_test_keywords_final.py",
+    "category": "logs.info",
+    "original": "🔄 Sincronizando solo keywords reales..."
+  },
+  "logs.info.calculando_health_scores_7593": {
+    "file": "scripts/clean_test_keywords_final.py",
+    "category": "logs.info",
+    "original": "📊 Calculando health scores para keywords reales..."
+  },
+  "logs.info.iniciando_proceso_completo_2684": {
+    "file": "scripts/clean_test_keywords_final.py",
+    "category": "logs.info",
+    "original": "🚀 Iniciando proceso completo de limpieza y sincronización..."
+  },
+  "logs.info.proceso_completo_exitoso_5946": {
+    "file": "scripts/clean_test_keywords_final.py",
+    "category": "logs.info",
+    "original": "🎉 Proceso completo exitoso: datos de prueba eliminados y keywords reales sincronizadas"
+  },
+  "logs.info.limpieza_y_sincronización_5834": {
+    "file": "scripts/clean_test_keywords_final.py",
+    "category": "logs.info",
+    "original": "✅ Limpieza y sincronización completada exitosamente"
+  },
+  "logs.info.proceso_interrumpido_por_4382": {
+    "file": "scripts/clean_test_keywords_final.py",
+    "category": "logs.info",
+    "original": "Proceso interrumpido por el usuario"
+  },
+  "logs.error.falló_la_limpieza_8288": {
+    "file": "scripts/clean_test_keywords_final.py",
+    "category": "logs.error",
+    "original": "❌ Falló la limpieza de datos de prueba"
+  },
+  "logs.error.falló_la_sincronización_7383": {
+    "file": "scripts/clean_test_keywords_final.py",
+    "category": "logs.error",
+    "original": "❌ Falló la sincronización de keywords reales"
+  },
+  "logs.error.falló_el_cálculo_6841": {
+    "file": "scripts/clean_test_keywords_final.py",
+    "category": "logs.error",
+    "original": "❌ Falló el cálculo de health scores"
+  },
+  "logs.error.falló_el_proceso_9042": {
+    "file": "scripts/clean_test_keywords_final.py",
+    "category": "logs.error",
+    "original": "❌ Falló el proceso de limpieza y sincronización"
+  },
+  "logs.info.iniciando_inicialización_de_6562": {
+    "file": "scripts/init_database.py",
+    "category": "logs.info",
+    "original": "🚀 Iniciando inicialización de base de datos..."
+  },
+  "logs.info.limpiando_datos_existentes_1562": {
+    "file": "scripts/init_database.py",
+    "category": "logs.info",
+    "original": "🧹 Limpiando datos existentes..."
+  },
+  "logs.info.creando_cuentas_mcc_5599": {
+    "file": "scripts/init_database.py",
+    "category": "logs.info",
+    "original": "👥 Creando cuentas MCC de ejemplo..."
+  },
+  "logs.info.creando_benchmarks_por_2594": {
+    "file": "scripts/init_database.py",
+    "category": "logs.info",
+    "original": "📊 Creando benchmarks por defecto..."
+  },
+  "logs.info.creando_datos_de_9103": {
+    "file": "scripts/init_database.py",
+    "category": "logs.info",
+    "original": "🧪 Creando datos de ejemplo..."
+  },
+  "logs.info.verificando_integridad_de_6932": {
+    "file": "scripts/init_database.py",
+    "category": "logs.info",
+    "original": "✅ Verificando integridad de datos..."
+  },
+  "logs.info.inicialización_de_base_6409": {
+    "file": "scripts/init_database.py",
+    "category": "logs.info",
+    "original": "🎉 Inicialización de base de datos completada exitosamente!"
+  },
+  "logs.info.conexión_a_supabase_9735": {
+    "file": "scripts/init_database.py",
+    "category": "logs.info",
+    "original": "✅ Conexión a Supabase verificada"
+  },
+  "logs.info.datos_existentes_limpiados_5282": {
+    "file": "scripts/init_database.py",
+    "category": "logs.info",
+    "original": "✅ Datos existentes limpiados"
+  },
+  "logs.info.creando_datos_de_3154": {
+    "file": "scripts/init_database.py",
+    "category": "logs.info",
+    "original": "🧪 Creando datos de ejemplo para testing..."
+  },
+  "logs.info.datos_de_ejemplo_1709": {
+    "file": "scripts/init_database.py",
+    "category": "logs.info",
+    "original": "✅ Datos de ejemplo creados"
+  },
+  "logs.info.configurando_scheduler_904": {
+    "file": "scripts/init_database.py",
+    "category": "logs.info",
+    "original": "⏰ Configurando scheduler..."
+  },
+  "logs.info.scheduler_configurado_y_3420": {
+    "file": "scripts/init_database.py",
+    "category": "logs.info",
+    "original": "✅ Scheduler configurado y iniciado"
+  },
+  "logs.info.ejecutando_sincronización_inicial_4964": {
+    "file": "scripts/init_database.py",
+    "category": "logs.info",
+    "original": "🔄 Ejecutando sincronización inicial de datos..."
+  },
+  "logs.info.iniciando_configuración_del_9824": {
+    "file": "scripts/init_database.py",
+    "category": "logs.info",
+    "original": "🚀 Iniciando configuración del sistema de optimización de keywords..."
+  },
+  "logs.info.sistema_de_optimización_9908": {
+    "file": "scripts/init_database.py",
+    "category": "logs.info",
+    "original": "🎉 ¡Sistema de optimización de keywords configurado exitosamente!"
+  },
+  "logs.info.1_verificar_que_2977": {
+    "file": "scripts/init_database.py",
+    "category": "logs.info",
+    "original": "   1. Verificar que el scheduler esté ejecutándose"
+  },
+  "logs.info.2_acceder_al_9380": {
+    "file": "scripts/init_database.py",
+    "category": "logs.info",
+    "original": "   2. Acceder al dashboard en la página 'Keyword Health'"
+  },
+  "logs.info.3_configurar_benchmarks_2326": {
+    "file": "scripts/init_database.py",
+    "category": "logs.info",
+    "original": "   3. Configurar benchmarks personalizados si es necesario"
+  },
+  "logs.info.4_revisar_las_2793": {
+    "file": "scripts/init_database.py",
+    "category": "logs.info",
+    "original": "   4. Revisar las primeras recomendaciones de optimización"
+  },
+  "logs.info.inicialización_cancelada_por_6634": {
+    "file": "scripts/init_database.py",
+    "category": "logs.info",
+    "original": "⏹️ Inicialización cancelada por el usuario"
+  },
+  "logs.warning.algunos_problemas_de_656": {
+    "file": "scripts/init_database.py",
+    "category": "logs.warning",
+    "original": "⚠️ Algunos problemas de integridad detectados"
+  },
+  "logs.warning.limpiando_todos_los_681": {
+    "file": "scripts/init_database.py",
+    "category": "logs.warning",
+    "original": "🧹 Limpiando todos los datos existentes..."
+  },
+  "logs.warning.falló_la_configuración_9055": {
+    "file": "scripts/init_database.py",
+    "category": "logs.warning",
+    "original": "⚠️ Falló la configuración del scheduler, pero continuando..."
+  },
+  "logs.warning.falló_la_sincronización_820": {
+    "file": "scripts/init_database.py",
+    "category": "logs.warning",
+    "original": "⚠️ Falló la sincronización inicial, pero continuando..."
+  },
+  "logs.error.no_se_pudo_7607": {
+    "file": "scripts/init_database.py",
+    "category": "logs.error",
+    "original": "❌ No se pudo conectar a Supabase"
+  },
+  "logs.error.las_tablas_de_5088": {
+    "file": "scripts/init_database.py",
+    "category": "logs.error",
+    "original": "❌ Las tablas de base de datos no existen. Ejecute las migraciones primero."
+  },
+  "logs.error.falló_la_inicialización_8844": {
+    "file": "scripts/init_database.py",
+    "category": "logs.error",
+    "original": "❌ Falló la inicialización de base de datos"
+  },
+  "help_texts.limpiar_datos_existentes_6705": {
+    "file": "scripts/init_database.py",
+    "category": "help_texts",
+    "original": "Limpiar datos existentes antes de inicializar"
+  },
+  "help_texts.no_iniciar_el_7611": {
+    "file": "scripts/init_database.py",
+    "category": "help_texts",
+    "original": "No iniciar el scheduler"
+  },
+  "help_texts.no_ejecutar_sincronización_960": {
+    "file": "scripts/init_database.py",
+    "category": "help_texts",
+    "original": "No ejecutar sincronización inicial"
+  },
+  "help_texts.mostrar_logs_detallados_7365": {
+    "file": "scripts/init_database.py",
+    "category": "help_texts",
+    "original": "Mostrar logs detallados"
+  },
+  "logs.info.schedulermanager_inicializado_3105": {
+    "file": "scripts/start_scheduler.py",
+    "category": "logs.info",
+    "original": "SchedulerManager inicializado"
+  },
+  "logs.info.iniciando_scheduler_2066": {
+    "file": "scripts/start_scheduler.py",
+    "category": "logs.info",
+    "original": "🚀 Iniciando scheduler..."
+  },
+  "logs.info.scheduler_iniciado_exitosamente_8561": {
+    "file": "scripts/start_scheduler.py",
+    "category": "logs.info",
+    "original": "✅ Scheduler iniciado exitosamente"
+  },
+  "logs.info.deteniendo_scheduler_9810": {
+    "file": "scripts/start_scheduler.py",
+    "category": "logs.info",
+    "original": "🛑 Deteniendo scheduler..."
+  },
+  "logs.info.scheduler_detenido_exitosamente_841": {
+    "file": "scripts/start_scheduler.py",
+    "category": "logs.info",
+    "original": "✅ Scheduler detenido exitosamente"
+  },
+  "logs.info.estado_del_scheduler_8525": {
+    "file": "scripts/start_scheduler.py",
+    "category": "logs.info",
+    "original": "📋 Estado del scheduler:"
+  },
+  "logs.info.trabajos_programados_4866": {
+    "file": "scripts/start_scheduler.py",
+    "category": "logs.info",
+    "original": "   - Trabajos programados:"
+  },
+  "logs.info.scheduler_ejecutándose_en_1907": {
+    "file": "scripts/start_scheduler.py",
+    "category": "logs.info",
+    "original": "🔄 Scheduler ejecutándose en modo continuo..."
+  },
+  "logs.info.presiona_ctrl_c_7931": {
+    "file": "scripts/start_scheduler.py",
+    "category": "logs.info",
+    "original": "   Presiona Ctrl+C para detener"
+  },
+  "logs.info.interrupción_recibida_deteniendo_436": {
+    "file": "scripts/start_scheduler.py",
+    "category": "logs.info",
+    "original": "⚠️ Interrupción recibida, deteniendo scheduler..."
+  },
+  "logs.info.iniciando_scheduler_manager_3064": {
+    "file": "scripts/start_scheduler.py",
+    "category": "logs.info",
+    "original": "🚀 Iniciando Scheduler Manager..."
+  },
+  "logs.error.no_se_pudo_9993": {
+    "file": "scripts/start_scheduler.py",
+    "category": "logs.error",
+    "original": "❌ No se pudo iniciar el scheduler"
+  },
+  "logs.info.keyworddatadebugger_inicializado_6879": {
+    "file": "scripts/debug_keyword_data.py",
+    "category": "logs.info",
+    "original": "KeywordDataDebugger inicializado"
+  },
+  "logs.info.iniciando_depuración_de_9511": {
+    "file": "scripts/debug_keyword_data.py",
+    "category": "logs.info",
+    "original": "🔍 Iniciando depuración de datos de keywords..."
+  },
+  "logs.info.probando_query_1_2200": {
+    "file": "scripts/debug_keyword_data.py",
+    "category": "logs.info",
+    "original": "🧪 Probando query 1: keyword_view con métricas..."
+  },
+  "logs.info.probando_query_2_8131": {
+    "file": "scripts/debug_keyword_data.py",
+    "category": "logs.info",
+    "original": "🧪 Probando query 2: keyword_view sin filtro de fecha..."
+  },
+  "logs.info.probando_query_3_6693": {
+    "file": "scripts/debug_keyword_data.py",
+    "category": "logs.info",
+    "original": "🧪 Probando query 3: ReportService como en campaigns..."
+  },
+  "logs.info.iniciando_depuración_de_4388": {
+    "file": "scripts/debug_keyword_data.py",
+    "category": "logs.info",
+    "original": "🚀 Iniciando depuración de datos de keywords"
+  },
+  "logs.info.depuración_completada_7334": {
+    "file": "scripts/debug_keyword_data.py",
+    "category": "logs.info",
+    "original": "🎉 Depuración completada"
+  },
+  "logs.warning.no_se_encontraron_1004": {
+    "file": "scripts/debug_keyword_data.py",
+    "category": "logs.warning",
+    "original": "❌ No se encontraron campañas activas"
+  },
+  "logs.warning.no_se_encontraron_7406": {
+    "file": "scripts/debug_keyword_data.py",
+    "category": "logs.warning",
+    "original": "❌ No se encontraron ad groups activos"
+  },
+  "logs.warning.no_se_encontraron_5584": {
+    "file": "scripts/debug_keyword_data.py",
+    "category": "logs.warning",
+    "original": "❌ No se encontraron keywords activas"
+  },
+  "logs.warning.query_1_sin_1985": {
+    "file": "scripts/debug_keyword_data.py",
+    "category": "logs.warning",
+    "original": "❌ Query 1: Sin resultados con métricas"
+  },
+  "logs.warning.query_2_sin_1117": {
+    "file": "scripts/debug_keyword_data.py",
+    "category": "logs.warning",
+    "original": "❌ Query 2: Sin keywords encontradas"
+  },
+  "logs.info.realkeywordsyncer_inicializado_5937": {
+    "file": "scripts/clean_and_sync_real_keywords.py",
+    "category": "logs.info",
+    "original": "RealKeywordSyncer inicializado"
+  },
+  "logs.info.iniciando_limpieza_completa_1566": {
+    "file": "scripts/clean_and_sync_real_keywords.py",
+    "category": "logs.info",
+    "original": "🧹 Iniciando limpieza completa y sincronización de keywords reales..."
+  },
+  "logs.info.limpiando_todos_los_4910": {
+    "file": "scripts/clean_and_sync_real_keywords.py",
+    "category": "logs.info",
+    "original": "🗑️ Limpiando TODOS los datos de keywords y health scores..."
+  },
+  "logs.info.limpieza_completa_de_5749": {
+    "file": "scripts/clean_and_sync_real_keywords.py",
+    "category": "logs.info",
+    "original": "✅ Limpieza completa de datos completada"
+  },
+  "logs.info.verificando_keywords_reales_7489": {
+    "file": "scripts/clean_and_sync_real_keywords.py",
+    "category": "logs.info",
+    "original": "🔍 Verificando keywords reales sincronizadas..."
+  },
+  "logs.info.iniciando_limpieza_completa_1668": {
+    "file": "scripts/clean_and_sync_real_keywords.py",
+    "category": "logs.info",
+    "original": "🚀 Iniciando limpieza completa y sincronización de keywords reales"
+  },
+  "logs.info.limpieza_y_sincronización_6393": {
+    "file": "scripts/clean_and_sync_real_keywords.py",
+    "category": "logs.info",
+    "original": "🎉 ¡Limpieza y sincronización completada exitosamente!"
+  },
+  "logs.error.error_en_la_9568": {
+    "file": "scripts/clean_and_sync_real_keywords.py",
+    "category": "logs.error",
+    "original": "❌ Error en la limpieza y sincronización"
+  },
+  "messages.info.asegúrate_de_que_1543": {
+    "file": "modules/auth.py",
+    "category": "messages.info",
+    "original": "Asegúrate de que el código de autorización sea correcto y no haya expirado."
+  },
+  "messages.info.please_go_to_8534": {
+    "file": "modules/auth.py",
+    "category": "messages.info",
+    "original": "Please go to Settings page to authenticate with Google Ads API"
+  },
+  "messages.warning.autenticación_exitosa_pero_3804": {
+    "file": "modules/auth.py",
+    "category": "messages.warning",
+    "original": "Autenticación exitosa, pero no se obtuvo token de actualización. Es posible que necesites volver a autenticarte."
+  },
+  "messages.warning.authentication_required_to_9241": {
+    "file": "modules/auth.py",
+    "category": "messages.warning",
+    "original": "⚠️ Authentication required to access this page"
+  },
+  "messages.error.no_se_recibió_3376": {
+    "file": "modules/auth.py",
+    "category": "messages.error",
+    "original": "❌ No se recibió código de autorización. Por favor, intenta el proceso nuevamente."
+  },
+  "messages.error.archivo_client_secret_json_7913": {
+    "file": "modules/auth.py",
+    "category": "messages.error",
+    "original": "❌ Archivo client_secret.json no encontrado"
+  },
+  "messages.error.no_se_encontró_9523": {
+    "file": "modules/auth.py",
+    "category": "messages.error",
+    "original": "No se encontró el código de autorización en la URL proporcionada."
+  },
+  "messages.error.no_se_recibió_912": {
+    "file": "modules/auth.py",
+    "category": "messages.error",
+    "original": "No se recibió código de autorización."
+  },
+  "messages.success.autenticación_exitosa_token_7080": {
+    "file": "modules/auth.py",
+    "category": "messages.success",
+    "original": "¡Autenticación exitosa! Token de actualización obtenido."
+  },
+  "messages.success.logged_out_successfully_5814": {
+    "file": "modules/auth.py",
+    "category": "messages.success",
+    "original": "Logged out successfully"
+  },
+  "logs.info.credentials_loaded_from_3507": {
+    "file": "modules/auth.py",
+    "category": "logs.info",
+    "original": "Credentials loaded from oauth_credentials.json"
+  },
+  "logs.info.usando_código_de_5898": {
+    "file": "modules/auth.py",
+    "category": "logs.info",
+    "original": "Usando código de autorización proporcionado manualmente"
+  },
+  "logs.info.código_de_autorización_6621": {
+    "file": "modules/auth.py",
+    "category": "logs.info",
+    "original": "Código de autorización obtenido del servidor OAuth"
+  },
+  "logs.info.flow_oauth_creado_5420": {
+    "file": "modules/auth.py",
+    "category": "logs.info",
+    "original": "Flow OAuth creado desde archivo de configuración"
+  },
+  "logs.info.oauth_authentication_completed_8135": {
+    "file": "modules/auth.py",
+    "category": "logs.info",
+    "original": "OAuth authentication completed successfully"
+  },
+  "logs.info.credentials_saved_to_2735": {
+    "file": "modules/auth.py",
+    "category": "logs.info",
+    "original": "Credentials saved to oauth_credentials.json"
+  },
+  "logs.info.google_ads_yaml_9551": {
+    "file": "modules/auth.py",
+    "category": "logs.info",
+    "original": "Google Ads YAML config updated with new credentials"
+  },
+  "logs.warning.no_se_encontró_8556": {
+    "file": "modules/auth.py",
+    "category": "logs.warning",
+    "original": "No se encontró código de autorización en el servidor OAuth"
+  },
+  "logs.info.credentials_saved_to_1018": {
+    "file": "modules/oauth_server.py",
+    "category": "logs.info",
+    "original": "✓ Credentials saved to oauth_credentials.json"
+  },
+  "logs.info.google_ads_yaml_351": {
+    "file": "modules/oauth_server.py",
+    "category": "logs.info",
+    "original": "✓ google-ads.yaml updated with new credentials"
+  },
+  "logs.info.auth_code_processed_8791": {
+    "file": "modules/oauth_server.py",
+    "category": "logs.info",
+    "original": "Auth code processed and credentials saved successfully"
+  },
+  "logs.info.servidor_oauth_callback_3889": {
+    "file": "modules/oauth_server.py",
+    "category": "logs.info",
+    "original": "Servidor OAuth callback detenido"
+  },
+  "logs.warning.solicitud_oauth_inválida_9042": {
+    "file": "modules/oauth_server.py",
+    "category": "logs.warning",
+    "original": "Solicitud OAuth inválida - no se encontró código"
+  },
+  "logs.error.no_se_obtuvo_5859": {
+    "file": "modules/oauth_server.py",
+    "category": "logs.error",
+    "original": "No se obtuvo refresh token"
+  },
+  "logs.info.google_ads_client_3544": {
+    "file": "modules/google_ads_client.py",
+    "category": "logs.info",
+    "original": "Google Ads client initialized successfully"
+  },
+  "logs.info.connection_test_query_9733": {
+    "file": "modules/google_ads_client.py",
+    "category": "logs.info",
+    "original": "Connection test query returned rows."
+  },
+  "logs.warning.accounts_txt_file_9251": {
+    "file": "modules/google_ads_client.py",
+    "category": "logs.warning",
+    "original": "accounts.txt file not found"
+  },
+  "logs.warning.no_customer_ids_8676": {
+    "file": "modules/google_ads_client.py",
+    "category": "logs.warning",
+    "original": "No customer IDs available for testing"
+  },
+  "logs.warning.connection_test_query_8085": {
+    "file": "modules/google_ads_client.py",
+    "category": "logs.warning",
+    "original": "Connection test query returned no rows."
+  },
+  "logs.warning.no_customer_ids_4521": {
+    "file": "modules/google_ads_client.py",
+    "category": "logs.warning",
+    "original": "No customer IDs found in accounts.txt"
+  },
+  "logs.warning.no_manager_customer_6263": {
+    "file": "modules/google_ads_client.py",
+    "category": "logs.warning",
+    "original": "No manager customer ID provided"
+  },
+  "logs.error.developer_token_not_3848": {
+    "file": "modules/google_ads_client.py",
+    "category": "logs.error",
+    "original": "Developer token not found or invalid in configuration"
+  },
+  "logs.error.missing_oauth_credentials_4122": {
+    "file": "modules/google_ads_client.py",
+    "category": "logs.error",
+    "original": "Missing OAuth credentials (client_id, client_secret, refresh_token)"
+  },
+  "logs.error.cannot_validate_accounts_3570": {
+    "file": "modules/google_ads_client.py",
+    "category": "logs.error",
+    "original": "Cannot validate accounts - client not initialized"
+  },
+  "logs.error.google_ads_client_9425": {
+    "file": "modules/google_ads_client.py",
+    "category": "logs.error",
+    "original": "Google Ads client not initialized; cannot list accessible customers."
+  },
+  "page_titles.custom_reports_analytics_6254": {
+    "file": "pages/4_reports.py",
+    "category": "page_titles",
+    "original": "📊 Custom Reports & Analytics"
+  },
+  "headers.report_configuration_7551": {
+    "file": "pages/4_reports.py",
+    "category": "headers",
+    "original": "📋 Report Configuration"
+  },
+  "subheaders.date_range_4012": {
+    "file": "pages/4_reports.py",
+    "category": "subheaders",
+    "original": "📅 Date Range"
+  },
+  "subheaders.metrics_7024": {
+    "file": "pages/4_reports.py",
+    "category": "subheaders",
+    "original": "📊 Metrics"
+  },
+  "subheaders.filters_5217": {
+    "file": "pages/4_reports.py",
+    "category": "subheaders",
+    "original": "🔍 Filters"
+  },
+  "subheaders.report_results_7132": {
+    "file": "pages/4_reports.py",
+    "category": "subheaders",
+    "original": "📊 Report Results"
+  },
+  "subheaders.export_options_1278": {
+    "file": "pages/4_reports.py",
+    "category": "subheaders",
+    "original": "📤 Export Options"
+  },
+  "subheaders.data_visualizations_8803": {
+    "file": "pages/4_reports.py",
+    "category": "subheaders",
+    "original": "📈 Data Visualizations"
+  },
+  "subheaders.custom_visualization_builder_513": {
+    "file": "pages/4_reports.py",
+    "category": "subheaders",
+    "original": "🎨 Custom Visualization Builder"
+  },
+  "subheaders.predefined_reports_7972": {
+    "file": "pages/4_reports.py",
+    "category": "subheaders",
+    "original": "📋 Predefined Reports"
+  },
+  "subheaders.report_scheduling_8670": {
+    "file": "pages/4_reports.py",
+    "category": "subheaders",
+    "original": "⏰ Report Scheduling"
+  },
+  "subheaders.advanced_analytics_421": {
+    "file": "pages/4_reports.py",
+    "category": "subheaders",
+    "original": "⚙️ Advanced Analytics"
+  },
+  "subheaders.custom_gaql_query_8909": {
+    "file": "pages/4_reports.py",
+    "category": "subheaders",
+    "original": "🔧 Custom GAQL Query Builder"
+  },
+  "markdown.generate_custom_reports_3153": {
+    "file": "pages/4_reports.py",
+    "category": "markdown",
+    "original": "Generate custom reports, analyze performance data, and export insights"
+  },
+  "markdown.schedule_automated_reports_7550": {
+    "file": "pages/4_reports.py",
+    "category": "markdown",
+    "original": "**Schedule Automated Reports**"
+  },
+  "markdown.trend_analysis_2659": {
+    "file": "pages/4_reports.py",
+    "category": "markdown",
+    "original": "**📈 Trend Analysis**"
+  },
+  "markdown.trend_insights_9054": {
+    "file": "pages/4_reports.py",
+    "category": "markdown",
+    "original": "**📊 Trend Insights:**"
+  },
+  "markdown.anomaly_detection_4614": {
+    "file": "pages/4_reports.py",
+    "category": "markdown",
+    "original": "**🚨 Anomaly Detection**"
+  },
+  "markdown.performance_forecasting_3875": {
+    "file": "pages/4_reports.py",
+    "category": "markdown",
+    "original": "**🔮 Performance Forecasting**"
+  },
+  "markdown.google_ads_query_2264": {
+    "file": "pages/4_reports.py",
+    "category": "markdown",
+    "original": "**Google Ads Query Language (GAQL) Builder**"
+  },
+  "messages.info.dashboard_creation_feature_9963": {
+    "file": "pages/4_reports.py",
+    "category": "messages.info",
+    "original": "Dashboard creation feature coming soon!"
+  },
+  "messages.info.configure_your_report_5570": {
+    "file": "pages/4_reports.py",
+    "category": "messages.info",
+    "original": "👆 Configure your report in the sidebar and click 'Generate Report' to see results."
+  },
+  "messages.info.generate_a_report_448": {
+    "file": "pages/4_reports.py",
+    "category": "messages.info",
+    "original": "📊 Generate a report first to see visualizations."
+  },
+  "messages.info.positive_trend_detected_6592": {
+    "file": "pages/4_reports.py",
+    "category": "messages.info",
+    "original": "📈 Positive trend detected: 15% increase over the analysis period"
+  },
+  "messages.info.query_results_would_9694": {
+    "file": "pages/4_reports.py",
+    "category": "messages.info",
+    "original": "📊 Query results would appear here in a real implementation"
+  },
+  "messages.warning.no_customer_account_2501": {
+    "file": "pages/5_alerts.py",
+    "category": "messages.warning",
+    "original": "⚠️ No customer account selected. Please select an account from the sidebar."
+  },
+  "messages.warning.volatility_alert_high_2137": {
+    "file": "pages/4_reports.py",
+    "category": "messages.warning",
+    "original": "⚠️ Volatility alert: High variance detected in the last 7 days"
+  },
+  "messages.error.google_ads_services_5745": {
+    "file": "pages/5_alerts.py",
+    "category": "messages.error",
+    "original": "❌ Google Ads services not initialized. Please check your configuration."
+  },
+  "messages.success.custom_query_executed_3128": {
+    "file": "pages/4_reports.py",
+    "category": "messages.success",
+    "original": "✅ Custom query executed successfully!"
+  },
+  "metrics.total_records_3928": {
+    "file": "pages/4_reports.py",
+    "category": "metrics",
+    "original": "📊 Total Records"
+  },
+  "metrics.total_impressions_1773": {
+    "file": "pages/4_reports.py",
+    "category": "metrics",
+    "original": "👁️ Total Impressions"
+  },
+  "metrics.total_clicks_2708": {
+    "file": "pages/4_reports.py",
+    "category": "metrics",
+    "original": "🖱️ Total Clicks"
+  },
+  "metrics.total_cost_6994": {
+    "file": "pages/4_reports.py",
+    "category": "metrics",
+    "original": "💰 Total Cost"
+  },
+  "buttons.generate_report_width_7958": {
+    "file": "pages/4_reports.py",
+    "category": "buttons",
+    "original": "🚀 Generate Report\", width='stretch"
+  },
+  "buttons.export_to_csv_9634": {
+    "file": "pages/4_reports.py",
+    "category": "buttons",
+    "original": "📊 Export to CSV"
+  },
+  "buttons.export_to_json_6445": {
+    "file": "pages/4_reports.py",
+    "category": "buttons",
+    "original": "📋 Export to JSON"
+  },
+  "buttons.create_dashboard_1701": {
+    "file": "pages/4_reports.py",
+    "category": "buttons",
+    "original": "📈 Create Dashboard"
+  },
+  "buttons.show_sample_report_6053": {
+    "file": "pages/4_reports.py",
+    "category": "buttons",
+    "original": "👀 Show Sample Report"
+  },
+  "buttons.create_custom_chart_3451": {
+    "file": "pages/4_reports.py",
+    "category": "buttons",
+    "original": "🎨 Create Custom Chart"
+  },
+  "buttons.analyze_trends_1852": {
+    "file": "pages/4_reports.py",
+    "category": "buttons",
+    "original": "🔍 Analyze Trends"
+  },
+  "buttons.detect_anomalies_749": {
+    "file": "pages/4_reports.py",
+    "category": "buttons",
+    "original": "🔍 Detect Anomalies"
+  },
+  "buttons.generate_forecast_4876": {
+    "file": "pages/4_reports.py",
+    "category": "buttons",
+    "original": "🔮 Generate Forecast"
+  },
+  "buttons.execute_custom_query_2529": {
+    "file": "pages/4_reports.py",
+    "category": "buttons",
+    "original": "🚀 Execute Custom Query"
+  },
+  "inputs.search_in_results_4476": {
+    "file": "pages/4_reports.py",
+    "category": "inputs",
+    "original": "🔍 Search in results:"
+  },
+  "inputs.report_name_5632": {
+    "file": "pages/4_reports.py",
+    "category": "inputs",
+    "original": "Report Name:"
+  },
+  "inputs.email_recipients_comma_6909": {
+    "file": "pages/4_reports.py",
+    "category": "inputs",
+    "original": "Email Recipients (comma-separated):"
+  },
+  "page_titles.billing_budget_management_1408": {
+    "file": "pages/2_billing.py",
+    "category": "page_titles",
+    "original": "💰 Billing & Budget Management"
+  },
+  "subheaders.historial_de_gastos_8313": {
+    "file": "pages/2_billing.py",
+    "category": "subheaders",
+    "original": "💳 Historial de Gastos Diarios"
+  },
+  "subheaders.budget_alerts_888": {
+    "file": "pages/2_billing.py",
+    "category": "subheaders",
+    "original": "🚨 Budget Alerts"
+  },
+  "subheaders.acciones_rápidas_1693": {
+    "file": "pages/2_billing.py",
+    "category": "subheaders",
+    "original": "⚡ Acciones Rápidas"
+  },
+  "subheaders.ℹ_información_2451": {
+    "file": "pages/2_billing.py",
+    "category": "subheaders",
+    "original": "ℹ️ Información"
+  },
+  "markdown.track_spending_manage_6591": {
+    "file": "pages/2_billing.py",
+    "category": "markdown",
+    "original": "Track spending, manage budgets, and analyze financial performance"
+  },
+  "markdown.abrir_google_ads_7208": {
+    "file": "pages/2_billing.py",
+    "category": "markdown",
+    "original": "[Abrir Google Ads Billing](https://ads.google.com/aw/billing)"
+  },
+  "messages.info.para_realizar_pagos_6196": {
+    "file": "pages/2_billing.py",
+    "category": "messages.info",
+    "original": "🔗 Para realizar pagos, visite: [Google Ads Billing](https://ads.google.com/aw/billing)"
+  },
+  "messages.info.ℹ_no_hay_9249": {
+    "file": "pages/2_billing.py",
+    "category": "messages.info",
+    "original": "ℹ️ No hay datos de gastos en este período"
+  },
+  "messages.info.sin_datos_disponibles_8349": {
+    "file": "pages/2_billing.py",
+    "category": "messages.info",
+    "original": "📊 **Sin datos disponibles**"
+  },
+  "messages.info.all_campaigns_are_9088": {
+    "file": "pages/2_billing.py",
+    "category": "messages.info",
+    "original": "All campaigns are within budget limits."
+  },
+  "messages.warning.no_hay_datos_7263": {
+    "file": "pages/2_billing.py",
+    "category": "messages.warning",
+    "original": "📊 No hay datos de billing disponibles para este período."
+  },
+  "messages.success.no_budget_alerts_762": {
+    "file": "pages/2_billing.py",
+    "category": "messages.success",
+    "original": "✅ No budget alerts"
+  },
+  "metrics.utilization_3339": {
+    "file": "pages/2_billing.py",
+    "category": "metrics",
+    "original": "📈 Utilization"
+  },
+  "buttons.refresh_width_stretch_5919": {
+    "file": "pages/2_billing.py",
+    "category": "buttons",
+    "original": "🔄 Refresh\", width='stretch"
+  },
+  "buttons.ir_a_pagos_9214": {
+    "file": "pages/2_billing.py",
+    "category": "buttons",
+    "original": "💳 Ir a Pagos\", width='stretch', type=\"primary"
+  },
+  "buttons.ir_a_google_7351": {
+    "file": "pages/2_billing.py",
+    "category": "buttons",
+    "original": "🔗 Ir a Google Ads Billing\", width='stretch"
+  },
+  "page_titles.keyword_health_dashboard_5475": {
+    "file": "pages/7_🎯_Keyword_Health.py",
+    "category": "page_titles",
+    "original": "🎯 Keyword Health Dashboard"
+  },
+  "headers.controls_8900": {
+    "file": "pages/7_🎯_Keyword_Health.py",
+    "category": "headers",
+    "original": "🎛️ Controls"
+  },
+  "subheaders.health_score_distribution_6197": {
+    "file": "pages/7_🎯_Keyword_Health.py",
+    "category": "subheaders",
+    "original": "📊 Health Score Distribution"
+  },
+  "subheaders.health_score_trends_8005": {
+    "file": "pages/7_🎯_Keyword_Health.py",
+    "category": "subheaders",
+    "original": "📈 Health Score Trends (Real-Time)"
+  },
+  "subheaders.recent_actions_6990": {
+    "file": "pages/7_🎯_Keyword_Health.py",
+    "category": "subheaders",
+    "original": "📋 Recent Actions"
+  },
+  "subheaders.action_recommendations_774": {
+    "file": "pages/7_🎯_Keyword_Health.py",
+    "category": "subheaders",
+    "original": "🎯 Action Recommendations"
+  },
+  "subheaders.detailed_keyword_analysis_2069": {
+    "file": "pages/7_🎯_Keyword_Health.py",
+    "category": "subheaders",
+    "original": "📋 Detailed Keyword Analysis"
+  },
+  "markdown.sistema_inteligente_de_2604": {
+    "file": "pages/7_🎯_Keyword_Health.py",
+    "category": "markdown",
+    "original": "Sistema inteligente de optimización de keywords con health scores y acciones automatizadas"
+  },
+  "messages.info.no_hay_datos_6755": {
+    "file": "pages/7_🎯_Keyword_Health.py",
+    "category": "messages.info",
+    "original": "📊 No hay datos de health score con los filtros actuales. Prueba bajar 'Min Health Score' o ampliar el período."
+  },
+  "messages.info.no_hay_datos_7635": {
+    "file": "pages/7_🎯_Keyword_Health.py",
+    "category": "messages.info",
+    "original": "No hay datos para tendencias en tiempo real."
+  },
+  "messages.info.no_hay_distribución_9358": {
+    "file": "pages/7_🎯_Keyword_Health.py",
+    "category": "messages.info",
+    "original": "No hay distribución disponible con los filtros actuales."
+  },
+  "messages.info.no_recent_actions_1945": {
+    "file": "pages/7_🎯_Keyword_Health.py",
+    "category": "messages.info",
+    "original": "No recent actions found"
+  },
+  "messages.info.no_recommendations_available_9894": {
+    "file": "pages/7_🎯_Keyword_Health.py",
+    "category": "messages.info",
+    "original": "No recommendations available. Try adjusting your filters."
+  },
+  "messages.info.insufficient_data_to_5380": {
+    "file": "pages/7_🎯_Keyword_Health.py",
+    "category": "messages.info",
+    "original": "📊 Insufficient data to generate recommendations."
+  },
+  "messages.info.no_hay_datos_9615": {
+    "file": "pages/7_🎯_Keyword_Health.py",
+    "category": "messages.info",
+    "original": "📋 No hay datos de keywords para el período seleccionado."
+  },
+  "messages.info.no_hay_datos_282": {
+    "file": "pages/7_🎯_Keyword_Health.py",
+    "category": "messages.info",
+    "original": "📋 No hay datos detallados disponibles."
+  },
+  "messages.info.no_recommendations_to_6103": {
+    "file": "pages/7_🎯_Keyword_Health.py",
+    "category": "messages.info",
+    "original": "No recommendations to preview"
+  },
+  "messages.info.no_actions_to_2975": {
+    "file": "pages/7_🎯_Keyword_Health.py",
+    "category": "messages.info",
+    "original": "No actions to execute"
+  },
+  "messages.info.no_keywords_to_1826": {
+    "file": "pages/7_🎯_Keyword_Health.py",
+    "category": "messages.info",
+    "original": "No keywords to pause"
+  },
+  "messages.warning.no_se_encontraron_8140": {
+    "file": "pages/7_🎯_Keyword_Health.py",
+    "category": "messages.warning",
+    "original": "⚠️ No se encontraron columnas esperadas en el reporte."
+  },
+  "messages.warning.no_hay_keywords_3646": {
+    "file": "pages/7_🎯_Keyword_Health.py",
+    "category": "messages.warning",
+    "original": "⚠️ No hay keywords para pausar"
+  },
+  "messages.error.scheduler_inactive_5174": {
+    "file": "pages/7_🎯_Keyword_Health.py",
+    "category": "messages.error",
+    "original": "❌ Scheduler Inactive"
+  },
+  "messages.error.failed_to_trigger_3294": {
+    "file": "pages/7_🎯_Keyword_Health.py",
+    "category": "messages.error",
+    "original": "❌ Failed to trigger ingestion"
+  },
+  "messages.error.failed_to_trigger_435": {
+    "file": "pages/7_🎯_Keyword_Health.py",
+    "category": "messages.error",
+    "original": "❌ Failed to trigger calculation"
+  },
+  "messages.error.el_servicio_de_7679": {
+    "file": "pages/7_🎯_Keyword_Health.py",
+    "category": "messages.error",
+    "original": "❌ El servicio de ejecución de acciones no está disponible. Verifica la configuración."
+  },
+  "messages.error.el_servicio_de_2048": {
+    "file": "pages/7_🎯_Keyword_Health.py",
+    "category": "messages.error",
+    "original": "❌ El servicio de pausa no está disponible. Verifica la configuración."
+  },
+  "messages.success.scheduler_active_4944": {
+    "file": "pages/7_🎯_Keyword_Health.py",
+    "category": "messages.success",
+    "original": "✅ Scheduler Active"
+  },
+  "messages.success.data_ingestion_triggered_5272": {
+    "file": "pages/7_🎯_Keyword_Health.py",
+    "category": "messages.success",
+    "original": "✅ Data ingestion triggered"
+  },
+  "messages.success.health_score_calculation_3293": {
+    "file": "pages/7_🎯_Keyword_Health.py",
+    "category": "messages.success",
+    "original": "✅ Health score calculation triggered"
+  },
+  "captions.gaql_ejecutado_9276": {
+    "file": "pages/7_🎯_Keyword_Health.py",
+    "category": "captions",
+    "original": "**GAQL ejecutado:**"
+  },
+  "metrics.total_keywords_785": {
+    "file": "pages/7_🎯_Keyword_Health.py",
+    "category": "metrics",
+    "original": "🎯 Total Keywords"
+  },
+  "metrics.avg_health_score_647": {
+    "file": "pages/7_🎯_Keyword_Health.py",
+    "category": "metrics",
+    "original": "📈 Avg Health Score"
+  },
+  "metrics.healthy_239": {
+    "file": "pages/7_🎯_Keyword_Health.py",
+    "category": "metrics",
+    "original": "🟢 Healthy"
+  },
+  "metrics.needs_attention_637": {
+    "file": "pages/7_🎯_Keyword_Health.py",
+    "category": "metrics",
+    "original": "🟡 Needs Attention"
+  },
+  "metrics.critical_9587": {
+    "file": "pages/7_🎯_Keyword_Health.py",
+    "category": "metrics",
+    "original": "🔴 Critical"
+  },
+  "inputs.buscar_keyword_placeholder_3721": {
+    "file": "pages/7_🎯_Keyword_Health.py",
+    "category": "inputs",
+    "original": "🔍 Buscar keyword\", placeholder=\"Escribe para filtrar..."
+  },
+  "logs.info.scheduler_started_from_1983": {
+    "file": "pages/7_🎯_Keyword_Health.py",
+    "category": "logs.info",
+    "original": "Scheduler started from Keyword Health page"
+  },
+  "logs.error.actionexecutionservice_missing_execute_bid_changes_235": {
+    "file": "pages/7_🎯_Keyword_Health.py",
+    "category": "logs.error",
+    "original": "ActionExecutionService missing execute_bid_changes method"
+  },
+  "columns.health_score_1886": {
+    "file": "pages/7_🎯_Keyword_Health.py",
+    "category": "columns",
+    "original": "Health Score"
+  },
+  "page_titles.campaign_performance_management_2436": {
+    "file": "pages/3_campaigns.py",
+    "category": "page_titles",
+    "original": "🎯 Campaign Performance & Management"
+  },
+  "subheaders.campaign_overview_9471": {
+    "file": "pages/3_campaigns.py",
+    "category": "subheaders",
+    "original": "📊 Campaign Overview"
+  },
+  "subheaders.campaign_performance_analysis_5344": {
+    "file": "pages/3_campaigns.py",
+    "category": "subheaders",
+    "original": "📈 Campaign Performance Analysis"
+  },
+  "subheaders.performance_comparison_7112": {
+    "file": "pages/3_campaigns.py",
+    "category": "subheaders",
+    "original": "📊 Performance Comparison"
+  },
+  "subheaders.análisis_por_palabras_8482": {
+    "file": "pages/3_campaigns.py",
+    "category": "subheaders",
+    "original": "🔎 Análisis por Palabras Clave y Anuncios"
+  },
+  "subheaders.campaign_management_9723": {
+    "file": "pages/3_campaigns.py",
+    "category": "subheaders",
+    "original": "📋 Campaign Management"
+  },
+  "subheaders.campaign_actions_9822": {
+    "file": "pages/3_campaigns.py",
+    "category": "subheaders",
+    "original": "⚡ Campaign Actions"
+  },
+  "subheaders.performance_insights_5494": {
+    "file": "pages/3_campaigns.py",
+    "category": "subheaders",
+    "original": "💡 Performance Insights"
+  },
+  "subheaders.top_performers_5935": {
+    "file": "pages/3_campaigns.py",
+    "category": "subheaders",
+    "original": "🏆 Top Performers"
+  },
+  "subheaders.optimization_opportunities_2242": {
+    "file": "pages/3_campaigns.py",
+    "category": "subheaders",
+    "original": "🔧 Optimization Opportunities"
+  },
+  "subheaders.statistics_3686": {
+    "file": "pages/3_campaigns.py",
+    "category": "subheaders",
+    "original": "📊 Statistics"
+  },
+  "markdown.analyze_campaign_performance_4748": {
+    "file": "pages/3_campaigns.py",
+    "category": "markdown",
+    "original": "Analyze campaign performance, identify opportunities, and optimize your advertising strategy"
+  },
+  "markdown.individual_campaign_actions_707": {
+    "file": "pages/3_campaigns.py",
+    "category": "markdown",
+    "original": "### Individual Campaign Actions"
+  },
+  "markdown.budget_management_2361": {
+    "file": "pages/3_campaigns.py",
+    "category": "markdown",
+    "original": "**Budget Management:**"
+  },
+  "messages.info.no_campaign_data_8388": {
+    "file": "pages/3_campaigns.py",
+    "category": "messages.info",
+    "original": "📊 No campaign data available."
+  },
+  "messages.info.consejo_selecciona_métricas_6945": {
+    "file": "pages/3_campaigns.py",
+    "category": "messages.info",
+    "original": "💡 Consejo: selecciona métricas para comparar (opcional)."
+  },
+  "messages.info.no_hay_campañas_9948": {
+    "file": "pages/3_campaigns.py",
+    "category": "messages.info",
+    "original": "No hay campañas activas disponibles para drill-down."
+  },
+  "messages.info.esta_campaña_es_5488": {
+    "file": "pages/3_campaigns.py",
+    "category": "messages.info",
+    "original": "Esta campaña es Performance Max y no usa palabras clave. Prueba las vistas 🪧 Anuncios o 🧩 Grupos de anuncios."
+  },
+  "messages.info.no_se_encontraron_8935": {
+    "file": "pages/3_campaigns.py",
+    "category": "messages.info",
+    "original": "No se encontraron columnas esperadas para palabras clave en el reporte."
+  },
+  "messages.info.no_se_encontraron_8854": {
+    "file": "pages/3_campaigns.py",
+    "category": "messages.info",
+    "original": "No se encontraron columnas esperadas para términos de búsqueda en el reporte."
+  },
+  "messages.info.no_se_encontraron_6854": {
+    "file": "pages/3_campaigns.py",
+    "category": "messages.info",
+    "original": "No se encontraron columnas esperadas para anuncios en el reporte."
+  },
+  "messages.info.no_hay_datos_8445": {
+    "file": "pages/3_campaigns.py",
+    "category": "messages.info",
+    "original": "No hay datos de anuncios para el rango seleccionado."
+  },
+  "messages.info.no_se_encontraron_6533": {
+    "file": "pages/3_campaigns.py",
+    "category": "messages.info",
+    "original": "No se encontraron columnas esperadas para grupos de anuncios en el reporte."
+  },
+  "messages.info.no_hay_datos_6860": {
+    "file": "pages/3_campaigns.py",
+    "category": "messages.info",
+    "original": "No hay datos de grupos de anuncios para el rango seleccionado."
+  },
+  "messages.info.no_detailed_campaign_556": {
+    "file": "pages/3_campaigns.py",
+    "category": "messages.info",
+    "original": "📋 No detailed campaign data available."
+  },
+  "messages.info.no_campaigns_found_9620": {
+    "file": "pages/3_campaigns.py",
+    "category": "messages.info",
+    "original": "✅ No campaigns found with CTR < 2%"
+  },
+  "messages.info.no_campaigns_found_6874": {
+    "file": "pages/3_campaigns.py",
+    "category": "messages.info",
+    "original": "✅ No campaigns found with cost/conversion > $100"
+  },
+  "messages.info.generating_detailed_performance_4386": {
+    "file": "pages/3_campaigns.py",
+    "category": "messages.info",
+    "original": "📊 Generating detailed performance report..."
+  },
+  "messages.info.redirecting_to_keyword_7053": {
+    "file": "pages/3_campaigns.py",
+    "category": "messages.info",
+    "original": "🔍 Redirecting to keyword analysis..."
+  },
+  "messages.info.loading_trend_analysis_9196": {
+    "file": "pages/3_campaigns.py",
+    "category": "messages.info",
+    "original": "📈 Loading trend analysis..."
+  },
+  "messages.warning.se_alcanzó_el_899": {
+    "file": "pages/3_campaigns.py",
+    "category": "messages.warning",
+    "original": "Se alcanzó el límite de tasa de la API para reportes. Reintentando en 3 segundos..."
+  },
+  "messages.warning.underperforming_campaigns_detected_2861": {
+    "file": "pages/3_campaigns.py",
+    "category": "messages.warning",
+    "original": "⚠️ Underperforming Campaigns Detected"
+  },
+  "messages.warning.no_campaign_data_3757": {
+    "file": "pages/3_campaigns.py",
+    "category": "messages.warning",
+    "original": "No campaign data available"
+  },
+  "messages.success.all_campaigns_performing_2535": {
+    "file": "pages/3_campaigns.py",
+    "category": "messages.success",
+    "original": "✅ All campaigns performing well!"
+  },
+  "captions.gaql_ejecutado_y_9795": {
+    "file": "pages/3_campaigns.py",
+    "category": "captions",
+    "original": "GAQL ejecutado y resumen de filas"
+  },
+  "metrics.total_campaigns_5080": {
+    "file": "pages/3_campaigns.py",
+    "category": "metrics",
+    "original": "📈 Total Campaigns"
+  },
+  "metrics.active_4603": {
+    "file": "pages/3_campaigns.py",
+    "category": "metrics",
+    "original": "✅ Active"
+  },
+  "metrics.paused_4948": {
+    "file": "pages/3_campaigns.py",
+    "category": "metrics",
+    "original": "⏸️ Paused"
+  },
+  "metrics.total_spend_7024": {
+    "file": "pages/1_overview.py",
+    "category": "metrics",
+    "original": "💰 Total Spend"
+  },
+  "metrics.avg_ctr_8937": {
+    "file": "pages/3_campaigns.py",
+    "category": "metrics",
+    "original": "📊 Avg CTR"
+  },
+  "buttons.refresh_6241": {
+    "file": "pages/3_campaigns.py",
+    "category": "buttons",
+    "original": "🔄 Refresh"
+  },
+  "buttons.reintentar_carga_de_2746": {
+    "file": "pages/3_campaigns.py",
+    "category": "buttons",
+    "original": "↻ Reintentar carga de palabras clave"
+  },
+  "buttons.reintentar_carga_de_6794": {
+    "file": "pages/3_campaigns.py",
+    "category": "buttons",
+    "original": "↻ Reintentar carga de términos"
+  },
+  "buttons.export_campaign_data_8347": {
+    "file": "pages/3_campaigns.py",
+    "category": "buttons",
+    "original": "📊 Export Campaign Data"
+  },
+  "buttons.refresh_all_data_5483": {
+    "file": "pages/3_campaigns.py",
+    "category": "buttons",
+    "original": "🔄 Refresh All Data"
+  },
+  "buttons.auto_optimize_low_2738": {
+    "file": "pages/3_campaigns.py",
+    "category": "buttons",
+    "original": "🎯 Auto-Optimize Low CTR\", width='stretch"
+  },
+  "buttons.pause_high_cost_6589": {
+    "file": "pages/3_campaigns.py",
+    "category": "buttons",
+    "original": "💰 Pause High Cost/Conv\", width='stretch"
+  },
+  "buttons.performance_report_width_4107": {
+    "file": "pages/3_campaigns.py",
+    "category": "buttons",
+    "original": "📊 Performance Report\", width='stretch"
+  },
+  "buttons.keyword_analysis_width_1712": {
+    "file": "pages/3_campaigns.py",
+    "category": "buttons",
+    "original": "🔍 Keyword Analysis\", width='stretch"
+  },
+  "buttons.trend_analysis_width_4558": {
+    "file": "pages/3_campaigns.py",
+    "category": "buttons",
+    "original": "📈 Trend Analysis\", width='stretch"
+  },
+  "inputs.search_campaigns_6564": {
+    "file": "pages/3_campaigns.py",
+    "category": "inputs",
+    "original": "🔍 Search campaigns:"
+  },
+  "inputs.top_n_min_value_5911": {
+    "file": "pages/3_campaigns.py",
+    "category": "inputs",
+    "original": "Top N\", min_value=5, max_value=100, value=15, step=5, help=\"Controla el número de keywords en el gráfico"
+  },
+  "inputs.top_n_min_value_4747": {
+    "file": "pages/3_campaigns.py",
+    "category": "inputs",
+    "original": "Top N\", min_value=5, max_value=100, value=15, step=5, help=\"Controla el número de términos en el gráfico"
+  },
+  "help_texts.controla_el_número_5318": {
+    "file": "pages/3_campaigns.py",
+    "category": "help_texts",
+    "original": "Controla el número de keywords en el gráfico"
+  },
+  "help_texts.controla_el_número_6862": {
+    "file": "pages/3_campaigns.py",
+    "category": "help_texts",
+    "original": "Controla el número de términos en el gráfico"
+  },
+  "page_titles.dashboard_overview_8812": {
+    "file": "pages/1_overview.py",
+    "category": "page_titles",
+    "original": "📊 Dashboard Overview"
+  },
+  "subheaders.performance_trends_8195": {
+    "file": "pages/1_overview.py",
+    "category": "subheaders",
+    "original": "📈 Performance Trends"
+  },
+  "subheaders.top_campaigns_5637": {
+    "file": "pages/1_overview.py",
+    "category": "subheaders",
+    "original": "🎯 Top Campaigns"
+  },
+  "subheaders.active_alerts_1649": {
+    "file": "pages/5_alerts.py",
+    "category": "subheaders",
+    "original": "🚨 Active Alerts"
+  },
+  "subheaders.budget_overview_7905": {
+    "file": "pages/1_overview.py",
+    "category": "subheaders",
+    "original": "💰 Budget Overview"
+  },
+  "markdown.alert_summary_2112": {
+    "file": "pages/1_overview.py",
+    "category": "markdown",
+    "original": "**Alert Summary:**"
+  },
+  "messages.info.no_kpi_data_7491": {
+    "file": "pages/1_overview.py",
+    "category": "messages.info",
+    "original": "📊 No KPI data available for the selected period."
+  },
+  "messages.info.no_campaign_data_8747": {
+    "file": "pages/1_overview.py",
+    "category": "messages.info",
+    "original": "📈 No campaign data available for trend analysis."
+  },
+  "messages.info.no_campaign_performance_9288": {
+    "file": "pages/1_overview.py",
+    "category": "messages.info",
+    "original": "🎯 No campaign performance data available."
+  },
+  "messages.info.no_campaign_data_3684": {
+    "file": "pages/1_overview.py",
+    "category": "messages.info",
+    "original": "🎯 No campaign data available."
+  },
+  "messages.info.all_systems_are_5951": {
+    "file": "pages/1_overview.py",
+    "category": "messages.info",
+    "original": "All systems are running smoothly!"
+  },
+  "messages.info.no_billing_data_516": {
+    "file": "pages/1_overview.py",
+    "category": "messages.info",
+    "original": "💰 No billing data available."
+  },
+  "messages.info.redirecting_to_reports_6529": {
+    "file": "pages/1_overview.py",
+    "category": "messages.info",
+    "original": "Redirecting to Reports page..."
+  },
+  "messages.info.redirecting_to_campaigns_4195": {
+    "file": "pages/1_overview.py",
+    "category": "messages.info",
+    "original": "Redirecting to Campaigns page..."
+  },
+  "messages.info.redirecting_to_settings_8684": {
+    "file": "pages/1_overview.py",
+    "category": "messages.info",
+    "original": "Redirecting to Settings page..."
+  },
+  "messages.success.no_active_alerts_1121": {
+    "file": "pages/1_overview.py",
+    "category": "messages.success",
+    "original": "✅ No active alerts"
+  },
+  "metrics.impressions_2763": {
+    "file": "pages/1_overview.py",
+    "category": "metrics",
+    "original": "👁️ Impressions"
+  },
+  "metrics.clicks_3387": {
+    "file": "pages/1_overview.py",
+    "category": "metrics",
+    "original": "🖱️ Clicks"
+  },
+  "metrics.ctr_1146": {
+    "file": "pages/1_overview.py",
+    "category": "metrics",
+    "original": "📊 CTR"
+  },
+  "metrics.conversions_1320": {
+    "file": "pages/1_overview.py",
+    "category": "metrics",
+    "original": "🎯 Conversions"
+  },
+  "metrics.active_1824": {
+    "file": "pages/1_overview.py",
+    "category": "metrics",
+    "original": "Active"
+  },
+  "metrics.high_priority_382": {
+    "file": "pages/1_overview.py",
+    "category": "metrics",
+    "original": "High Priority"
+  },
+  "metrics.total_5677": {
+    "file": "pages/1_overview.py",
+    "category": "metrics",
+    "original": "Total"
+  },
+  "metrics.recent_24h_9065": {
+    "file": "pages/1_overview.py",
+    "category": "metrics",
+    "original": "Recent (24h)"
+  },
+  "metrics.total_budget_8104": {
+    "file": "pages/1_overview.py",
+    "category": "metrics",
+    "original": "Total Budget"
+  },
+  "metrics.spent_2888": {
+    "file": "pages/1_overview.py",
+    "category": "metrics",
+    "original": "Spent"
+  },
+  "buttons.refresh_now_width_2568": {
+    "file": "pages/1_overview.py",
+    "category": "buttons",
+    "original": "🔄 Refresh Now\", width='stretch"
+  },
+  "buttons.generate_report_width_8079": {
+    "file": "pages/1_overview.py",
+    "category": "buttons",
+    "original": "📊 Generate Report\", width='stretch"
+  },
+  "buttons.campaign_analysis_width_2172": {
+    "file": "pages/1_overview.py",
+    "category": "buttons",
+    "original": "🔍 Campaign Analysis\", width='stretch"
+  },
+  "buttons.settings_width_stretch_3021": {
+    "file": "pages/1_overview.py",
+    "category": "buttons",
+    "original": "⚙️ Settings\", width='stretch"
+  },
+  "page_titles.settings_configuration_2695": {
+    "file": "pages/6_settings.py",
+    "category": "page_titles",
+    "original": "⚙️ Settings & Configuration"
+  },
+  "subheaders.google_ads_api_3278": {
+    "file": "pages/6_settings.py",
+    "category": "subheaders",
+    "original": "🔑 Google Ads API Configuration"
+  },
+  "subheaders.account_settings_430": {
+    "file": "pages/6_settings.py",
+    "category": "subheaders",
+    "original": "👤 Account Settings"
+  },
+  "subheaders.dashboard_preferences_2345": {
+    "file": "pages/6_settings.py",
+    "category": "subheaders",
+    "original": "📊 Dashboard Preferences"
+  },
+  "subheaders.notification_settings_4591": {
+    "file": "pages/6_settings.py",
+    "category": "subheaders",
+    "original": "🔔 Notification Settings"
+  },
+  "subheaders.advanced_settings_1688": {
+    "file": "pages/6_settings.py",
+    "category": "subheaders",
+    "original": "🛠️ Advanced Settings"
+  },
+  "markdown.manage_your_dashboard_8340": {
+    "file": "pages/6_settings.py",
+    "category": "markdown",
+    "original": "Manage your dashboard settings, API configuration, and preferences"
+  },
+  "markdown.configure_your_google_5940": {
+    "file": "pages/6_settings.py",
+    "category": "markdown",
+    "original": "**Configure your Google Ads API credentials**"
+  },
+  "markdown.diagnóstico_completo_de_4530": {
+    "file": "pages/6_settings.py",
+    "category": "markdown",
+    "original": "**Diagnóstico completo de configuración y cuentas accesibles**"
+  },
+  "markdown.configuración_actual_7208": {
+    "file": "pages/6_settings.py",
+    "category": "markdown",
+    "original": "**📋 Configuración Actual:**"
+  },
+  "markdown.cuentas_esperadas_4103": {
+    "file": "pages/6_settings.py",
+    "category": "markdown",
+    "original": "**🎯 Cuentas Esperadas:**"
+  },
+  "markdown.1_cuentas_accesibles_7029": {
+    "file": "pages/6_settings.py",
+    "category": "markdown",
+    "original": "### 🔍 1. Cuentas Accesibles (API)"
+  },
+  "markdown.2_comparación_con_2631": {
+    "file": "pages/6_settings.py",
+    "category": "markdown",
+    "original": "### 📋 2. Comparación con accounts.txt"
+  },
+  "markdown.3_resultado_final_8930": {
+    "file": "pages/6_settings.py",
+    "category": "markdown",
+    "original": "### ✅ 3. Resultado Final"
+  },
+  "markdown.authenticate_with_google_5364": {
+    "file": "pages/6_settings.py",
+    "category": "markdown",
+    "original": "**Authenticate with Google Ads**"
+  },
+  "markdown.manage_accessible_google_2940": {
+    "file": "pages/6_settings.py",
+    "category": "markdown",
+    "original": "**Manage accessible Google Ads accounts**"
+  },
+  "markdown.available_accounts_4979": {
+    "file": "pages/6_settings.py",
+    "category": "markdown",
+    "original": "**Available Accounts:**"
+  },
+  "markdown.password_security_884": {
+    "file": "pages/6_settings.py",
+    "category": "markdown",
+    "original": "**Password & Security**"
+  },
+  "markdown.two_factor_authentication_1219": {
+    "file": "pages/6_settings.py",
+    "category": "markdown",
+    "original": "**Two-Factor Authentication**"
+  },
+  "markdown.session_management_6979": {
+    "file": "pages/6_settings.py",
+    "category": "markdown",
+    "original": "**Session Management**"
+  },
+  "markdown.manage_api_keys_3611": {
+    "file": "pages/6_settings.py",
+    "category": "markdown",
+    "original": "**Manage API Keys and Tokens**"
+  },
+  "markdown.chart_preferences_8982": {
+    "file": "pages/6_settings.py",
+    "category": "markdown",
+    "original": "**Chart Preferences**"
+  },
+  "markdown.default_metrics_5397": {
+    "file": "pages/6_settings.py",
+    "category": "markdown",
+    "original": "**Default Metrics**"
+  },
+  "markdown.date_range_preferences_6857": {
+    "file": "pages/6_settings.py",
+    "category": "markdown",
+    "original": "**Date Range Preferences**"
+  },
+  "markdown.currency_formatting_6657": {
+    "file": "pages/6_settings.py",
+    "category": "markdown",
+    "original": "**Currency & Formatting**"
+  },
+  "markdown.default_export_format_2143": {
+    "file": "pages/6_settings.py",
+    "category": "markdown",
+    "original": "**Default Export Format**"
+  },
+  "markdown.scheduled_reports_3357": {
+    "file": "pages/6_settings.py",
+    "category": "markdown",
+    "original": "**Scheduled Reports**"
+  },
+  "markdown.email_notification_preferences_197": {
+    "file": "pages/6_settings.py",
+    "category": "markdown",
+    "original": "**Email Notification Preferences**"
+  },
+  "markdown.notification_types_426": {
+    "file": "pages/6_settings.py",
+    "category": "markdown",
+    "original": "**Notification Types**"
+  },
+  "markdown.notification_frequency_2944": {
+    "file": "pages/6_settings.py",
+    "category": "markdown",
+    "original": "**Notification Frequency**"
+  },
+  "markdown.browser_push_notifications_5790": {
+    "file": "pages/6_settings.py",
+    "category": "markdown",
+    "original": "**Browser Push Notifications**"
+  },
+  "markdown.slack_notifications_3719": {
+    "file": "pages/6_settings.py",
+    "category": "markdown",
+    "original": "**Slack Notifications**"
+  },
+  "markdown.data_caching_configuration_4660": {
+    "file": "pages/6_settings.py",
+    "category": "markdown",
+    "original": "**Data Caching Configuration**"
+  },
+  "markdown.cache_management_5097": {
+    "file": "pages/6_settings.py",
+    "category": "markdown",
+    "original": "**Cache Management**"
+  },
+  "markdown.api_rate_limiting_6738": {
+    "file": "pages/6_settings.py",
+    "category": "markdown",
+    "original": "**API Rate Limiting Configuration**"
+  },
+  "markdown.logging_configuration_4708": {
+    "file": "pages/6_settings.py",
+    "category": "markdown",
+    "original": "**Logging Configuration**"
+  },
+  "markdown.export_all_settings_1914": {
+    "file": "pages/6_settings.py",
+    "category": "markdown",
+    "original": "**Export All Settings**"
+  },
+  "markdown.dashboard_information_564": {
+    "file": "pages/6_settings.py",
+    "category": "markdown",
+    "original": "**Dashboard Information**"
+  },
+  "messages.info.please_restart_the_8951": {
+    "file": "pages/6_settings.py",
+    "category": "messages.info",
+    "original": "🔄 Please restart the application to apply changes."
+  },
+  "messages.info.complete_the_oauth_2803": {
+    "file": "pages/6_settings.py",
+    "category": "messages.info",
+    "original": "👆 Complete the OAuth flow to access your Google Ads accounts."
+  },
+  "messages.info.redirecting_to_google_8946": {
+    "file": "pages/6_settings.py",
+    "category": "messages.info",
+    "original": "🔄 Redirecting to Google for authentication..."
+  },
+  "messages.info.refreshing_authentication_tokens_9280": {
+    "file": "pages/6_settings.py",
+    "category": "messages.info",
+    "original": "🔄 Refreshing authentication tokens..."
+  },
+  "messages.info.no_accounts_found_6383": {
+    "file": "pages/6_settings.py",
+    "category": "messages.info",
+    "original": "🔍 No accounts found. Please check your API configuration and authentication."
+  },
+  "messages.info.refreshing_account_list_1017": {
+    "file": "pages/6_settings.py",
+    "category": "messages.info",
+    "original": "🔄 Refreshing account list..."
+  },
+  "messages.info.two_factor_authentication_8535": {
+    "file": "pages/6_settings.py",
+    "category": "messages.info",
+    "original": "📱 Two-factor authentication will be enabled using your mobile device."
+  },
+  "messages.info.browser_notifications_will_1413": {
+    "file": "pages/6_settings.py",
+    "category": "messages.info",
+    "original": "📱 Browser notifications will be requested when you enable this feature."
+  },
+  "messages.info.sending_test_message_6138": {
+    "file": "pages/6_settings.py",
+    "category": "messages.info",
+    "original": "📤 Sending test message to Slack..."
+  },
+  "messages.info.cache_hit_rate_1146": {
+    "file": "pages/6_settings.py",
+    "category": "messages.info",
+    "original": "📈 Cache hit rate: 85% | Size: 245 MB"
+  },
+  "messages.info.cache_refreshed_successfully_2757": {
+    "file": "pages/6_settings.py",
+    "category": "messages.info",
+    "original": "🔄 Cache refreshed successfully!"
+  },
+  "messages.info.please_restart_the_8615": {
+    "file": "pages/6_settings.py",
+    "category": "messages.info",
+    "original": "🔄 Please restart the application to apply imported settings."
+  },
+  "messages.warning.no_se_pudo_3934": {
+    "file": "pages/6_settings.py",
+    "category": "messages.warning",
+    "original": "No se pudo obtener información de la cuenta"
+  },
+  "messages.warning.no_se_encontraron_8482": {
+    "file": "pages/6_settings.py",
+    "category": "messages.warning",
+    "original": "📁 No se encontraron cuentas en accounts.txt"
+  },
+  "messages.warning.you_will_be_9887": {
+    "file": "pages/6_settings.py",
+    "category": "messages.warning",
+    "original": "⚠️ You will be logged out and need to re-authenticate."
+  },
+  "messages.warning.debug_mode_will_8234": {
+    "file": "pages/6_settings.py",
+    "category": "messages.warning",
+    "original": "⚠️ Debug mode will log sensitive information. Use only for troubleshooting."
+  },
+  "messages.error.please_fill_in_4673": {
+    "file": "pages/6_settings.py",
+    "category": "messages.error",
+    "original": "❌ Please fill in all required fields."
+  },
+  "messages.error.login_customer_id_1269": {
+    "file": "pages/6_settings.py",
+    "category": "messages.error",
+    "original": "❌ Login Customer ID no establecido en .env"
+  },
+  "messages.error.developer_token_no_5831": {
+    "file": "pages/6_settings.py",
+    "category": "messages.error",
+    "original": "❌ Developer Token no configurado"
+  },
+  "messages.error.client_id_no_2458": {
+    "file": "pages/6_settings.py",
+    "category": "messages.error",
+    "original": "❌ Client ID no configurado"
+  },
+  "messages.error.no_se_pudo_439": {
+    "file": "pages/6_settings.py",
+    "category": "messages.error",
+    "original": "❌ No se pudo inicializar el cliente de Google Ads. Verifica tus credenciales."
+  },
+  "messages.error.no_se_obtuvieron_9692": {
+    "file": "pages/6_settings.py",
+    "category": "messages.error",
+    "original": "❌ No se obtuvieron cuentas accesibles"
+  },
+  "messages.error.no_se_pudieron_1855": {
+    "file": "pages/6_settings.py",
+    "category": "messages.error",
+    "original": "❌ No se pudieron obtener cuentas válidas"
+  },
+  "messages.error.passwords_do_not_9000": {
+    "file": "pages/6_settings.py",
+    "category": "messages.error",
+    "original": "❌ Passwords do not match!"
+  },
+  "messages.success.api_configuration_saved_8529": {
+    "file": "pages/6_settings.py",
+    "category": "messages.success",
+    "original": "✅ API configuration saved successfully!"
+  },
+  "messages.success.developer_token_configurado_5614": {
+    "file": "pages/6_settings.py",
+    "category": "messages.success",
+    "original": "✅ Developer Token configurado"
+  },
+  "messages.success.client_id_configurado_5621": {
+    "file": "pages/6_settings.py",
+    "category": "messages.success",
+    "original": "✅ Client ID configurado"
+  },
+  "messages.success.cliente_y_servicios_5264": {
+    "file": "pages/6_settings.py",
+    "category": "messages.success",
+    "original": "✅ Cliente y servicios inicializados correctamente."
+  },
+  "messages.success.diagnóstico_completado_las_1398": {
+    "file": "pages/6_settings.py",
+    "category": "messages.success",
+    "original": "🎉 Diagnóstico completado. Las cuentas han sido actualizadas en la sesión."
+  },
+  "messages.success.configuración_reinicializada_ejecuta_9992": {
+    "file": "pages/6_settings.py",
+    "category": "messages.success",
+    "original": "✅ Configuración reinicializada. Ejecuta el diagnóstico nuevamente."
+  },
+  "messages.success.successfully_authenticated_4556": {
+    "file": "pages/6_settings.py",
+    "category": "messages.success",
+    "original": "✅ Successfully authenticated!"
+  },
+  "messages.success.profile_updated_successfully_3945": {
+    "file": "pages/6_settings.py",
+    "category": "messages.success",
+    "original": "✅ Profile updated successfully!"
+  },
+  "messages.success.security_settings_updated_7161": {
+    "file": "pages/6_settings.py",
+    "category": "messages.success",
+    "original": "✅ Security settings updated successfully!"
+  },
+  "messages.success.new_api_key_841": {
+    "file": "pages/6_settings.py",
+    "category": "messages.success",
+    "original": "✅ New API key generated successfully!"
+  },
+  "messages.success.display_settings_saved_64": {
+    "file": "pages/6_settings.py",
+    "category": "messages.success",
+    "original": "✅ Display settings saved successfully!"
+  },
+  "messages.success.data_settings_saved_2516": {
+    "file": "pages/6_settings.py",
+    "category": "messages.success",
+    "original": "✅ Data settings saved successfully!"
+  },
+  "messages.success.export_settings_saved_4916": {
+    "file": "pages/6_settings.py",
+    "category": "messages.success",
+    "original": "✅ Export settings saved successfully!"
+  },
+  "messages.success.email_notification_settings_1583": {
+    "file": "pages/6_settings.py",
+    "category": "messages.success",
+    "original": "✅ Email notification settings saved successfully!"
+  },
+  "messages.success.browser_notification_settings_272": {
+    "file": "pages/6_settings.py",
+    "category": "messages.success",
+    "original": "✅ Browser notification settings saved successfully!"
+  },
+  "messages.success.slack_integration_settings_159": {
+    "file": "pages/6_settings.py",
+    "category": "messages.success",
+    "original": "✅ Slack integration settings saved successfully!"
+  },
+  "messages.success.cache_settings_saved_8886": {
+    "file": "pages/6_settings.py",
+    "category": "messages.success",
+    "original": "✅ Cache settings saved successfully!"
+  },
+  "messages.success.all_cache_cleared_9257": {
+    "file": "pages/6_settings.py",
+    "category": "messages.success",
+    "original": "✅ All cache cleared successfully!"
+  },
+  "messages.success.rate_limiting_settings_48": {
+    "file": "pages/6_settings.py",
+    "category": "messages.success",
+    "original": "✅ Rate limiting settings saved successfully!"
+  },
+  "messages.success.logging_settings_saved_4346": {
+    "file": "pages/6_settings.py",
+    "category": "messages.success",
+    "original": "✅ Logging settings saved successfully!"
+  },
+  "messages.success.settings_imported_successfully_9853": {
+    "file": "pages/6_settings.py",
+    "category": "messages.success",
+    "original": "✅ Settings imported successfully!"
+  },
+  "metrics.api_connection_7496": {
+    "file": "pages/6_settings.py",
+    "category": "metrics",
+    "original": "API Connection"
+  },
+  "metrics.authentication_7105": {
+    "file": "pages/6_settings.py",
+    "category": "metrics",
+    "original": "Authentication"
+  },
+  "metrics.accessible_accounts_9942": {
+    "file": "pages/6_settings.py",
+    "category": "metrics",
+    "original": "Accessible Accounts"
+  },
+  "buttons.ejecutar_diagnóstico_completo_9770": {
+    "file": "pages/6_settings.py",
+    "category": "buttons",
+    "original": "🔍 Ejecutar Diagnóstico Completo\", type=\"primary"
+  },
+  "buttons.reinicializar_configuración_9972": {
+    "file": "pages/6_settings.py",
+    "category": "buttons",
+    "original": "🔄 Reinicializar Configuración"
+  },
+  "buttons.start_oauth_flow_8215": {
+    "file": "pages/6_settings.py",
+    "category": "buttons",
+    "original": "🚀 Start OAuth Flow"
+  },
+  "buttons.refresh_authentication_5390": {
+    "file": "pages/6_settings.py",
+    "category": "buttons",
+    "original": "🔄 Refresh Authentication"
+  },
+  "buttons.logout_7581": {
+    "file": "pages/6_settings.py",
+    "category": "buttons",
+    "original": "🚪 Logout"
+  },
+  "buttons.refresh_account_list_5529": {
+    "file": "pages/6_settings.py",
+    "category": "buttons",
+    "original": "🔄 Refresh Account List"
+  },
+  "buttons.regenerate_key_f_148": {
+    "file": "pages/6_settings.py",
+    "category": "buttons",
+    "original": "🔄 Regenerate\", key=f\"regen_{key['name']}"
+  },
+  "buttons.delete_key_f_4470": {
+    "file": "pages/6_settings.py",
+    "category": "buttons",
+    "original": "🗑️ Delete\", key=f\"delete_{key['name']}"
+  },
+  "buttons.generate_new_api_2341": {
+    "file": "pages/6_settings.py",
+    "category": "buttons",
+    "original": "➕ Generate New API Key"
+  },
+  "buttons.save_browser_settings_7169": {
+    "file": "pages/6_settings.py",
+    "category": "buttons",
+    "original": "💾 Save Browser Settings"
+  },
+  "buttons.test_slack_integration_8536": {
+    "file": "pages/6_settings.py",
+    "category": "buttons",
+    "original": "🧪 Test Slack Integration"
+  },
+  "buttons.save_slack_settings_6160": {
+    "file": "pages/6_settings.py",
+    "category": "buttons",
+    "original": "💾 Save Slack Settings"
+  },
+  "buttons.clear_all_cache_8215": {
+    "file": "pages/6_settings.py",
+    "category": "buttons",
+    "original": "🗑️ Clear All Cache"
+  },
+  "buttons.view_cache_stats_7007": {
+    "file": "pages/6_settings.py",
+    "category": "buttons",
+    "original": "📊 View Cache Stats"
+  },
+  "buttons.refresh_cache_4971": {
+    "file": "pages/6_settings.py",
+    "category": "buttons",
+    "original": "🔄 Refresh Cache"
+  },
+  "buttons.export_settings_2871": {
+    "file": "pages/6_settings.py",
+    "category": "buttons",
+    "original": "📊 Export Settings"
+  },
+  "buttons.import_settings_238": {
+    "file": "pages/6_settings.py",
+    "category": "buttons",
+    "original": "📥 Import Settings"
+  },
+  "buttons.refresh_system_info_8884": {
+    "file": "pages/6_settings.py",
+    "category": "buttons",
+    "original": "🔄 Refresh System Info"
+  },
+  "inputs.display_name_value_2917": {
+    "file": "pages/6_settings.py",
+    "category": "inputs",
+    "original": "Display Name:\", value=\"John Doe"
+  },
+  "inputs.company_value_marketing_7059": {
+    "file": "pages/6_settings.py",
+    "category": "inputs",
+    "original": "Company:\", value=\"Marketing Agency Inc."
+  },
+  "inputs.email_value_john_6686": {
+    "file": "pages/6_settings.py",
+    "category": "inputs",
+    "original": "Email:\", value=\"john.doe@example.com"
+  },
+  "inputs.current_password_type_5886": {
+    "file": "pages/6_settings.py",
+    "category": "inputs",
+    "original": "Current Password:\", type=\"password"
+  },
+  "inputs.new_password_type_8798": {
+    "file": "pages/6_settings.py",
+    "category": "inputs",
+    "original": "New Password:\", type=\"password"
+  },
+  "inputs.confirm_new_password_5915": {
+    "file": "pages/6_settings.py",
+    "category": "inputs",
+    "original": "Confirm New Password:\", type=\"password"
+  },
+  "inputs.default_channel_value_6666": {
+    "file": "pages/6_settings.py",
+    "category": "inputs",
+    "original": "Default Channel:\", value=\"#google-ads-alerts"
+  },
+  "page_titles.alerts_monitoring_5627": {
+    "file": "pages/5_alerts.py",
+    "category": "page_titles",
+    "original": "🚨 Alerts & Monitoring"
+  },
+  "subheaders.alert_rules_configuration_4156": {
+    "file": "pages/5_alerts.py",
+    "category": "subheaders",
+    "original": "⚙️ Alert Rules Configuration"
+  },
+  "subheaders.alert_history_9788": {
+    "file": "pages/5_alerts.py",
+    "category": "subheaders",
+    "original": "📊 Alert History"
+  },
+  "subheaders.alert_trends_4951": {
+    "file": "pages/5_alerts.py",
+    "category": "subheaders",
+    "original": "📈 Alert Trends"
+  },
+  "subheaders.alert_history_details_7558": {
+    "file": "pages/5_alerts.py",
+    "category": "subheaders",
+    "original": "📋 Alert History Details"
+  },
+  "subheaders.real_time_monitoring_4460": {
+    "file": "pages/5_alerts.py",
+    "category": "subheaders",
+    "original": "📈 Real-time Monitoring"
+  },
+  "subheaders.real_time_alert_8591": {
+    "file": "pages/5_alerts.py",
+    "category": "subheaders",
+    "original": "🔔 Real-time Alert Feed"
+  },
+  "markdown.monitor_your_campaigns_6794": {
+    "file": "pages/5_alerts.py",
+    "category": "markdown",
+    "original": "Monitor your campaigns, set up custom alerts, and stay informed about important changes"
+  },
+  "markdown.configure_new_alert_9730": {
+    "file": "pages/5_alerts.py",
+    "category": "markdown",
+    "original": "**Configure New Alert Rule**"
+  },
+  "markdown.notification_settings_7751": {
+    "file": "pages/5_alerts.py",
+    "category": "markdown",
+    "original": "**Notification Settings**"
+  },
+  "markdown.existing_alert_rules_4190": {
+    "file": "pages/5_alerts.py",
+    "category": "markdown",
+    "original": "**📋 Existing Alert Rules**"
+  },
+  "markdown.campaign_health_score_5736": {
+    "file": "pages/5_alerts.py",
+    "category": "markdown",
+    "original": "**🎯 Campaign Health Score**"
+  },
+  "markdown.key_metrics_status_9255": {
+    "file": "pages/5_alerts.py",
+    "category": "markdown",
+    "original": "**📊 Key Metrics Status**"
+  },
+  "markdown.configure_real_time_2114": {
+    "file": "pages/5_alerts.py",
+    "category": "markdown",
+    "original": "**Configure Real-time Monitoring**"
+  },
+  "messages.info.the_rule_will_9363": {
+    "file": "pages/5_alerts.py",
+    "category": "messages.info",
+    "original": "The rule will be active within 5 minutes."
+  },
+  "messages.info.no_alert_rules_2298": {
+    "file": "pages/5_alerts.py",
+    "category": "messages.info",
+    "original": "📋 No alert rules configured. Create your first rule above!"
+  },
+  "messages.info.no_alert_history_6404": {
+    "file": "pages/5_alerts.py",
+    "category": "messages.info",
+    "original": "📊 No alert history found for the selected filters."
+  },
+  "messages.info.no_alert_history_2272": {
+    "file": "pages/5_alerts.py",
+    "category": "messages.info",
+    "original": "📊 No alert history available."
+  },
+  "messages.info.no_recent_alerts_4393": {
+    "file": "pages/5_alerts.py",
+    "category": "messages.info",
+    "original": "🔔 No recent alerts. Click 'Refresh Feed' to check for updates."
+  },
+  "messages.success.no_active_alerts_5219": {
+    "file": "pages/5_alerts.py",
+    "category": "messages.success",
+    "original": "🎉 No active alerts! Your campaigns are performing well."
+  },
+  "messages.success.monitoring_settings_saved_1016": {
+    "file": "pages/5_alerts.py",
+    "category": "messages.success",
+    "original": "✅ Monitoring settings saved!"
+  },
+  "metrics.high_priority_6322": {
+    "file": "pages/5_alerts.py",
+    "category": "metrics",
+    "original": "🔴 High Priority"
+  },
+  "metrics.medium_priority_5225": {
+    "file": "pages/5_alerts.py",
+    "category": "metrics",
+    "original": "🟡 Medium Priority"
+  },
+  "metrics.low_priority_8565": {
+    "file": "pages/5_alerts.py",
+    "category": "metrics",
+    "original": "🟢 Low Priority"
+  },
+  "metrics.total_active_9298": {
+    "file": "pages/5_alerts.py",
+    "category": "metrics",
+    "original": "📊 Total Active"
+  },
+  "buttons.refresh_alerts_3488": {
+    "file": "pages/5_alerts.py",
+    "category": "buttons",
+    "original": "🔄 Refresh Alerts"
+  },
+  "buttons.show_sample_alerts_9980": {
+    "file": "pages/5_alerts.py",
+    "category": "buttons",
+    "original": "👀 Show Sample Alerts"
+  },
+  "buttons.export_alert_history_6735": {
+    "file": "pages/5_alerts.py",
+    "category": "buttons",
+    "original": "📊 Export Alert History"
+  },
+  "buttons.refresh_feed_8017": {
+    "file": "pages/5_alerts.py",
+    "category": "buttons",
+    "original": "🔄 Refresh Feed"
+  },
+  "buttons.save_monitoring_settings_4376": {
+    "file": "pages/5_alerts.py",
+    "category": "buttons",
+    "original": "💾 Save Monitoring Settings"
+  },
+  "inputs.rule_name_placeholder_974": {
+    "file": "pages/5_alerts.py",
+    "category": "inputs",
+    "original": "Rule Name:\", placeholder=\"e.g., High CPC Alert"
+  },
+  "inputs.email_addresses_comma_6486": {
+    "file": "pages/5_alerts.py",
+    "category": "inputs",
+    "original": "Email Addresses (comma-separated):"
+  },
+  "logs.info.keywordhealthservice_inicializado_3079": {
+    "file": "services/keyword_health_service.py",
+    "category": "logs.info",
+    "original": "KeywordHealthService inicializado"
+  },
+  "logs.warning.googleadsclient_no_disponible_522": {
+    "file": "services/keyword_health_service.py",
+    "category": "logs.warning",
+    "original": "GoogleAdsClient no disponible, usando datos de base de datos"
+  },
+  "logs.info.actionexecutionservice_inicializado_con_5785": {
+    "file": "services/action_execution_service.py",
+    "category": "logs.info",
+    "original": "ActionExecutionService inicializado con guardrails de seguridad"
+  },
+  "logs.info.configuración_de_guardrails_4443": {
+    "file": "services/action_execution_service.py",
+    "category": "logs.info",
+    "original": "Configuración de guardrails actualizada"
+  },
+  "logs.info.schedulerservice_inicializado_8842": {
+    "file": "services/scheduler_service.py",
+    "category": "logs.info",
+    "original": "SchedulerService inicializado"
+  },
+  "logs.info.scheduler_iniciado_exitosamente_7922": {
+    "file": "services/scheduler_service.py",
+    "category": "logs.info",
+    "original": "Scheduler iniciado exitosamente"
+  },
+  "logs.info.scheduler_detenido_exitosamente_6440": {
+    "file": "services/scheduler_service.py",
+    "category": "logs.info",
+    "original": "Scheduler detenido exitosamente"
+  },
+  "logs.info.trabajos_programados_configurados_8275": {
+    "file": "services/scheduler_service.py",
+    "category": "logs.info",
+    "original": "Trabajos programados configurados exitosamente"
+  },
+  "logs.info.iniciando_ingesta_diaria_398": {
+    "file": "services/scheduler_service.py",
+    "category": "logs.info",
+    "original": "Iniciando ingesta diaria de datos"
+  },
+  "logs.info.iniciando_cálculo_de_2070": {
+    "file": "services/scheduler_service.py",
+    "category": "logs.info",
+    "original": "Iniciando cálculo de health scores"
+  },
+  "logs.info.iniciando_descubrimiento_de_5353": {
+    "file": "services/scheduler_service.py",
+    "category": "logs.info",
+    "original": "Iniciando descubrimiento de nuevas cuentas"
+  },
+  "logs.info.iniciando_limpieza_de_2482": {
+    "file": "services/scheduler_service.py",
+    "category": "logs.info",
+    "original": "Iniciando limpieza de datos antiguos"
+  },
+  "logs.info.iniciando_generación_de_2541": {
+    "file": "services/scheduler_service.py",
+    "category": "logs.info",
+    "original": "Iniciando generación de reportes semanales"
+  },
+  "logs.info.system_health_check_1669": {
+    "file": "services/scheduler_service.py",
+    "category": "logs.info",
+    "original": "System health check - All systems operational"
+  },
+  "logs.info.databaseservice_inicializado_correctamente_3159": {
+    "file": "services/database_service.py",
+    "category": "logs.info",
+    "original": "DatabaseService inicializado correctamente"
+  },
+  "logs.info.mccmanagementservice_inicializado_5634": {
+    "file": "services/mcc_management_service.py",
+    "category": "logs.info",
+    "original": "MCCManagementService inicializado"
+  },
+  "logs.info.iniciando_descubrimiento_y_7641": {
+    "file": "services/mcc_management_service.py",
+    "category": "logs.info",
+    "original": "Iniciando descubrimiento y sincronización de cuentas MCC"
+  },
+  "logs.warning.no_se_encontraron_8829": {
+    "file": "services/mcc_management_service.py",
+    "category": "logs.warning",
+    "original": "No se encontraron customer IDs en la configuración"
+  },
+  "logs.error.no_se_pudo_641": {
+    "file": "services/mcc_management_service.py",
+    "category": "logs.error",
+    "original": "No se pudo obtener cliente de Google Ads"
+  }
+}
