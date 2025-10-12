@@ -61,7 +61,7 @@ def main():
         auto_refresh = st.checkbox("🔄 Auto-refresh (30s)", value=False)
     
     with col3:
-        if st.button("🔄 Refresh Now", width='stretch'):
+        if st.button("🔄 Refresh Now", use_container_width=True):
             st.cache_data.clear()
             st.rerun()
     
@@ -214,7 +214,7 @@ def main():
                     title_text="Performance Trends (Last 30 Days)"
                 )
                 
-                st.plotly_chart(fig, width='stretch')
+                st.plotly_chart(fig, use_container_width=True)
             
             else:
                 st.info("📈 No campaign data available for trend analysis.")
@@ -250,7 +250,7 @@ def main():
                 
                 if campaign_data:
                     df_campaigns = pd.DataFrame(campaign_data)
-                    st.dataframe(df_campaigns, width='stretch', hide_index=True)
+                    st.dataframe(df_campaigns, use_container_width=True, hide_index=True)
                 else:
                     st.info("🎯 No campaign performance data available.")
             else:
@@ -340,7 +340,7 @@ def main():
                     ))
                     
                     fig_budget.update_layout(height=300)
-                    st.plotly_chart(fig_budget, width='stretch')
+                    st.plotly_chart(fig_budget, use_container_width=True)
                 
                 # Budget metrics
                 col_b1, col_b2 = st.columns(2)
@@ -361,15 +361,15 @@ def main():
             # Quick actions
             st.subheader("⚡ Quick Actions")
             
-            if st.button("📊 Generate Report", width='stretch'):
+            if st.button("📊 Generate Report", use_container_width=True):
                 st.info("Redirecting to Reports page...")
                 # In a real app, this would navigate to the reports page
             
-            if st.button("🔍 Campaign Analysis", width='stretch'):
+            if st.button("🔍 Campaign Analysis", use_container_width=True):
                 st.info("Redirecting to Campaigns page...")
                 # In a real app, this would navigate to the campaigns page
             
-            if st.button("⚙️ Settings", width='stretch'):
+            if st.button("⚙️ Settings", use_container_width=True):
                 st.info("Redirecting to Settings page...")
                 # In a real app, this would navigate to the settings page
     
