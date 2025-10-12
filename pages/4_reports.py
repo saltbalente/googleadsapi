@@ -104,7 +104,7 @@ def main():
         )
         
         # Generate report button
-        generate_report = st.button("🚀 Generate Report", width='stretch')
+        generate_report = st.button("🚀 Generate Report", use_container_width=True)
     
     # Main content area
     tab1, tab2, tab3, tab4 = st.tabs(["📊 Report Results", "📈 Visualizations", "📋 Predefined Reports", "⚙️ Advanced"])
@@ -202,7 +202,7 @@ def main():
                     else:
                         df_display = df_report.head(rows_per_page)
                     
-                    st.dataframe(df_display, width='stretch', hide_index=True)
+                    st.dataframe(df_display, use_container_width=True, hide_index=True)
                     
                     # Export options
                     st.subheader("📤 Export Options")
@@ -268,7 +268,7 @@ def main():
                     title="Performance Trends Over Time",
                     labels={'value': 'Count/Cost', 'variable': 'Metric'}
                 )
-                st.plotly_chart(fig_line, width='stretch')
+                st.plotly_chart(fig_line, use_container_width=True)
             
             elif chart_type == "Bar Chart":
                 # Performance comparison
@@ -280,7 +280,7 @@ def main():
                     title="Campaign Performance Comparison",
                     color_continuous_scale='viridis'
                 )
-                st.plotly_chart(fig_bar, width='stretch')
+                st.plotly_chart(fig_bar, use_container_width=True)
             
             elif chart_type == "Scatter Plot":
                 # Performance correlation
@@ -293,7 +293,7 @@ def main():
                     hover_name='Campaign',
                     title="Clicks vs Conversions (Size = Cost, Color = CTR)"
                 )
-                st.plotly_chart(fig_scatter, width='stretch')
+                st.plotly_chart(fig_scatter, use_container_width=True)
             
             elif chart_type == "Pie Chart":
                 # Cost distribution
@@ -303,7 +303,7 @@ def main():
                     names='Campaign',
                     title="Cost Distribution by Campaign"
                 )
-                st.plotly_chart(fig_pie, width='stretch')
+                st.plotly_chart(fig_pie, use_container_width=True)
             
             elif chart_type == "Heatmap":
                 # Performance heatmap
@@ -319,7 +319,7 @@ def main():
                     title="CTR Heatmap by Campaign and Device",
                     color_continuous_scale='RdYlBu_r'
                 )
-                st.plotly_chart(fig_heatmap, width='stretch')
+                st.plotly_chart(fig_heatmap, use_container_width=True)
             
             elif chart_type == "Funnel Chart":
                 # Conversion funnel
@@ -335,7 +335,7 @@ def main():
                 ))
                 
                 fig_funnel.update_layout(title="Conversion Funnel")
-                st.plotly_chart(fig_funnel, width='stretch')
+                st.plotly_chart(fig_funnel, use_container_width=True)
             
             # Custom visualization builder
             st.subheader("🎨 Custom Visualization Builder")
@@ -357,7 +357,7 @@ def main():
                 else:
                     fig_custom = px.scatter(df_viz, x=x_axis, y=y_axis, color=color_by, title=f"{y_axis} vs {x_axis}")
                 
-                st.plotly_chart(fig_custom, width='stretch')
+                st.plotly_chart(fig_custom, use_container_width=True)
         
         else:
             st.info("📊 Generate a report first to see visualizations.")
@@ -464,7 +464,7 @@ def main():
                     trendline="ols"
                 )
                 
-                st.plotly_chart(fig_trend, width='stretch')
+                st.plotly_chart(fig_trend, use_container_width=True)
                 
                 # Trend insights
                 st.markdown("**📊 Trend Insights:**")
@@ -530,7 +530,7 @@ def main():
                     yaxis_title=forecast_metric
                 )
                 
-                st.plotly_chart(fig_forecast, width='stretch')
+                st.plotly_chart(fig_forecast, use_container_width=True)
                 
                 st.info(f"📊 Forecast Summary: Expected {forecast_metric.lower()} trend shows 12% increase over the next {forecast_days} days")
         

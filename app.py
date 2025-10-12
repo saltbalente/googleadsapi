@@ -298,7 +298,7 @@ def render_sidebar():
                     logger.warning(f"No se pudo detectar moneda: {e}")
             
             # Botón para cambiar de cuenta
-            if st.button("🔄 Cambiar Cuenta", width='stretch'):
+            if st.button("🔄 Cambiar Cuenta", use_container_width=True):
                 del st.session_state['selected_customer']
                 st.rerun()
         
@@ -338,7 +338,7 @@ def render_sidebar():
         col1, col2 = st.columns(2)
         
         with col1:
-            if st.button("🔄 Refresh Data", width='stretch'):
+            if st.button("🔄 Refresh Data", use_container_width=True):
                 try:
                     if hasattr(st.session_state.cache_manager, 'clear'):
                         st.session_state.cache_manager.clear()
@@ -350,7 +350,7 @@ def render_sidebar():
                 st.rerun()
         
         with col2:
-            if st.button("📊 Check Alerts", width='stretch'):
+            if st.button("📊 Check Alerts", use_container_width=True):
                 if 'alert' in st.session_state.services:
                     with st.spinner("Checking alerts..."):
                         alerts = st.session_state.services['alert'].check_alerts([st.session_state.selected_customer])
@@ -454,7 +454,7 @@ def main():
             
             col1, col2, col3 = st.columns([1, 2, 1])
             with col2:
-                if st.button("🔑 Iniciar Autenticación con Google Ads", width='stretch', type="primary"):
+                if st.button("🔑 Iniciar Autenticación con Google Ads", use_container_width=True, type="primary"):
                     try:
                         auth_url = auth.get_auth_url()
                         if auth_url:
@@ -531,7 +531,7 @@ def main():
                     key='account_selector'
                 )
                 
-                if st.button("✅ Continuar con esta cuenta", width='stretch', type="primary"):
+                if st.button("✅ Continuar con esta cuenta", use_container_width=True, type="primary"):
                     # Encontrar el customer_id correspondiente
                     for name, customer_id in account_options:
                         if name == selected_account:
