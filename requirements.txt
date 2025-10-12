@@ -1,4 +1,4 @@
-google-ads==28.0.0
+google-ads==23.0.0
 streamlit==1.32.2
 streamlit-option-menu==0.3.12
 streamlit-aggrid==0.3.4.post3
@@ -12,3 +12,4 @@ pyyaml==6.0.1
 python-dotenv==1.0.1
 Pillow==10.2.0
 requests==2.31.0
+protobuf==4.25.3
