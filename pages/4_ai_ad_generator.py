@@ -1,35 +1,215 @@
 """
-🤖 Generador de Anuncios con IA
-Página principal para generar anuncios usando OpenAI y Google Gemini
-VERSIÓN CORREGIDA Y SEGURA
+🤖 GENERADOR DE ANUNCIOS CON IA - VERSIÓN ULTRA-PROFESIONAL 2025
+Página de Streamlit para generación de anuncios con IA
+Versión: 3.0 Ultra
+Fecha: 2025-01-13
 """
 
 import streamlit as st
 import pandas as pd
-import yaml
-import os
-import sys
+import json
 import time
 from datetime import datetime
-from typing import Dict, List, Any
+from typing import Dict, List, Any, Optional
 import logging
+import sys
+import os
+from pathlib import Path
+
+# ============================================================================
+# CONFIGURAR PATH
+# ============================================================================
+
+# Agregar directorio raíz al path
+project_root = Path(__file__).parent.parent
+sys.path.insert(0, str(project_root))
+
+# ============================================================================
+# IMPORTS
+# ============================================================================
+
+try:
+    from modules.ai_ad_generator import AIAdGenerator
+    from utils.ad_scorer import AdScorer
+    logger = logging.getLogger(__name__)
+    logger.info("✅ Módulos importados correctamente")
+except ImportError as e:
+    st.error(f"❌ Error importando módulos: {e}")
+    st.stop()
+
+# ============================================================================
+# CONFIGURACIÓN DE PÁGINA
+# ============================================================================
+
+st.set_page_config(
+    page_title="🤖 Generador IA Ultra-Pro",
+    page_icon="🤖",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
+
+# ============================================================================
+# MODELOS IA 2025
+# ============================================================================
+
+AI_MODELS_2025 = {
+    'openai': {
+        'name': '🔵 OpenAI',
+        'icon': '🔵',
+        'models': [
+            'gpt-4o',
+            'gpt-4-turbo',
+            'gpt-4',
+            'gpt-3.5-turbo',
+            'o1-preview',
+            'o1-mini'
+        ],
+        'default': 'gpt-4o',
+        'api_url': 'https://platform.openai.com/api-keys',
+        'color': '#10a37f'
+    },
+    'gemini': {
+        'name': '🔴 Google Gemini',
+        'icon': '🔴',
+        'models': [
+            'gemini-2.0-flash-exp',
+            'gemini-1.5-pro',
+            'gemini-1.5-flash',
+            'gemini-pro'
+        ],
+        'default': 'gemini-2.0-flash-exp',
+        'api_url': 'https://makersuite.google.com/app/apikey',
+        'color': '#4285f4'
+    }
+}
+
+TONE_PRESETS = {
+    'emocional': {'icon': '❤️', 'description': 'Apela a sentimientos'},
+    'urgente': {'icon': '⚡', 'description': 'Crea inmediatez'},
+    'profesional': {'icon': '💼', 'description': 'Tono corporativo'},
+    'místico': {'icon': '🔮', 'description': 'Lenguaje espiritual'},
+    'poderoso': {'icon': '💪', 'description': 'Resultados y efectividad'},
+    'esperanzador': {'icon': '🌟', 'description': 'Optimismo y posibilidad'},
+    'tranquilizador': {'icon': '🕊️', 'description': 'Calma y paz'}
+}
+
+# ============================================================================
+# CSS ULTRA-PROFESIONAL
+# ============================================================================
+
+ULTRA_PRO_CSS = """
+<style>
+    .ultra-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 2.5rem;
+        border-radius: 15px;
+        text-align: center;
+        color: white;
+        margin-bottom: 2rem;
+        box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+    }
+    
+    .ultra-header h1 {
+        margin: 0;
+        font-size: 2.8rem;
+        font-weight: 800;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+    
+    .ultra-metric {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 1.5rem;
+        border-radius: 12px;
+        text-align: center;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        transition: transform 0.3s ease;
+    }
+    
+    .ultra-metric:hover {
+        transform: scale(1.05);
+    }
+    
+    .metric-value {
+        font-size: 2.5rem;
+        font-weight: 800;
+        margin: 0.5rem 0;
+    }
+    
+    .metric-label {
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    
+    .provider-card {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        border: 2px solid transparent;
+        transition: all 0.3s ease;
+    }
+    
+    .provider-card.connected {
+        border-color: #4caf50;
+        background: linear-gradient(135deg, rgba(76, 175, 80, 0.05) 0%, rgba(69, 160, 73, 0.05) 100%);
+    }
+    
+    .ultra-info {
+        background: linear-gradient(135deg, rgba(33, 150, 243, 0.1) 0%, rgba(25, 118, 210, 0.1) 100%);
+        border-left: 4px solid #2196f3;
+        border-radius: 12px;
+        padding: 1rem 1.5rem;
+        margin: 1rem 0;
+    }
+</style>
+"""
+
+# ============================================================================
+# FUNCIONES DE ALMACENAMIENTO
+# ============================================================================
+
+def save_api_config(provider: str, api_key: str, model: str):
+    """Guarda configuración de API"""
+    if 'api_configs' not in st.session_state:
+        st.session_state.api_configs = {}
+    
+    st.session_state.api_configs[provider] = {
+        'api_key': api_key,
+        'model': model,
+        'saved_at': datetime.now().isoformat()
+    }
+
+def load_api_config(provider: str) -> Dict[str, Any]:
+    """Carga configuración de API"""
+    if 'api_configs' not in st.session_state:
+        st.session_state.api_configs = {}
+    
+    return st.session_state.api_configs.get(provider, {})
+
+def clear_api_config(provider: str):
+    """Limpia configuración de API"""
+    if 'api_configs' in st.session_state and provider in st.session_state.api_configs:
+        del st.session_state.api_configs[provider]
+
+def get_configured_providers() -> List[str]:
+    """Obtiene proveedores configurados"""
+    if 'api_configs' not in st.session_state:
+        return []
+    
+    return [
+        provider for provider, config in st.session_state.api_configs.items()
+        if config.get('api_key')
+    ]
 
 def save_ad_for_campaigns(ad_data: Dict[str, Any]) -> bool:
-    """
-    Guarda un anuncio generado para usar en campañas
-    
-    Args:
-        ad_data: Datos del anuncio generado
-    
-    Returns:
-        bool: True si se guardó exitosamente
-    """
+    """Guarda anuncio para campañas"""
     try:
-        # Inicializar lista de anuncios pendientes si no existe
         if 'pending_ai_ads' not in st.session_state:
             st.session_state.pending_ai_ads = []
         
-        # Crear estructura compatible con AdCreative
         ad_for_campaign = {
             'id': ad_data.get('id', f"AD_{datetime.now().strftime('%Y%m%d%H%M%S%f')}"),
             'timestamp': ad_data.get('timestamp', datetime.now().isoformat()),
@@ -40,612 +220,478 @@ def save_ad_for_campaigns(ad_data: Dict[str, Any]) -> bool:
             'headlines': ad_data.get('headlines', []),
             'descriptions': ad_data.get('descriptions', []),
             'validation_result': ad_data.get('validation_result', {}),
-            'used': False,  # Marca si ya fue usado
-            'campaign_id': None,
-            'ad_group_id': None
+            'score': ad_data.get('score', 0),
+            'used': False
         }
         
-        # Verificar que no esté duplicado
         existing_ids = [ad['id'] for ad in st.session_state.pending_ai_ads]
         if ad_for_campaign['id'] not in existing_ids:
             st.session_state.pending_ai_ads.append(ad_for_campaign)
-            logger.info(f"✅ Anuncio {ad_for_campaign['id']} guardado para campañas")
             return True
-        else:
-            logger.warning(f"⚠️ Anuncio {ad_for_campaign['id']} ya existe en pendientes")
-            return False
         
+        return False
+    
     except Exception as e:
-        logger.error(f"❌ Error guardando anuncio para campañas: {e}")
+        st.error(f"Error guardando: {e}")
         return False
 
-
 def get_pending_ads_count() -> int:
-    """Obtiene el número de anuncios pendientes de usar en campañas"""
+    """Obtiene anuncios pendientes"""
     if 'pending_ai_ads' not in st.session_state:
         return 0
     
-    # Contar solo los no usados
     return len([ad for ad in st.session_state.pending_ai_ads if not ad.get('used', False)])
 
-
-def mark_ad_as_used(ad_id: str, campaign_id: str = None, ad_group_id: str = None):
-    """Marca un anuncio como usado en una campaña"""
-    if 'pending_ai_ads' not in st.session_state:
-        return
-    
-    for ad in st.session_state.pending_ai_ads:
-        if ad['id'] == ad_id:
-            ad['used'] = True
-            ad['campaign_id'] = campaign_id
-            ad['ad_group_id'] = ad_group_id
-            ad['used_at'] = datetime.now().isoformat()
-            logger.info(f"✅ Anuncio {ad_id} marcado como usado")
-            break
-
-# Agregar el directorio raíz al path
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-from modules.ai_ad_generator import AIAdGenerator
-from modules.ai_providers import OpenAIProvider, GeminiProvider
-from utils.ad_validator import GoogleAdsValidator
-
-# Configurar logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
-
-# Configuración de página
-st.set_page_config(
-    page_title="🤖 Generador de Anuncios IA",
-    page_icon="🤖",
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
-
-def load_config():
-    """Cargar configuración desde ai_config.yaml"""
-    try:
-        config_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "config", "ai_config.yaml")
-        with open(config_path, 'r', encoding='utf-8') as file:
-            return yaml.safe_load(file)
-    except Exception as e:
-        st.error(f"❌ Error cargando configuración: {e}")
-        return None
+# ============================================================================
+# INICIALIZACIÓN
+# ============================================================================
 
 def initialize_session_state():
-    """Inicializar variables de sesión"""
+    """Inicializa session state"""
+    if 'generated_ads_batch' not in st.session_state:
+        st.session_state.generated_ads_batch = []
+    
     if 'ai_generator' not in st.session_state:
-        st.session_state.ai_generator = AIAdGenerator()
+        try:
+            st.session_state.ai_generator = AIAdGenerator()
+        except:
+            st.session_state.ai_generator = None
     
-    if 'generated_ads' not in st.session_state:
-        st.session_state.generated_ads = []
-    
-    if 'validation_results' not in st.session_state:
-        st.session_state.validation_results = {}
-    
-    if 'provider_status' not in st.session_state:
-        st.session_state.provider_status = {
-            'openai': {'connected': False, 'error': None},
-            'gemini': {'connected': False, 'error': None}
-        }
+    if 'ad_scorer' not in st.session_state:
+        try:
+            st.session_state.ad_scorer = AdScorer()
+        except:
+            st.session_state.ad_scorer = None
 
-def test_provider_connection(provider_type: str, api_key: str, model: str) -> Dict[str, Any]:
-    """Probar conexión con proveedor de IA"""
-    try:
-        if provider_type == "OpenAI":
-            provider = OpenAIProvider(api_key=api_key, model=model)
-        elif provider_type == "Gemini":
-            provider = GeminiProvider(api_key=api_key, model=model)
-        else:
-            return {'success': False, 'error': 'Proveedor no válido'}
-        
-        success = provider.test_connection()
-        return {'success': success, 'error': None if success else 'Conexión fallida'}
-        
-    except Exception as e:
-        return {'success': False, 'error': str(e)}
+# ============================================================================
+# MAIN
+# ============================================================================
 
-def render_provider_config():
-    """Renderizar configuración de proveedores de IA"""
-    st.subheader("🔧 Configuración de Proveedores de IA")
+def main():
+    """Función principal"""
     
-    config = load_config()
-    if not config:
-        st.error("❌ No se pudo cargar la configuración")
-        return None, None
+    # Aplicar CSS
+    st.markdown(ULTRA_PRO_CSS, unsafe_allow_html=True)
     
-    col1, col2 = st.columns(2)
+    # Inicializar
+    initialize_session_state()
     
-    with col1:
-        st.markdown("### 🤖 OpenAI")
-        
-        # ✅ CORRECCIÓN: Input para API Key (NO hardcodeado)
-        openai_api_key = st.text_input(
-            "API Key OpenAI:",
-            type="password",
-            placeholder="sk-proj-...",
-            key="openai_api_key_input",
-            help="Ingresa tu API key de OpenAI. Obtén una en https://platform.openai.com/api-keys"
-        )
-        
-        openai_model = st.selectbox(
-            "Modelo OpenAI:",
-            options=config.get('providers', {}).get('openai', {}).get('available_models', ["gpt-4", "gpt-3.5-turbo"]),
-            index=0,
-            key="openai_model"
-        )
-        
-        # Botón para probar conexión OpenAI
-        if st.button("🔍 Probar Conexión OpenAI", key="test_openai", disabled=not openai_api_key):
-            with st.spinner("Probando conexión con OpenAI..."):
-                result = test_provider_connection("OpenAI", openai_api_key, openai_model)
-                st.session_state.provider_status['openai'] = {
-                    'connected': result['success'],
-                    'error': result['error'],
-                    'api_key': openai_api_key if result['success'] else None,
-                    'model': openai_model if result['success'] else None
-                }
-        
-        # Estado de conexión OpenAI
-        if st.session_state.provider_status['openai']['connected']:
-            st.success(f"✅ OpenAI conectado correctamente ({openai_model})")
-        elif st.session_state.provider_status['openai']['error']:
-            st.error(f"❌ Error OpenAI: {st.session_state.provider_status['openai']['error']}")
+    # Header
+    st.markdown("""
+    <div class="ultra-header">
+        <h1>🤖 Generador de Anuncios con IA</h1>
+        <p>Sistema Ultra-Profesional 2025 | GPT-4o, Gemini 2.0, Claude 3</p>
+    </div>
+    """, unsafe_allow_html=True)
     
-    with col2:
-        st.markdown("### 🧠 Google Gemini")
-        
-        # ✅ CORRECCIÓN: Input para API Key (NO hardcodeado)
-        gemini_api_key = st.text_input(
-            "API Key Gemini:",
-            type="password",
-            placeholder="AIzaSy...",
-            key="gemini_api_key_input",
-            help="Ingresa tu API key de Google Gemini. Obtén una en https://makersuite.google.com/app/apikey"
-        )
-        
-        gemini_model = st.selectbox(
-            "Modelo Gemini:",
-            options=config.get('providers', {}).get('gemini', {}).get('available_models', ["gemini-pro"]),
-            index=0,
-            key="gemini_model"
-        )
-        
-        # Botón para probar conexión Gemini
-        if st.button("🔍 Probar Conexión Gemini", key="test_gemini", disabled=not gemini_api_key):
-            with st.spinner("Probando conexión con Gemini..."):
-                result = test_provider_connection("Gemini", gemini_api_key, gemini_model)
-                st.session_state.provider_status['gemini'] = {
-                    'connected': result['success'],
-                    'error': result['error'],
-                    'api_key': gemini_api_key if result['success'] else None,
-                    'model': gemini_model if result['success'] else None
-                }
-        
-        # Estado de conexión Gemini
-        if st.session_state.provider_status['gemini']['connected']:
-            st.success(f"✅ Gemini conectado correctamente ({gemini_model})")
-        elif st.session_state.provider_status['gemini']['error']:
-            st.error(f"❌ Error Gemini: {st.session_state.provider_status['gemini']['error']}")
+    # Tabs
+    tabs = st.tabs([
+        "🚀 Generar",
+        "🎨 Galería",
+        "⚙️ Config API",
+        "📦 Export/Import"
+    ])
     
-    # ✅ Retornar configuración desde session_state (no desde inputs)
-    providers_config = {
-        'openai': {
-            'api_key': st.session_state.provider_status['openai'].get('api_key'),
-            'model': st.session_state.provider_status['openai'].get('model')
-        },
-        'gemini': {
-            'api_key': st.session_state.provider_status['gemini'].get('api_key'),
-            'model': st.session_state.provider_status['gemini'].get('model')
-        }
-    }
+    # Tab 1: Generar
+    with tabs[0]:
+        render_generation_tab()
     
-    return providers_config, config
+    # Tab 2: Galería
+    with tabs[1]:
+        render_gallery_tab()
+    
+    # Tab 3: Config
+    with tabs[2]:
+        render_config_tab()
+    
+    # Tab 4: Export
+    with tabs[3]:
+        render_export_tab()
 
-def render_ad_generation_form(providers_config, config):
-    """Renderizar formulario de generación de anuncios"""
-    st.subheader("✨ Generar Anuncios")
+# ============================================================================
+# TAB 1: GENERAR
+# ============================================================================
+
+def render_generation_tab():
+    """Tab de generación"""
     
-    with st.form("ad_generation_form"):
-        col1, col2 = st.columns(2)
+    st.markdown("### 🎯 Generación de Anuncios")
+    
+    configured_providers = get_configured_providers()
+    
+    if not configured_providers:
+        st.markdown("""
+        <div class="ultra-info">
+            <h4>⚠️ No hay proveedores configurados</h4>
+            <p>Ve a la pestaña <strong>⚙️ Config API</strong> para configurar OpenAI o Gemini.</p>
+        </div>
+        """, unsafe_allow_html=True)
+        return
+    
+    # Formulario
+    with st.form("gen_form"):
+        col1, col2, col3 = st.columns([2, 2, 1])
         
         with col1:
-            # Selección de proveedor
-            provider_options = []
-            if st.session_state.provider_status['openai']['connected']:
-                provider_options.append("OpenAI")
-            if st.session_state.provider_status['gemini']['connected']:
-                provider_options.append("Gemini")
-            
-            if not provider_options:
-                st.warning("⚠️ Conecta al menos un proveedor de IA primero")
-                st.form_submit_button("🚀 Generar Anuncios", disabled=True)
-                return
-            
-            selected_provider = st.selectbox(
-                "🤖 Proveedor de IA:",
-                options=provider_options,
-                key="selected_provider"
-            )
-            
-            # Palabras clave
-            keywords_input = st.text_area(
-                "🔑 Palabras Clave:",
-                placeholder="Ej: marketing digital, SEO, publicidad online",
-                help="Separa las palabras clave con comas",
-                key="keywords_input",
-                height=100
-            )
-            
-            # Tono del anuncio
-            available_tones = list(config.get('generation', {}).get('available_tones', {}).keys())
-            tone = st.selectbox(
-                "🎭 Tono del Anuncio:",
-                options=available_tones if available_tones else ["profesional"],
-                index=0,
-                key="tone_select"
+            provider_type = st.selectbox(
+                "Proveedor:",
+                configured_providers,
+                format_func=lambda x: f"{AI_MODELS_2025[x]['icon']} {AI_MODELS_2025[x]['name']}"
             )
         
         with col2:
-            # Cantidad de títulos y descripciones
-            num_headlines = st.slider(
-                "📝 Número de Títulos:",
-                min_value=3,
-                max_value=15,
-                value=15,
-                help="Google Ads permite hasta 15 títulos",
-                key="num_headlines"
-            )
-            
-            num_descriptions = st.slider(
-                "📄 Número de Descripciones:",
-                min_value=2,
-                max_value=4,
-                value=4,
-                help="Google Ads permite hasta 4 descripciones",
-                key="num_descriptions"
-            )
-            
-            # Opciones avanzadas
-            st.markdown("**⚙️ Opciones:**")
-            validate_ads = st.checkbox(
-                "✅ Validar automáticamente",
-                value=True,
-                key="validate_ads"
-            )
-            
-            save_to_csv = st.checkbox(
-                "💾 Guardar en CSV",
-                value=True,
-                key="save_to_csv"
+            tone = st.selectbox(
+                "Tono:",
+                list(TONE_PRESETS.keys()),
+                format_func=lambda x: f"{TONE_PRESETS[x]['icon']} {x.title()}"
             )
         
-        # Botón de generación
-        generate_button = st.form_submit_button(
-            "🚀 Generar Anuncios",
+        with col3:
+            num_ads = st.number_input("Cantidad:", 1, 10, 1)
+        
+        keywords_input = st.text_area(
+            "Keywords (una por línea o separadas por comas):",
+            placeholder="amarres de amor\nhechizos efectivos\nbrujería profesional",
+            height=120
+        )
+        
+        with st.expander("⚙️ Avanzado"):
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                num_headlines = st.slider("Títulos:", 5, 15, 10)
+            
+            with col2:
+                num_descriptions = st.slider("Descriptions:", 2, 4, 3)
+            
+            validate_ads = st.checkbox("✅ Validar políticas", True)
+            score_ads = st.checkbox("📊 Calcular score", True)
+        
+        submitted = st.form_submit_button(
+            f"✨ Generar {num_ads} Anuncio{'s' if num_ads > 1 else ''}",
             type="primary",
             use_container_width=True
         )
         
-        if generate_button:
+        if submitted:
             if not keywords_input.strip():
-                st.error("❌ Por favor ingresa al menos una palabra clave")
+                st.error("❌ Ingresa keywords")
                 return
             
-            keywords = [kw.strip() for kw in keywords_input.split(",") if kw.strip()]
+            keywords = [kw.strip() for kw in keywords_input.replace(',', '\n').split('\n') if kw.strip()]
             
-            if len(keywords) > config.get('limits', {}).get('max_keywords_per_request', 10):
-                st.error(f"❌ Máximo {config.get('limits', {}).get('max_keywords_per_request', 10)} palabras clave permitidas")
+            if not keywords:
+                st.error("❌ No hay keywords válidas")
                 return
             
-            # Generar anuncios
+            # Generar
             generate_ads(
-                selected_provider,
-                providers_config,
+                provider_type,
                 keywords,
+                tone,
+                num_ads,
                 num_headlines,
                 num_descriptions,
-                tone,
                 validate_ads,
-                save_to_csv
+                score_ads
             )
 
-def generate_ads(provider_name, providers_config, keywords, num_headlines, 
-                num_descriptions, tone, validate_ads, save_to_csv):
-    """Generar anuncios con el proveedor seleccionado"""
+def generate_ads(provider_type, keywords, tone, num_ads, num_headlines, num_descriptions, validate, score):
+    """Genera anuncios"""
     
-    try:
-        with st.spinner(f"🤖 Generando anuncios con {provider_name}..."):
-            
-            # ✅ CORRECCIÓN: Usar AIAdGenerator completo
-            ai_generator = st.session_state.ai_generator
-            
-            # Configurar proveedor
-            provider_config = providers_config[provider_name.lower()]
-            success = ai_generator.set_provider(
-                provider_type=provider_name.lower(),
-                api_key=provider_config['api_key'],
-                model=provider_config['model']
-            )
-            
-            if not success:
-                st.error(f"❌ No se pudo configurar {provider_name}")
-                return
-            
-            # ✅ CORRECCIÓN: Usar método correcto con todos los parámetros
-            generated_ads = ai_generator.generate_ad(
-                keywords=keywords,
-                num_ads=1,
-                num_headlines=num_headlines,
-                num_descriptions=num_descriptions,
-                tone=tone,
-                user=st.session_state.get('user_login', 'saltbalente'),
-                validate=validate_ads
-            )
-            
-            if not generated_ads or len(generated_ads) == 0:
-                st.error("❌ No se generaron anuncios")
-                return
-            
-            # Tomar el primer anuncio generado
-            result = generated_ads[0]
-            
-            if 'error' in result:
-                st.error(f"❌ Error generando anuncios: {result['error']}")
-                return
-            
-            # Guardar en session state
-            st.session_state.generated_ads = result
-            st.session_state.validation_results = result.get('validation_result', {})
-            
-            st.success(f"✅ ¡Anuncios generados exitosamente con {provider_name}!")
-            st.balloons()
-            
-    except Exception as e:
-        st.error(f"❌ Error inesperado: {str(e)}")
-        logger.error(f"Error generando anuncios: {e}", exc_info=True)
-
-def render_results():
-    """Renderizar resultados de anuncios generados"""
-    if not st.session_state.generated_ads:
+    provider_config = load_api_config(provider_type)
+    
+    if not provider_config or not provider_config.get('api_key'):
+        st.error(f"❌ No hay configuración para {provider_type}")
         return
     
-    st.subheader("📊 Resultados Generados")
+    progress_bar = st.progress(0)
+    status = st.empty()
     
-    ads = st.session_state.generated_ads
-    validation = st.session_state.validation_results
+    try:
+        # Configurar proveedor
+        status.text("🔧 Configurando proveedor...")
+        progress_bar.progress(0.2)
+        
+        ai_gen = st.session_state.ai_generator
+        
+        if not ai_gen:
+            st.error("❌ AIAdGenerator no disponible")
+            return
+        
+        success = ai_gen.set_provider(
+            provider_type=provider_type,
+            api_key=provider_config['api_key'],
+            model=provider_config['model']
+        )
+        
+        if not success:
+            st.error(f"❌ No se pudo configurar {provider_type}")
+            return
+        
+        # Generar
+        status.text(f"🎨 Generando {num_ads} anuncio(s)...")
+        progress_bar.progress(0.5)
+        
+        batch_result = ai_gen.generate_batch(
+            keywords=keywords,
+            num_ads=num_ads,
+            num_headlines=num_headlines,
+            num_descriptions=num_descriptions,
+            tone=tone,
+            validate=validate,
+            business_type='esoteric',
+            save_to_csv=True
+        )
+        
+        progress_bar.progress(0.8)
+        
+        # Calcular scores
+        if score and batch_result['successful'] > 0:
+            status.text("📊 Calculando scores...")
+            
+            scorer = st.session_state.ad_scorer
+            
+            if scorer:
+                for ad in batch_result['ads']:
+                    if 'error' not in ad or not ad['error']:
+                        try:
+                            score_result = scorer.score_ad(
+                                headlines=ad.get('headlines', []),
+                                descriptions=ad.get('descriptions', []),
+                                keywords=keywords
+                            )
+                            ad['score_result'] = score_result
+                            ad['score'] = score_result.get('overall_score', 0)
+                        except:
+                            pass
+        
+        progress_bar.progress(1.0)
+        status.empty()
+        progress_bar.empty()
+        
+        # Guardar
+        if batch_result['successful'] > 0:
+            st.session_state.generated_ads_batch.extend(batch_result['ads'])
+            
+            st.success(f"✅ ¡{batch_result['successful']} anuncio(s) generado(s)!")
+            st.balloons()
+            
+            col1, col2, col3, col4 = st.columns(4)
+            
+            with col1:
+                st.metric("Exitosos", batch_result['successful'])
+            
+            with col2:
+                st.metric("Fallidos", batch_result['failed'])
+            
+            with col3:
+                st.metric("Tasa Éxito", f"{batch_result['success_rate']:.0f}%")
+            
+            with col4:
+                scores = [ad.get('score', 0) for ad in batch_result['ads'] if ad.get('score')]
+                avg = sum(scores) / len(scores) if scores else 0
+                st.metric("Score Promedio", f"{avg:.1f}")
+            
+            st.info("👉 Ve a **🎨 Galería** para ver los resultados")
+        else:
+            st.error("❌ No se pudo generar ningún anuncio")
     
-    # ===== AGREGAR: Botón para usar en campañas =====
+    except Exception as e:
+        st.error(f"❌ Error: {e}")
+
+# ============================================================================
+# TAB 2: GALERÍA
+# ============================================================================
+
+def render_gallery_tab():
+    """Tab de galería"""
+    
+    st.markdown("### 🎨 Galería de Anuncios")
+    
+    if not st.session_state.generated_ads_batch:
+        st.info("ℹ️ No hay anuncios generados")
+        return
+    
+    total = len(st.session_state.generated_ads_batch)
+    st.success(f"📊 **{total}** anuncio(s) generado(s)")
+    
+    # Acciones
+    col1, col2, col3 = st.columns(3)
+    
+    with col1:
+        if st.button("📦 Exportar Todos", use_container_width=True):
+            data = {
+                'exported_at': datetime.now().isoformat(),
+                'total': total,
+                'ads': st.session_state.generated_ads_batch
+            }
+            
+            json_str = json.dumps(data, indent=2, ensure_ascii=False)
+            
+            st.download_button(
+                "💾 Descargar JSON",
+                json_str,
+                f"anuncios_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json",
+                "application/json"
+            )
+    
+    with col2:
+        if st.button("💾 Guardar en Campañas", use_container_width=True):
+            count = 0
+            for ad in st.session_state.generated_ads_batch:
+                if 'error' not in ad or not ad['error']:
+                    if save_ad_for_campaigns(ad):
+                        count += 1
+            
+            if count > 0:
+                st.success(f"✅ {count} guardado(s)")
+                st.balloons()
+    
+    with col3:
+        if st.button("🗑️ Limpiar Todo", use_container_width=True):
+            st.session_state.generated_ads_batch = []
+            st.success("✅ Limpiado")
+            st.rerun()
+    
+    st.markdown("---")
+    
+    # Mostrar anuncios
+    for idx, ad in enumerate(st.session_state.generated_ads_batch):
+        if 'error' in ad and ad['error']:
+            st.error(f"❌ Anuncio #{idx+1}: {ad['error']}")
+            continue
+        
+        with st.expander(f"📢 Anuncio #{idx+1} - {ad.get('tone', 'N/A').title()}", expanded=(idx==0)):
+            col1, col2, col3 = st.columns(3)
+            
+            with col1:
+                st.metric("Proveedor", ad.get('provider', 'N/A'))
+            
+            with col2:
+                st.metric("Tono", ad.get('tone', 'N/A'))
+            
+            with col3:
+                st.metric("Score", f"{ad.get('score', 0):.1f}")
+            
+            st.markdown("**📝 Headlines:**")
+            for h in ad.get('headlines', []):
+                st.text(f"• {h} ({len(h)}/30)")
+            
+            st.markdown("**📄 Descriptions:**")
+            for d in ad.get('descriptions', []):
+                st.text(f"• {d} ({len(d)}/90)")
+
+# ============================================================================
+# TAB 3: CONFIG API
+# ============================================================================
+
+def render_config_tab():
+    """Tab de configuración"""
+    
+    st.markdown("### ⚙️ Configuración de APIs")
+    
     st.markdown("""
-    <div style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
-                border-left: 4px solid #667eea; border-radius: 12px; padding: 1rem; margin-bottom: 1rem;">
-        <h4 style="margin: 0 0 0.5rem 0;">💡 ¿Quieres usar este anuncio en una campaña?</h4>
-        <p style="margin: 0; font-size: 0.9rem;">
-            Guárdalo y luego podrás importarlo directamente en el editor de campañas.
-        </p>
+    <div class="ultra-info">
+        <p><strong>🔐 Privacidad:</strong> Las API Keys se guardan en tu sesión local y NO se envían a ningún servidor.</p>
     </div>
     """, unsafe_allow_html=True)
     
-    col_save, col_status = st.columns([1, 2])
-    
-    with col_save:
-        if st.button("📤 Guardar para Usar en Campañas", use_container_width=True, type="primary", key="save_for_campaigns"):
-            success = save_ad_for_campaigns(ads)
-            if success:
-                st.success("✅ Anuncio guardado. Ve a **Campañas → Editar → Crear Grupo** para usarlo.")
-                st.balloons()
-                time.sleep(2)
-                st.rerun()
-            else:
-                st.warning("⚠️ Este anuncio ya está guardado")
-    
-    with col_status:
-        pending_count = get_pending_ads_count()
-        if pending_count > 0:
-            st.info(f"📋 Tienes **{pending_count}** anuncio(s) listo(s) para usar en campañas")
-        else:
-            st.caption("No hay anuncios guardados aún")
-    
-    st.markdown("---")
-    
-    # Información general
-    col1, col2, col3, col4 = st.columns(4)
-    
-    with col1:
-        st.metric("🤖 Proveedor", ads.get('provider', 'N/A'))
-    
-    with col2:
-        st.metric("📝 Títulos", len(ads.get('headlines', [])))
-    
-    with col3:
-        st.metric("📄 Descripciones", len(ads.get('descriptions', [])))
-    
-    with col4:
-        if validation and 'summary' in validation:
-            valid_count = validation['summary'].get('valid_headlines', 0)
-            total_count = validation['summary'].get('total_headlines', 0)
-            st.metric("✅ Títulos Válidos", f"{valid_count}/{total_count}")
-    
-    # Tabs para mostrar resultados
-    tab1, tab2, tab3 = st.tabs(["📝 Títulos", "📄 Descripciones", "📊 Validación"])
-    
-    with tab1:
-        st.markdown("### 📝 Títulos Generados")
-        headlines_data = []
+    for provider_key, provider_info in AI_MODELS_2025.items():
+        current_config = load_api_config(provider_key)
+        is_configured = bool(current_config.get('api_key'))
         
-        for i, headline in enumerate(ads.get('headlines', [])):
-            # ✅ CORRECCIÓN: Usar índice numérico
-            headline_validation = validation.get('headlines', {}).get(i, {})
-            is_valid = headline_validation.get('valid', True)
-            errors = headline_validation.get('errors', [])
-            
-            headlines_data.append({
-                '#': i + 1,
-                'Título': headline,
-                'Caracteres': len(headline),
-                'Estado': '✅ Válido' if is_valid else '❌ Inválido',
-                'Problemas': ', '.join(errors) if errors else '-'
-            })
-        
-        df_headlines = pd.DataFrame(headlines_data)
-        st.dataframe(df_headlines, use_container_width=True, hide_index=True)
-        
-        # Exportar títulos
-        if headlines_data:
-            csv_headlines = df_headlines.to_csv(index=False)
-            st.download_button(
-                "📥 Exportar Títulos (CSV)",
-                csv_headlines,
-                f"titulos_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv",
-                "text/csv"
-            )
-    
-    with tab2:
-        st.markdown("### 📄 Descripciones Generadas")
-        descriptions_data = []
-        
-        for i, description in enumerate(ads.get('descriptions', [])):
-            # ✅ CORRECCIÓN: Usar índice numérico
-            desc_validation = validation.get('descriptions', {}).get(i, {})
-            is_valid = desc_validation.get('valid', True)
-            errors = desc_validation.get('errors', [])
-            
-            descriptions_data.append({
-                '#': i + 1,
-                'Descripción': description,
-                'Caracteres': len(description),
-                'Estado': '✅ Válido' if is_valid else '❌ Inválido',
-                'Problemas': ', '.join(errors) if errors else '-'
-            })
-        
-        df_descriptions = pd.DataFrame(descriptions_data)
-        st.dataframe(df_descriptions, use_container_width=True, hide_index=True)
-        
-        # Exportar descripciones
-        if descriptions_data:
-            csv_descriptions = df_descriptions.to_csv(index=False)
-            st.download_button(
-                "📥 Exportar Descripciones (CSV)",
-                csv_descriptions,
-                f"descripciones_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv",
-                "text/csv"
-            )
-    
-    with tab3:
-        if validation and 'summary' in validation:
-            st.markdown("### 📊 Resumen de Validación")
-            
-            summary = validation.get('summary', {})
-            
-            col1, col2 = st.columns(2)
+        with st.expander(f"{provider_info['icon']} {provider_info['name']} {'✅' if is_configured else ''}", expanded=not is_configured):
+            col1, col2 = st.columns([3, 1])
             
             with col1:
-                st.markdown("**📝 Títulos:**")
-                st.write(f"• Total: {summary.get('total_headlines', 0)}")
-                st.write(f"• ✅ Válidos: {summary.get('valid_headlines', 0)}")
-                st.write(f"• ❌ Inválidos: {summary.get('invalid_headlines', 0)}")
+                api_key = st.text_input(
+                    "API Key:",
+                    type="password",
+                    value=current_config.get('api_key', ''),
+                    key=f"key_{provider_key}"
+                )
             
             with col2:
-                st.markdown("**📄 Descripciones:**")
-                st.write(f"• Total: {summary.get('total_descriptions', 0)}")
-                st.write(f"• ✅ Válidas: {summary.get('valid_descriptions', 0)}")
-                st.write(f"• ❌ Inválidas: {summary.get('invalid_descriptions', 0)}")
+                model = st.selectbox(
+                    "Modelo:",
+                    provider_info['models'],
+                    key=f"model_{provider_key}"
+                )
             
-            # Estado general
-            is_valid = validation.get('valid', False)
-            if is_valid:
-                st.success("✅ El anuncio cumple con todas las políticas de Google Ads")
-            else:
-                st.error("❌ El anuncio tiene errores que deben corregirse")
+            col_a, col_b, col_c = st.columns(3)
             
-            # Mostrar errores si existen
-            if 'errors' in validation and validation['errors']:
-                st.markdown("**⚠️ Errores Encontrados:**")
-                for error in validation['errors']:
-                    st.write(f"• {error}")
+            with col_a:
+                if st.button("💾 Guardar", key=f"save_{provider_key}", use_container_width=True):
+                    if api_key:
+                        save_api_config(provider_key, api_key, model)
+                        st.success("✅ Guardado")
+                        st.rerun()
             
-            # Mostrar advertencias si existen
-            if 'warnings' in validation and validation['warnings']:
-                st.markdown("**💡 Advertencias:**")
-                for warning in validation['warnings']:
-                    st.write(f"• {warning}")
-        else:
-            st.info("ℹ️ No se ejecutó validación para estos anuncios")
+            with col_b:
+                if st.button("🧪 Probar", key=f"test_{provider_key}", use_container_width=True):
+                    if api_key:
+                        st.info("⏳ Probando...")
+            
+            with col_c:
+                if st.button("🗑️ Borrar", key=f"del_{provider_key}", use_container_width=True):
+                    clear_api_config(provider_key)
+                    st.success("✅ Borrado")
+                    st.rerun()
 
-def main():
-    """Función principal"""
-    st.title("🤖 Generador de Anuncios con IA")
-    st.markdown("Crea anuncios impactantes para Google Ads usando Inteligencia Artificial")
-    st.markdown("---")
+# ============================================================================
+# TAB 4: EXPORT
+# ============================================================================
+
+def render_export_tab():
+    """Tab de exportación"""
     
-    # Inicializar session state
-    initialize_session_state()
+    st.markdown("### 📦 Importar/Exportar")
     
-    # Sidebar con información
-    with st.sidebar:
-        st.markdown("### ℹ️ Información")
-        st.markdown("""
-        **Características:**
-        • 🤖 OpenAI GPT-4 y Google Gemini
-        • ✅ Validación automática de políticas
-        • 💾 Almacenamiento en CSV
-        • 🎭 Múltiples tonos de voz
-        • 📊 Análisis detallado de resultados
-        """)
-        
-        st.markdown("---")
-        
-        st.markdown("### 📋 Límites de Google Ads")
-        st.markdown("""
-        **Títulos:**
-        • Máx. 30 caracteres
-        • Mín. 3 títulos requeridos
-        
-        **Descripciones:**
-        • Máx. 90 caracteres
-        • Mín. 2 descripciones requeridas
-        
-        **Restricciones:**
-        • Sin mayúsculas consecutivas (ej: USA ✅, OFERTA ❌)
-        • Sin signos: ! ? ¡ ¿
-        • Sin emojis
-        • Sin palabras prohibidas
-        """)
-        
-        st.markdown("---")
-        
-        # Estadísticas
-        if st.session_state.ai_generator:
-            st.markdown("### 📊 Estadísticas")
-            try:
-                stats = st.session_state.ai_generator.get_statistics()
-                st.metric("Total Anuncios", stats.get('total_ads', 0))
-                st.metric("Publicados", stats.get('published_ads', 0))
-            except:
-                st.info("No hay estadísticas disponibles")
+    col1, col2 = st.columns(2)
     
-    # Configuración de proveedores
-    providers_config, config = render_provider_config()
+    with col1:
+        st.markdown("#### 📤 Exportar")
+        
+        if st.session_state.generated_ads_batch:
+            if st.button("📥 Exportar JSON", use_container_width=True):
+                data = {
+                    'exported_at': datetime.now().isoformat(),
+                    'total': len(st.session_state.generated_ads_batch),
+                    'ads': st.session_state.generated_ads_batch
+                }
+                
+                json_str = json.dumps(data, indent=2, ensure_ascii=False)
+                
+                st.download_button(
+                    "💾 Descargar",
+                    json_str,
+                    f"anuncios_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json",
+                    "application/json"
+                )
+        else:
+            st.info("No hay anuncios")
     
-    if providers_config and config:
-        st.markdown("---")
+    with col2:
+        st.markdown("#### 📥 Importar")
         
-        # Formulario de generación
-        render_ad_generation_form(providers_config, config)
+        uploaded = st.file_uploader("Archivo JSON:", type=['json'])
         
-        st.markdown("---")
-        
-        # Mostrar resultados
-        render_results()
-    
-    # Footer
-    st.markdown("---")
-    st.markdown(
-        "<div style='text-align: center; color: gray;'>"
-        "Desarrollado con ❤️ para optimizar tus campañas de Google Ads"
-        "</div>",
-        unsafe_allow_html=True
-    )
+        if uploaded:
+            if st.button("📥 Importar", use_container_width=True):
+                try:
+                    data = json.loads(uploaded.read())
+                    ads = data.get('ads', [])
+                    
+                    st.session_state.generated_ads_batch.extend(ads)
+                    st.success(f"✅ {len(ads)} importados")
+                    st.rerun()
+                except Exception as e:
+                    st.error(f"❌ Error: {e}")
+
+# ============================================================================
+# EJECUTAR
+# ============================================================================
 
 if __name__ == "__main__":
     main()

@@ -1,0 +1,599 @@
+# ============================================================================
+# BENCHMARKS DE RENDIMIENTO PARA GENERACIÓN DE ANUNCIOS
+# Métricas de referencia y objetivos de performance para nichos esotéricos
+# Versión: 2.0
+# Fecha: 2025-01-13
+# ============================================================================
+
+version: "2.0"
+last_updated: "2025-01-13"
+
+# ============================================================================
+# CONFIGURACIÓN GLOBAL DE BENCHMARKS
+# ============================================================================
+global_settings:
+  measurement_period_days: 30
+  minimum_data_points: 1000
+  confidence_interval: 95
+  update_frequency: "weekly"
+  auto_alert_thresholds: true
+  benchmark_categories: ["industry", "niche", "campaign_type", "geographic"]
+
+# ============================================================================
+# BENCHMARKS POR INDUSTRIA ESOTÉRICA
+# ============================================================================
+industry_benchmarks:
+  
+  # --------------------------------------------------------------------------
+  # SERVICIOS ESOTÉRICOS GENERALES
+  # --------------------------------------------------------------------------
+  esoteric_services:
+    name: "Servicios Esotéricos"
+    description: "Benchmarks generales para servicios esotéricos y espirituales"
+    
+    metrics:
+      ctr:
+        excellent: 4.5      # CTR > 4.5%
+        good: 3.0          # CTR 3.0-4.5%
+        average: 2.0       # CTR 2.0-3.0%
+        poor: 1.0          # CTR < 1.0%
+        unit: "percentage"
+      
+      conversion_rate:
+        excellent: 8.0     # CR > 8%
+        good: 5.0         # CR 5-8%
+        average: 3.0      # CR 3-5%
+        poor: 1.5         # CR < 1.5%
+        unit: "percentage"
+      
+      cost_per_click:
+        excellent: 0.30    # CPC < $0.30
+        good: 0.50        # CPC $0.30-0.50
+        average: 0.80     # CPC $0.50-0.80
+        poor: 1.20        # CPC > $1.20
+        unit: "usd"
+      
+      cost_per_conversion:
+        excellent: 15.0    # CPA < $15
+        good: 25.0        # CPA $15-25
+        average: 40.0     # CPA $25-40
+        poor: 60.0        # CPA > $60
+        unit: "usd"
+      
+      quality_score:
+        excellent: 8.0     # QS > 8
+        good: 6.0         # QS 6-8
+        average: 4.0      # QS 4-6
+        poor: 2.0         # QS < 2
+        unit: "score"
+
+  # --------------------------------------------------------------------------
+  # AMARRES Y BRUJERÍA DE PAREJA
+  # --------------------------------------------------------------------------
+  love_spells:
+    name: "Amarres y Brujería de Pareja"
+    description: "Benchmarks específicos para servicios de amarres y hechizos de amor"
+    
+    metrics:
+      ctr:
+        excellent: 5.2
+        good: 3.8
+        average: 2.5
+        poor: 1.2
+        unit: "percentage"
+      
+      conversion_rate:
+        excellent: 12.0
+        good: 8.0
+        average: 5.0
+        poor: 2.0
+        unit: "percentage"
+      
+      cost_per_click:
+        excellent: 0.25
+        good: 0.40
+        average: 0.65
+        poor: 1.00
+        unit: "usd"
+      
+      cost_per_conversion:
+        excellent: 12.0
+        good: 20.0
+        average: 35.0
+        poor: 55.0
+        unit: "usd"
+
+  # --------------------------------------------------------------------------
+  # TAROT Y VIDENCIA
+  # --------------------------------------------------------------------------
+  tarot_readings:
+    name: "Tarot y Videncia"
+    description: "Benchmarks para servicios de lectura de tarot y videncia"
+    
+    metrics:
+      ctr:
+        excellent: 4.8
+        good: 3.5
+        average: 2.3
+        poor: 1.0
+        unit: "percentage"
+      
+      conversion_rate:
+        excellent: 10.0
+        good: 6.5
+        average: 4.0
+        poor: 1.8
+        unit: "percentage"
+      
+      cost_per_click:
+        excellent: 0.35
+        good: 0.55
+        average: 0.85
+        poor: 1.30
+        unit: "usd"
+      
+      cost_per_conversion:
+        excellent: 18.0
+        good: 30.0
+        average: 45.0
+        poor: 70.0
+        unit: "usd"
+
+  # --------------------------------------------------------------------------
+  # LIMPIEZA ESPIRITUAL
+  # --------------------------------------------------------------------------
+  spiritual_cleansing:
+    name: "Limpieza Espiritual"
+    description: "Benchmarks para servicios de limpieza energética y despojos"
+    
+    metrics:
+      ctr:
+        excellent: 4.0
+        good: 2.8
+        average: 1.8
+        poor: 0.8
+        unit: "percentage"
+      
+      conversion_rate:
+        excellent: 9.0
+        good: 6.0
+        average: 3.5
+        poor: 1.5
+        unit: "percentage"
+      
+      cost_per_click:
+        excellent: 0.40
+        good: 0.65
+        average: 1.00
+        poor: 1.50
+        unit: "usd"
+      
+      cost_per_conversion:
+        excellent: 20.0
+        good: 35.0
+        average: 55.0
+        poor: 85.0
+        unit: "usd"
+
+# ============================================================================
+# BENCHMARKS POR REGIÓN GEOGRÁFICA
+# ============================================================================
+geographic_benchmarks:
+  
+  # --------------------------------------------------------------------------
+  # MÉXICO
+  # --------------------------------------------------------------------------
+  mexico:
+    name: "México"
+    currency: "MXN"
+    
+    metrics:
+      ctr:
+        excellent: 4.8
+        good: 3.2
+        average: 2.1
+        poor: 1.0
+      
+      conversion_rate:
+        excellent: 9.5
+        good: 6.0
+        average: 3.8
+        poor: 1.5
+      
+      cost_per_click:
+        excellent: 3.50    # MXN
+        good: 6.00
+        average: 10.00
+        poor: 16.00
+      
+      cost_per_conversion:
+        excellent: 180.0   # MXN
+        good: 320.0
+        average: 520.0
+        poor: 800.0
+
+  # --------------------------------------------------------------------------
+  # ESPAÑA
+  # --------------------------------------------------------------------------
+  spain:
+    name: "España"
+    currency: "EUR"
+    
+    metrics:
+      ctr:
+        excellent: 3.8
+        good: 2.5
+        average: 1.6
+        poor: 0.8
+      
+      conversion_rate:
+        excellent: 7.0
+        good: 4.5
+        average: 2.8
+        poor: 1.2
+      
+      cost_per_click:
+        excellent: 0.45    # EUR
+        good: 0.75
+        average: 1.20
+        poor: 1.80
+      
+      cost_per_conversion:
+        excellent: 25.0    # EUR
+        good: 45.0
+        average: 75.0
+        poor: 120.0
+
+  # --------------------------------------------------------------------------
+  # COLOMBIA
+  # --------------------------------------------------------------------------
+  colombia:
+    name: "Colombia"
+    currency: "COP"
+    
+    metrics:
+      ctr:
+        excellent: 5.2
+        good: 3.5
+        average: 2.3
+        poor: 1.1
+      
+      conversion_rate:
+        excellent: 11.0
+        good: 7.0
+        average: 4.5
+        poor: 2.0
+      
+      cost_per_click:
+        excellent: 800.0   # COP
+        good: 1400.0
+        average: 2200.0
+        poor: 3500.0
+      
+      cost_per_conversion:
+        excellent: 35000.0 # COP
+        good: 65000.0
+        average: 110000.0
+        poor: 180000.0
+
+  # --------------------------------------------------------------------------
+  # ARGENTINA
+  # --------------------------------------------------------------------------
+  argentina:
+    name: "Argentina"
+    currency: "ARS"
+    
+    metrics:
+      ctr:
+        excellent: 4.5
+        good: 3.0
+        average: 2.0
+        poor: 0.9
+      
+      conversion_rate:
+        excellent: 8.5
+        good: 5.5
+        average: 3.2
+        poor: 1.4
+      
+      cost_per_click:
+        excellent: 25.0    # ARS
+        good: 45.0
+        average: 75.0
+        poor: 120.0
+      
+      cost_per_conversion:
+        excellent: 1200.0  # ARS
+        good: 2200.0
+        average: 3800.0
+        poor: 6500.0
+
+# ============================================================================
+# BENCHMARKS POR TIPO DE CAMPAÑA
+# ============================================================================
+campaign_type_benchmarks:
+  
+  # --------------------------------------------------------------------------
+  # CAMPAÑAS DE BÚSQUEDA
+  # --------------------------------------------------------------------------
+  search_campaigns:
+    name: "Campañas de Búsqueda"
+    description: "Anuncios en resultados de búsqueda de Google"
+    
+    metrics:
+      ctr:
+        excellent: 5.5
+        good: 3.8
+        average: 2.5
+        poor: 1.2
+      
+      conversion_rate:
+        excellent: 12.0
+        good: 8.0
+        average: 5.0
+        poor: 2.0
+      
+      impression_share:
+        excellent: 85.0
+        good: 70.0
+        average: 55.0
+        poor: 35.0
+      
+      search_lost_is_rank:
+        excellent: 5.0     # Menor es mejor
+        good: 15.0
+        average: 25.0
+        poor: 40.0
+
+  # --------------------------------------------------------------------------
+  # CAMPAÑAS DE DISPLAY
+  # --------------------------------------------------------------------------
+  display_campaigns:
+    name: "Campañas de Display"
+    description: "Anuncios gráficos en la red de display"
+    
+    metrics:
+      ctr:
+        excellent: 1.8
+        good: 1.2
+        average: 0.8
+        poor: 0.4
+      
+      conversion_rate:
+        excellent: 4.0
+        good: 2.5
+        average: 1.5
+        poor: 0.7
+      
+      viewthrough_conversions:
+        excellent: 15.0
+        good: 10.0
+        average: 6.0
+        poor: 2.0
+
+  # --------------------------------------------------------------------------
+  # CAMPAÑAS DE VIDEO
+  # --------------------------------------------------------------------------
+  video_campaigns:
+    name: "Campañas de Video"
+    description: "Anuncios de video en YouTube y red de display"
+    
+    metrics:
+      view_rate:
+        excellent: 35.0
+        good: 25.0
+        average: 18.0
+        poor: 10.0
+      
+      ctr:
+        excellent: 2.5
+        good: 1.8
+        average: 1.2
+        poor: 0.6
+      
+      conversion_rate:
+        excellent: 6.0
+        good: 4.0
+        average: 2.5
+        poor: 1.0
+
+# ============================================================================
+# BENCHMARKS POR DISPOSITIVO
+# ============================================================================
+device_benchmarks:
+  
+  mobile:
+    name: "Dispositivos Móviles"
+    
+    metrics:
+      ctr:
+        excellent: 4.2
+        good: 2.8
+        average: 1.8
+        poor: 0.9
+      
+      conversion_rate:
+        excellent: 7.5
+        good: 5.0
+        average: 3.0
+        poor: 1.2
+  
+  desktop:
+    name: "Escritorio"
+    
+    metrics:
+      ctr:
+        excellent: 3.8
+        good: 2.5
+        average: 1.6
+        poor: 0.8
+      
+      conversion_rate:
+        excellent: 9.0
+        good: 6.0
+        average: 3.8
+        poor: 1.5
+  
+  tablet:
+    name: "Tabletas"
+    
+    metrics:
+      ctr:
+        excellent: 3.2
+        good: 2.1
+        average: 1.4
+        poor: 0.7
+      
+      conversion_rate:
+        excellent: 6.5
+        good: 4.2
+        average: 2.6
+        poor: 1.0
+
+# ============================================================================
+# BENCHMARKS TEMPORALES
+# ============================================================================
+temporal_benchmarks:
+  
+  # --------------------------------------------------------------------------
+  # POR DÍA DE LA SEMANA
+  # --------------------------------------------------------------------------
+  day_of_week:
+    monday:
+      performance_multiplier: 0.95
+      best_hours: ["19:00", "20:00", "21:00"]
+    
+    tuesday:
+      performance_multiplier: 1.05
+      best_hours: ["18:00", "19:00", "20:00", "21:00"]
+    
+    wednesday:
+      performance_multiplier: 1.10
+      best_hours: ["18:00", "19:00", "20:00", "21:00", "22:00"]
+    
+    thursday:
+      performance_multiplier: 1.15
+      best_hours: ["18:00", "19:00", "20:00", "21:00", "22:00"]
+    
+    friday:
+      performance_multiplier: 1.20
+      best_hours: ["17:00", "18:00", "19:00", "20:00", "21:00"]
+    
+    saturday:
+      performance_multiplier: 1.25
+      best_hours: ["10:00", "11:00", "19:00", "20:00", "21:00", "22:00"]
+    
+    sunday:
+      performance_multiplier: 1.30
+      best_hours: ["10:00", "11:00", "19:00", "20:00", "21:00", "22:00", "23:00"]
+
+  # --------------------------------------------------------------------------
+  # POR ÉPOCA DEL AÑO
+  # --------------------------------------------------------------------------
+  seasonal:
+    new_year:
+      period: "December 25 - January 15"
+      performance_multiplier: 1.40
+      top_services: ["amarres", "rituales_año_nuevo", "limpiezas"]
+    
+    valentines:
+      period: "February 1 - February 20"
+      performance_multiplier: 1.60
+      top_services: ["amarres_amor", "hechizos_pareja", "rituales_san_valentin"]
+    
+    full_moon:
+      frequency: "monthly"
+      performance_multiplier: 1.35
+      top_services: ["rituales_luna_llena", "amarres", "limpiezas"]
+    
+    summer_solstice:
+      period: "June 15 - June 25"
+      performance_multiplier: 1.25
+      top_services: ["rituales_solsticio", "protecciones", "abundancia"]
+
+# ============================================================================
+# CONFIGURACIÓN DE ALERTAS
+# ============================================================================
+alert_configuration:
+  
+  performance_alerts:
+    ctr_drop:
+      threshold: 20      # % de caída
+      timeframe: "24h"
+      severity: "high"
+    
+    conversion_rate_drop:
+      threshold: 25      # % de caída
+      timeframe: "48h"
+      severity: "critical"
+    
+    cost_increase:
+      threshold: 30      # % de aumento
+      timeframe: "24h"
+      severity: "medium"
+    
+    quality_score_drop:
+      threshold: 1       # puntos de caída
+      timeframe: "72h"
+      severity: "medium"
+  
+  benchmark_alerts:
+    below_average:
+      enabled: true
+      notification_frequency: "daily"
+    
+    poor_performance:
+      enabled: true
+      notification_frequency: "immediate"
+    
+    excellent_performance:
+      enabled: true
+      notification_frequency: "weekly"
+
+# ============================================================================
+# CONFIGURACIÓN DE REPORTES
+# ============================================================================
+reporting_configuration:
+  
+  automated_reports:
+    daily_performance:
+      enabled: true
+      recipients: ["admin@example.com"]
+      include_benchmarks: true
+    
+    weekly_benchmark_analysis:
+      enabled: true
+      recipients: ["admin@example.com", "marketing@example.com"]
+      include_recommendations: true
+    
+    monthly_trend_analysis:
+      enabled: true
+      recipients: ["admin@example.com", "marketing@example.com"]
+      include_forecasting: true
+  
+  dashboard_settings:
+    real_time_comparison: true
+    benchmark_visualization: true
+    trend_analysis: true
+    export_formats: ["pdf", "csv", "json"]
+
+# ============================================================================
+# CONFIGURACIÓN DE OPTIMIZACIÓN
+# ============================================================================
+optimization_settings:
+  
+  auto_optimization:
+    enabled: false      # Requiere aprobación manual
+    min_data_points: 500
+    confidence_threshold: 90
+  
+  recommendation_engine:
+    enabled: true
+    frequency: "daily"
+    include_benchmark_comparison: true
+  
+  bid_adjustments:
+    device_based: true
+    time_based: true
+    location_based: true
+    performance_based: true

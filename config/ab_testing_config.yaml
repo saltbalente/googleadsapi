@@ -1,0 +1,361 @@
+# ============================================================================
+# CONFIGURACIÓN DE PRUEBAS A/B PARA GENERACIÓN DE ANUNCIOS
+# Sistema de testing automatizado para optimización de anuncios
+# Versión: 2.0
+# Fecha: 2025-01-13
+# ============================================================================
+
+version: "2.0"
+last_updated: "2025-01-13"
+
+# ============================================================================
+# CONFIGURACIÓN GLOBAL DE A/B TESTING
+# ============================================================================
+global_settings:
+  default_test_duration_days: 14
+  min_sample_size: 1000
+  confidence_level: 0.95
+  statistical_significance_threshold: 0.05
+  auto_winner_selection: true
+  max_concurrent_tests: 5
+  test_budget_allocation: "equal"  # equal, weighted, custom
+
+# ============================================================================
+# TIPOS DE PRUEBAS A/B
+# ============================================================================
+test_types:
+  
+  # --------------------------------------------------------------------------
+  # PRUEBAS DE HEADLINES
+  # --------------------------------------------------------------------------
+  headline_tests:
+    name: "Pruebas de Títulos"
+    description: "Comparación de diferentes variaciones de headlines"
+    enabled: true
+    
+    test_variables:
+      - "tone"          # emocional, urgente, profesional
+      - "length"        # corto, medio, largo
+      - "cta_position"  # inicio, medio, final
+      - "keywords"      # primarias, secundarias, long_tail
+      - "urgency"       # alta, media, baja
+    
+    metrics_to_track:
+      primary:
+        - "ctr"         # Click-through rate
+        - "impressions"
+        - "clicks"
+      secondary:
+        - "conversion_rate"
+        - "cost_per_click"
+        - "quality_score"
+        - "ad_relevance"
+    
+    sample_variations:
+      emotional_vs_professional:
+        variant_a:
+          tone: "emocional"
+          example: "Recupera a Tu Pareja Hoy - Amarres Efectivos"
+        variant_b:
+          tone: "profesional"
+          example: "Servicios de Reconciliación - Consulta Profesional"
+      
+      urgency_levels:
+        variant_a:
+          urgency: "alta"
+          example: "¡Urgente! Amarre de Amor en 24 Horas"
+        variant_b:
+          urgency: "media"
+          example: "Amarre de Amor Efectivo - Resultados Rápidos"
+        variant_c:
+          urgency: "baja"
+          example: "Servicios de Amarres de Amor Profesionales"
+
+  # --------------------------------------------------------------------------
+  # PRUEBAS DE DESCRIPCIONES
+  # --------------------------------------------------------------------------
+  description_tests:
+    name: "Pruebas de Descripciones"
+    description: "Optimización de textos descriptivos"
+    enabled: true
+    
+    test_variables:
+      - "benefit_focus"    # resultados, proceso, garantía
+      - "social_proof"     # testimonios, años_experiencia, casos_exito
+      - "call_to_action"   # directo, suave, urgente
+      - "feature_emphasis" # discreto, rápido, efectivo
+    
+    metrics_to_track:
+      primary:
+        - "ctr"
+        - "conversion_rate"
+      secondary:
+        - "engagement_rate"
+        - "bounce_rate"
+        - "time_on_page"
+    
+    sample_variations:
+      benefit_focused:
+        variant_a:
+          focus: "resultados"
+          example: "Resultados garantizados en 24-48 horas. Bruja profesional con años de experiencia."
+        variant_b:
+          focus: "proceso"
+          example: "Rituales personalizados según tu caso. Magia blanca efectiva y segura."
+        variant_c:
+          focus: "garantía"
+          example: "100% discreto y confidencial. Consulta inicial completamente gratuita."
+
+  # --------------------------------------------------------------------------
+  # PRUEBAS DE LANDING PAGES
+  # --------------------------------------------------------------------------
+  landing_page_tests:
+    name: "Pruebas de Páginas de Destino"
+    description: "Optimización de páginas de aterrizaje"
+    enabled: true
+    
+    test_variables:
+      - "layout"           # simple, detallado, testimonial_heavy
+      - "color_scheme"     # místico, profesional, emocional
+      - "form_placement"   # arriba, lateral, abajo
+      - "trust_signals"    # certificaciones, testimonios, garantías
+    
+    metrics_to_track:
+      primary:
+        - "conversion_rate"
+        - "form_completion_rate"
+      secondary:
+        - "time_on_page"
+        - "scroll_depth"
+        - "exit_rate"
+    
+    sample_variations:
+      layout_tests:
+        variant_a:
+          layout: "simple"
+          description: "Diseño minimalista con formulario prominente"
+        variant_b:
+          layout: "detallado"
+          description: "Información completa con múltiples secciones"
+        variant_c:
+          layout: "testimonial_heavy"
+          description: "Enfoque en testimonios y casos de éxito"
+
+  # --------------------------------------------------------------------------
+  # PRUEBAS DE TARGETING
+  # --------------------------------------------------------------------------
+  targeting_tests:
+    name: "Pruebas de Segmentación"
+    description: "Optimización de audiencias objetivo"
+    enabled: true
+    
+    test_variables:
+      - "age_ranges"       # 25-34, 35-44, 45-54
+      - "gender_focus"     # all, female, male
+      - "geographic_focus" # nacional, regional, local
+      - "interest_targeting" # amplio, específico, lookalike
+    
+    metrics_to_track:
+      primary:
+        - "ctr"
+        - "conversion_rate"
+        - "cost_per_conversion"
+      secondary:
+        - "reach"
+        - "frequency"
+        - "relevance_score"
+
+# ============================================================================
+# CONFIGURACIÓN DE MÉTRICAS
+# ============================================================================
+metrics_configuration:
+  
+  primary_kpis:
+    ctr:
+      name: "Click-Through Rate"
+      formula: "clicks / impressions * 100"
+      target_threshold: 2.5
+      improvement_threshold: 0.5
+    
+    conversion_rate:
+      name: "Tasa de Conversión"
+      formula: "conversions / clicks * 100"
+      target_threshold: 5.0
+      improvement_threshold: 1.0
+    
+    cost_per_conversion:
+      name: "Costo por Conversión"
+      formula: "total_cost / conversions"
+      target_threshold: 50.0
+      improvement_threshold: 10.0
+  
+  secondary_kpis:
+    quality_score:
+      name: "Puntuación de Calidad"
+      range: "1-10"
+      target_threshold: 7.0
+    
+    ad_relevance:
+      name: "Relevancia del Anuncio"
+      values: ["below_average", "average", "above_average"]
+      target: "above_average"
+    
+    engagement_rate:
+      name: "Tasa de Engagement"
+      formula: "engagements / impressions * 100"
+      target_threshold: 1.0
+
+# ============================================================================
+# CONFIGURACIÓN DE EXPERIMENTOS
+# ============================================================================
+experiment_settings:
+  
+  traffic_allocation:
+    control_group: 50    # Porcentaje para grupo de control
+    test_groups: 50      # Porcentaje para grupos de prueba
+    min_allocation: 10   # Mínimo porcentaje por variante
+  
+  duration_settings:
+    min_duration_days: 7
+    max_duration_days: 30
+    auto_extend_if_inconclusive: true
+    max_extensions: 2
+  
+  stopping_rules:
+    early_winner_detection: true
+    early_loser_detection: true
+    futility_analysis: true
+    min_runtime_days: 3
+  
+  sample_size_calculation:
+    method: "power_analysis"
+    power: 0.8
+    effect_size: 0.1
+    alpha: 0.05
+
+# ============================================================================
+# PLANTILLAS DE PRUEBAS PREDEFINIDAS
+# ============================================================================
+test_templates:
+  
+  # --------------------------------------------------------------------------
+  # PRUEBA ESTÁNDAR DE HEADLINES
+  # --------------------------------------------------------------------------
+  standard_headline_test:
+    name: "Prueba Estándar de Títulos"
+    type: "headline_tests"
+    duration_days: 14
+    
+    variants:
+      control:
+        headline: "Amarres de Amor Efectivos - Consulta Gratis"
+        tone: "profesional"
+        urgency: "media"
+      
+      test_a:
+        headline: "¡Recupera a Tu Pareja Hoy! - Resultados en 24h"
+        tone: "emocional"
+        urgency: "alta"
+      
+      test_b:
+        headline: "Brujería de Amor Profesional - Garantizado"
+        tone: "místico"
+        urgency: "baja"
+    
+    success_criteria:
+      primary_metric: "ctr"
+      minimum_improvement: 15
+      confidence_level: 95
+
+  # --------------------------------------------------------------------------
+  # PRUEBA DE OPTIMIZACIÓN DE CTA
+  # --------------------------------------------------------------------------
+  cta_optimization_test:
+    name: "Optimización de Call-to-Action"
+    type: "description_tests"
+    duration_days: 10
+    
+    variants:
+      control:
+        cta: "Consulta Gratis Ahora"
+        style: "directo"
+      
+      test_a:
+        cta: "Solicita Tu Ritual Personalizado"
+        style: "específico"
+      
+      test_b:
+        cta: "Cambia Tu Vida Hoy Mismo"
+        style: "emocional"
+    
+    success_criteria:
+      primary_metric: "conversion_rate"
+      minimum_improvement: 20
+      confidence_level: 95
+
+# ============================================================================
+# CONFIGURACIÓN DE REPORTES
+# ============================================================================
+reporting_settings:
+  
+  automated_reports:
+    daily_summary: true
+    weekly_detailed: true
+    test_completion: true
+    performance_alerts: true
+  
+  report_recipients:
+    - "admin@example.com"
+    - "marketing@example.com"
+  
+  dashboard_settings:
+    real_time_updates: true
+    historical_data_retention_days: 365
+    export_formats: ["pdf", "csv", "json"]
+  
+  alert_thresholds:
+    significant_winner: 95
+    significant_loser: 95
+    budget_depletion: 80
+    low_traffic_warning: 100  # impressions per day
+
+# ============================================================================
+# CONFIGURACIÓN DE INTEGRACIÓN
+# ============================================================================
+integration_settings:
+  
+  google_ads:
+    auto_apply_winners: false  # Requiere aprobación manual
+    pause_losers: true
+    budget_reallocation: true
+  
+  analytics:
+    google_analytics: true
+    custom_events: true
+    conversion_tracking: true
+  
+  data_export:
+    formats: ["csv", "json", "xlsx"]
+    automated_backups: true
+    retention_period_days: 730
+
+# ============================================================================
+# CONFIGURACIÓN DE SEGURIDAD
+# ============================================================================
+security_settings:
+  
+  access_control:
+    view_tests: ["admin", "marketing", "analyst"]
+    create_tests: ["admin", "marketing"]
+    modify_tests: ["admin"]
+    delete_tests: ["admin"]
+  
+  data_protection:
+    anonymize_user_data: true
+    gdpr_compliance: true
+    data_retention_policy: "2_years"
+  
+  audit_logging:
+    log_all_actions: true
+    retention_days: 365
+    export_logs: true
