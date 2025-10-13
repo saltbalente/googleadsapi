@@ -170,6 +170,7 @@ temp/
 
 # Vercel
 .vercel
+vercel-env-variables.env
 
 # Local development
 .trae/
