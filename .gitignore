@@ -174,3 +174,19 @@ vercel-env-variables.env
 
 # Local development
 .trae/
+
+# User data (private) - Sistema de Persistencia Local
+data/user_data/*
+!data/user_data/.gitkeep
+!data/user_data/README.md
+
+# Archivos de encriptación
+*.enc
+.salt
+
+# Exports temporales
+data/exports/*
+!data/exports/.gitkeep
+
+# Cache de usuario
+data/cache/user_*

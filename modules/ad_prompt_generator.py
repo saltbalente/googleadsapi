@@ -5,6 +5,7 @@ Fecha: 2025-01-14
 """
 
 from typing import Dict, List
+import random
 
 class SearchIntentPatterns:
     """Patrones de búsqueda real basados en user intent"""

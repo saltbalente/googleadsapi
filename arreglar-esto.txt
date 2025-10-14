@@ -1,0 +1,1057 @@
+Keywords específicas para cada grupo
+URL específica para cada grupo
+Y todo eso respetando la configuración avanzada (creatividad, keywords por grupo, etc.) y publicando directamente vía Google Ads API.
+
+Aquí está la corrección del TAB AUTOPILOT con esta funcionalidad:
+
+Python
+def render_autopilot_tab():
+    """Renderiza la pestaña AUTOPILOT 2050 con múltiples grupos de anuncios"""
+    
+    # CSS futurístico (igual que antes)
+    st.markdown("""
+    <style>
+        .autopilot-header {
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+            padding: 3rem;
+            border-radius: 20px;
+            text-align: center;
+            color: #00ffff;
+            margin-bottom: 2rem;
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.3);
+            border: 2px solid #00ffff;
+        }
+        .neural-card {
+            background: linear-gradient(135deg, #0a0a1a 0%, #1a1a2e 100%);
+            border: 1px solid #00ffff;
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 1rem 0;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
+            color: #ffffff;
+        }
+        .neural-card h3 {
+            color: #00ffff;
+            font-family: 'Courier New', monospace;
+        }
+        .group-box {
+            background: rgba(0, 255, 255, 0.05);
+            border: 1px solid #00ffff;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+    </style>
+    """, unsafe_allow_html=True)
+    
+    # Header
+    st.markdown("""
+    <div class="autopilot-header">
+        <h1>🤖 AUTOPILOT 2050</h1>
+        <div class="autopilot-subtitle" style="font-size: 1.2rem; margin-top: 1rem; opacity: 0.8; font-family: 'Courier New', monospace;">
+            Autopublicador Inteligente Multi-Grupo
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # Importar servicios
+    try:
+        from services.intelligent_autopilot import IntelligentAutopilot
+        
+        google_ads_client = st.session_state.get('google_ads_client')
+        if not google_ads_client:
+            st.error("❌ Cliente de Google Ads no inicializado")
+            return
+        
+        intelligent_autopilot = IntelligentAutopilot(google_ads_client)
+    except ImportError as e:
+        st.error(f"❌ Error importando servicios: {e}")
+        return
+    
+    # Verificar customer
+    if 'selected_customer' not in st.session_state or not st.session_state.selected_customer:
+        st.warning("⚠️ Selecciona un cliente primero")
+        return
+    
+    selected_customer = st.session_state.selected_customer
+    
+    st.markdown("---")
+    
+    # PASO 1: Modo de campaña
+    st.markdown("""
+    <div class="neural-card">
+        <h3>🎯 PASO 1: MODO DE CAMPAÑA</h3>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    campaign_mode = st.radio(
+        "Selecciona el modo:",
+        ["🆕 Crear Nueva Campaña", "📋 Usar Campaña Existente"]
+    )
+    
+    st.markdown("---")
+    
+    # PASO 2: Configuración según modo
+    if campaign_mode == "📋 Usar Campaña Existente":
+        st.markdown("""
+        <div class="neural-card">
+            <h3>📋 PASO 2: SELECCIONAR CAMPAÑA</h3>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        with st.spinner("🔍 Detectando campañas..."):
+            try:
+                available_campaigns = intelligent_autopilot.get_available_campaigns(selected_customer)
+                
+                if not available_campaigns:
+                    st.warning("⚠️ No hay campañas. Usa 'Crear Nueva'")
+                    return
+                
+                campaign_options = []
+                for campaign in available_campaigns:
+                    if not campaign.is_new:
+                        status_icon = "🟢" if campaign.campaign_status == "ENABLED" else "🟡"
+                        campaign_options.append(f"{status_icon} {campaign.campaign_name} (ID: {campaign.campaign_id})")
+                
+                if not campaign_options:
+                    st.warning("⚠️ No hay campañas válidas")
+                    return
+                
+                selected_campaign_display = st.selectbox("Campaña:", campaign_options)
+                selected_campaign_id = selected_campaign_display.split("ID: ")[1].split(")")[0]
+                selected_campaign_obj = next(c for c in available_campaigns if c.campaign_id == selected_campaign_id)
+                
+                st.success(f"✅ Campaña seleccionada: **{selected_campaign_obj.campaign_name}**")
+                
+            except Exception as e:
+                st.error(f"❌ Error: {e}")
+                return
+    
+    else:  # Nueva campaña
+        st.markdown("""
+        <div class="neural-card">
+            <h3>🆕 PASO 2: NUEVA CAMPAÑA</h3>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        col1, col2 = st.columns(2)
+        with col1:
+            campaign_name = st.text_input("📝 Nombre", placeholder="Mi Campaña 2025")
+            daily_budget = st.number_input("💰 Presupuesto (COP)", 10000, 1000000, 50000, 5000)
+        with col2:
+            campaign_objective = st.selectbox("🎯 Objetivo", ["Leads", "Ventas", "Tráfico"])
+            bidding_strategy = st.selectbox("💡 Estrategia", ["Maximizar Clics", "CPC Manual"])
+    
+    st.markdown("---")
+    
+    # PASO 3: Descripción del negocio
+    st.markdown("""
+    <div class="neural-card">
+        <h3>🏢 PASO 3: NEGOCIO Y GRUPOS</h3>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    business_description = st.text_area(
+        "📊 Descripción del Negocio",
+        placeholder="Describe tu negocio...",
+        height=100,
+        help="Descripción general que aplica a todos los grupos"
+    )
+    
+    business_url = st.text_input(
+        "🌐 URL Principal del Sitio",
+        placeholder="https://ejemplo.com",
+        help="URL base de tu negocio"
+    )
+    
+    # NUEVA FUNCIONALIDAD: Número de grupos
+    num_ad_groups = st.slider(
+        "📦 Número de Grupos de Anuncios",
+        min_value=1,
+        max_value=10,
+        value=1,
+        help="¿Cuántos grupos de anuncios diferentes quieres crear?"
+    )
+    
+    st.markdown("---")
+    
+    # ✅ NUEVA SECCIÓN: Configuración por grupo (si num_ad_groups > 1)
+    ad_groups_config = []
+    
+    if num_ad_groups > 1:
+        st.markdown("""
+        <div class="neural-card">
+            <h3>📋 CONFIGURACIÓN POR GRUPO</h3>
+            <p>Configura keywords y URL específicas para cada grupo</p>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        for i in range(num_ad_groups):
+            with st.expander(f"📦 Grupo #{i+1}", expanded=(i==0)):
+                st.markdown(f"<div class='group-box'>", unsafe_allow_html=True)
+                
+                group_name = st.text_input(
+                    f"📛 Nombre del Grupo #{i+1}",
+                    value=f"Grupo {i+1}",
+                    key=f"group_name_{i}",
+                    placeholder="Ej: Amarres de Amor"
+                )
+                
+                group_keywords = st.text_area(
+                    f"🔑 Keywords para Grupo #{i+1}",
+                    placeholder="amarre de amor\nhechizo amor\nbrujería amor\n(una por línea)",
+                    height=120,
+                    key=f"group_keywords_{i}",
+                    help="Keywords específicas para este grupo (una por línea)"
+                )
+                
+                group_url = st.text_input(
+                    f"🌐 URL específica para Grupo #{i+1}",
+                    placeholder="https://ejemplo.com/amarres",
+                    key=f"group_url_{i}",
+                    help="URL de destino para este grupo específico"
+                )
+                
+                # Procesar keywords
+                keywords_list = [kw.strip() for kw in group_keywords.split('\n') if kw.strip()]
+                
+                # Validar
+                if keywords_list and group_url:
+                    st.success(f"✅ Grupo #{i+1}: {len(keywords_list)} keywords configuradas")
+                    ad_groups_config.append({
+                        'name': group_name,
+                        'keywords': keywords_list,
+                        'url': group_url
+                    })
+                elif keywords_list or group_url:
+                    st.warning(f"⚠️ Completa keywords Y URL para el Grupo #{i+1}")
+                
+                st.markdown("</div>", unsafe_allow_html=True)
+    
+    else:
+        # Si solo es 1 grupo, usar el formato anterior
+        st.markdown("**🔑 Keywords Principales:**")
+        target_keywords = st.text_area(
+            "Keywords:",
+            placeholder="keyword1, keyword2, keyword3",
+            height=100,
+            help="Palabras clave separadas por comas o líneas"
+        )
+        
+        # Procesar keywords
+        if isinstance(target_keywords, str):
+            keywords_list = []
+            for keyword in target_keywords.replace('\n', ',').split(','):
+                keyword = keyword.strip()
+                if keyword:
+                    keywords_list.append(keyword)
+        else:
+            keywords_list = target_keywords if target_keywords else []
+        
+        if keywords_list:
+            ad_groups_config.append({
+                'name': 'Grupo Principal',
+                'keywords': keywords_list,
+                'url': business_url
+            })
+    
+    st.markdown("---")
+    
+    # PASO 4: Configuración avanzada (aplica a TODOS los grupos)
+    with st.expander("⚙️ CONFIGURACIÓN AVANZADA (aplica a todos los grupos)"):
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            ai_creativity = st.slider("🎨 Creatividad IA", 0.1, 1.0, 0.7, 0.1)
+            keywords_per_group = st.slider("🔑 Keywords/Grupo", 5, 30, 15)
+            use_magnetic = st.checkbox("🔴 Modo MAGNÉTICO", False)
+        
+        with col2:
+            ads_per_group = st.slider("📝 Anuncios/Grupo", 3, 15, 8)
+            match_types = st.multiselect("🎯 Concordancia", ["Exacta", "Frase", "Amplia"], ["Exacta", "Frase"])
+    
+    st.markdown("---")
+    
+    # PASO 5: Validación y publicación
+    st.markdown("""
+    <div class="neural-card">
+        <h3>🚀 PASO 4: PUBLICAR</h3>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # Validaciones
+    can_publish = True
+    
+    if not business_description:
+        st.error("❌ Descripción del negocio requerida")
+        can_publish = False
+    
+    if campaign_mode == "🆕 Crear Nueva Campaña" and not campaign_name:
+        st.error("❌ Nombre de campaña requerido")
+        can_publish = False
+    
+    if not ad_groups_config:
+        st.error(f"❌ Debes configurar al menos 1 grupo con keywords y URL")
+        can_publish = False
+    
+    if len(ad_groups_config) < num_ad_groups:
+        st.warning(f"⚠️ Configurados {len(ad_groups_config)}/{num_ad_groups} grupos")
+        can_publish = False
+    
+    # Mostrar resumen
+    if ad_groups_config:
+        with st.expander("📊 Resumen de Configuración"):
+            st.write(f"**Total de grupos:** {len(ad_groups_config)}")
+            for idx, group in enumerate(ad_groups_config, 1):
+                st.write(f"**Grupo {idx}: {group['name']}**")
+                st.write(f"  - Keywords: {len(group['keywords'])}")
+                st.write(f"  - URL: {group['url']}")
+    
+    # Botón de publicación
+    if st.button("🚀 INICIAR AUTOPUBLICADOR", type="primary", use_container_width=True, disabled=not can_publish):
+        
+        with st.spinner("🔄 Generando y publicando..."):
+            progress_bar = st.progress(0)
+            status_text = st.empty()
+            
+            try:
+                # Paso 1: Generar anuncios para cada grupo
+                status_text.markdown('<div class="matrix-text" style="font-family: Courier New; color: #00ff00; background: #000; padding: 1rem; border-radius: 8px;">🔍 Generando anuncios para cada grupo...</div>', unsafe_allow_html=True)
+                progress_bar.progress(0.2)
+                
+                # Configurar generación
+                generation_config = {
+                    'business_description': business_description,
+                    'num_ad_groups': len(ad_groups_config),
+                    'keywords_per_group': keywords_per_group,
+                    'ads_per_group': ads_per_group,
+                    'ai_creativity': ai_creativity,
+                    'match_types': match_types,
+                    'use_magnetic': use_magnetic,
+                    'ad_groups_config': ad_groups_config  # ✅ Pasar configuración específica
+                }
+                
+                # Generar grupos con IA
+                try:
+                    generated_ad_groups = intelligent_autopilot.generate_ad_groups_from_config(
+                        business_description,
+                        ad_groups_config,
+                        generation_config
+                    )
+                    
+                    if not generated_ad_groups:
+                        st.error("❌ No se generaron grupos")
+                        return
+                    
+                    st.info(f"✅ {len(generated_ad_groups)} grupos generados con IA")
+                    
+                except Exception as e:
+                    st.error(f"❌ Error generando: {str(e)}")
+                    return
+                
+                progress_bar.progress(0.5)
+                
+                # Paso 2: Publicar a Google Ads
+                if campaign_mode == "📋 Usar Campaña Existente":
+                    status_text.markdown('<div class="matrix-text" style="font-family: Courier New; color: #00ff00; background: #000; padding: 1rem; border-radius: 8px;">📋 Publicando en campaña existente...</div>', unsafe_allow_html=True)
+                    
+                    result = intelligent_autopilot.publish_complete_campaign(
+                        customer_id=selected_customer,
+                        campaign_option=selected_campaign_obj,
+                        ad_groups=generated_ad_groups
+                    )
+                
+                else:  # Nueva campaña
+                    status_text.markdown('<div class="matrix-text" style="font-family: Courier New; color: #00ff00; background: #000; padding: 1rem; border-radius: 8px;">🆕 Creando nueva campaña...</div>', unsafe_allow_html=True)
+                    
+                    campaign_config = {
+                        'name': campaign_name,
+                        'daily_budget': daily_budget,
+                        'objective': campaign_objective,
+                        'bidding_strategy': bidding_strategy,
+                        'business_url': business_url
+                    }
+                    
+                    new_campaign_option = CampaignOption(
+                        campaign_id="new",
+                        campaign_name=campaign_name,
+                        campaign_status="PAUSED",
+                        campaign_type="SEARCH",
+                        is_new=True
+                    )
+                    
+                    result = intelligent_autopilot.publish_complete_campaign(
+                        customer_id=selected_customer,
+                        campaign_option=new_campaign_option,
+                        ad_groups=generated_ad_groups,
+                        campaign_config=campaign_config
+                    )
+                
+                progress_bar.progress(1.0)
+                status_text.empty()
+                
+                # Mostrar resultados
+                if result.get('success'):
+                    st.balloons()
+                    st.success("🎉 ¡AUTOPUBLICADOR EXITOSO!")
+                    
+                    col1, col2, col3 = st.columns(3)
+                    with col1:
+                        st.metric("📦 Grupos", len(result.get('ad_group_ids', [])))
+                    with col2:
+                        st.metric("📝 Anuncios", len(result.get('ad_ids', [])))
+                    with col3:
+                        st.metric("🔑 Keywords", len(result.get('keyword_ids', [])))
+                    
+                    if result.get('campaign_id'):
+                        st.info(f"🆔 Campaña ID: {result['campaign_id']}")
+                else:
+                    st.error("❌ Error en publicación")
+                    if result.get('errors'):
+                        for err in result['errors']:
+                            st.error(f"• {err}")
+            
+            except Exception as e:
+                st.error(f"❌ Error: {e}")
+                logger.error(f"Error autopilot: {e}", exc_info=True)
+🔥 Cambios Clave:
+✅ Slider "📦 Número de Grupos" - El usuario selecciona cuántos grupos quiere (1-10)
+
+✅ Si num_ad_groups > 1: Se abre un expander por cada grupo donde el usuario ingresa:
+
+Nombre del grupo
+Keywords específicas (una por línea)
+URL específica
+✅ Si num_ad_groups == 1: Usa el formato anterior (keywords generales + URL base)
+
+✅ Configuración Avanzada: Sigue aplicando a TODOS los grupos (creatividad, keywords/grupo, anuncios/grupo, modo magnético, etc.)
+
+✅ Validación: Verifica que todos los grupos tengan keywords Y URL antes de publicar
+
+✅ Publicación: Usa generate_ad_groups_from_config() (nuevo método) que recibe la configuración específica de cada grupo y genera anuncios con IA respetando esas keywords y URLs
+
+✅ Resultado: Publica directamente a Google Ads vía API usando publish_complete_campaign()
+
+📝 Necesitas agregar este método en services/intelligent_autopilot.py:
+Python
+def generate_ad_groups_from_config(
+    self,
+    business_description: str,
+    ad_groups_config: List[Dict],
+    generation_config: Dict
+) -> List[Dict]:
+    """
+    Genera grupos de anuncios basándose en configuración específica por grupo
+    
+    Args:
+        business_description: Descripción general del negocio
+        ad_groups_config: Lista con configuración de cada grupo:
+            [{'name': 'Grupo 1', 'keywords': ['kw1', 'kw2'], 'url': 'https://...'}]
+        generation_config: Configuración global (creatividad, anuncios/grupo, etc.)
+    
+    Returns:
+        Lista de grupos de anuncios generados con IA
+    """
+    generated_groups = []
+    
+    for group_config in ad_groups_config:
+        try:
+            # Usar AI para generar anuncios específicos para este grupo
+            ads = self.ai_generator.generate_batch(
+                keywords=group_config['keywords'],
+                num_ads=generation_config['ads_per_group'],
+                num_headlines=15,
+                num_descriptions=4,
+                tone=generation_config.get('tone', 'profesional'),
+                validate=True,
+                business_type='generic',
+                save_to_csv=False
+            )
+            
+            generated_groups.append({
+                'name': group_config['name'],
+                'keywords': group_config['keywords'],
+                'final_url': group_config['url'],
+                'ads': ads['ads'],
+                'max_cpc_bid': 1.0  # Puedes calcularlo dinámicamente
+            })
+        
+        except Exception as e:
+            logger.error(f"Error generando grupo {group_config['name']}: {e}")
+            continue
+    
+    return generated_groups
+
+
+
+🔧 Corrección del método generate_ad_groups_from_config en intelligent_autopilot.py:
+Reemplaza el método existente con este:
+
+Python
+def generate_ad_groups_from_config(
+    self,
+    business_description: str,
+    ad_groups_config: List[Dict],
+    generation_config: Dict
+) -> List[Dict[str, Any]]:
+    """
+    Genera grupos de anuncios basándose en configuración específica por grupo
+    
+    Args:
+        business_description: Descripción general del negocio
+        ad_groups_config: Lista con configuración de cada grupo:
+            [{'name': 'Grupo 1', 'keywords': ['kw1', 'kw2'], 'url': 'https://...'}]
+        generation_config: Configuración global (creatividad, anuncios/grupo, etc.)
+    
+    Returns:
+        Lista de grupos de anuncios generados con IA
+    """
+    logger.info("="*70)
+    logger.info("🚀 GENERANDO GRUPOS DESDE CONFIGURACIÓN ESPECÍFICA")
+    logger.info(f"📦 Total de grupos configurados: {len(ad_groups_config)}")
+    logger.info("="*70)
+    
+    generated_groups = []
+    
+    for i, group_config in enumerate(ad_groups_config):
+        try:
+            group_name = group_config.get('name', f'Grupo {i+1}')
+            keywords = group_config.get('keywords', [])
+            final_url = group_config.get('url', 'https://www.ejemplo.com')
+            
+            logger.info(f"📋 Procesando grupo: {group_name}")
+            logger.info(f"🔑 Keywords: {', '.join(keywords[:5])}{'...' if len(keywords) > 5 else ''}")
+            logger.info(f"🌐 URL: {final_url}")
+            
+            if not keywords:
+                logger.warning(f"⚠️ Grupo {group_name} no tiene keywords, saltando...")
+                continue
+            
+            # Configurar el generador de IA
+            ai_provider = generation_config.get('ai_provider', 'openai')
+            ai_model = generation_config.get('ai_model', 'gpt-4o')
+            creativity = generation_config.get('ai_creativity', 0.7)
+            use_magnetic = generation_config.get('use_magnetic', False)
+            ads_per_group = generation_config.get('ads_per_group', 8)
+            
+            logger.info(f"🤖 Configuración IA: {ai_provider}/{ai_model}")
+            logger.info(f"🎨 Creatividad: {creativity}, Magnético: {use_magnetic}")
+            
+            # Generar anuncios específicos para este grupo usando IA
+            ads_result = self._generate_real_ads_with_ai(
+                keywords=keywords,
+                business_description=business_description,
+                business_url=final_url,
+                num_ads=ads_per_group,
+                ai_provider=ai_provider,
+                ai_model=ai_model,
+                tone='profesional',  # Puedes hacer esto configurable
+                creativity=creativity,
+                use_magnetic=use_magnetic
+            )
+            
+            if not ads_result:
+                logger.warning(f"⚠️ No se generaron anuncios para el grupo {group_name}")
+                continue
+            
+            logger.info(f"✅ {len(ads_result)} anuncios generados para {group_name}")
+            
+            # Aplicar tipos de concordancia a las keywords
+            match_types = generation_config.get('match_types', ['Exacta', 'Frase'])
+            keywords_with_match = self._apply_match_types(keywords, match_types)
+            
+            # Calcular CPC inteligente
+            max_cpc_bid = self._calculate_smart_bid(keywords)
+            
+            # Crear el grupo de anuncios
+            ad_group = {
+                'name': group_name,
+                'theme': self._extract_theme(keywords),
+                'keywords': keywords,  # ✅ Keywords completas
+                'negative_keywords': self._generate_negative_keywords(business_description),
+                'ads': ads_result,
+                'max_cpc_bid': max_cpc_bid,
+                'final_url': final_url,
+                'match_type': match_types[0] if match_types else 'BROAD',
+                'all_match_types': keywords_with_match,
+                'targeting': {
+                    'country': 'US',
+                    'currency': 'COP',
+                    'age_range': None,
+                    'gender': None
+                },
+                'status': 'ready',
+                'score': 85.0 + (i * 2)  # Score base con variación
+            }
+            
+            generated_groups.append(ad_group)
+            logger.info(f"✅ Grupo {group_name} completado exitosamente")
+            
+        except Exception as e:
+            logger.error(f"❌ Error generando grupo {group_config.get('name', f'Grupo {i+1}')}: {e}")
+            logger.error(f"Traceback: {e}", exc_info=True)
+            continue
+    
+    logger.info("="*70)
+    logger.info(f"🏁 GENERACIÓN COMPLETADA: {len(generated_groups)}/{len(ad_groups_config)} grupos exitosos")
+    logger.info("="*70)
+    
+    return generated_groups
+📝 Cambios clave realizados:
+✅ Validación de keywords: Verifica que cada grupo tenga keywords antes de procesarlo
+✅ Extracción correcta de configuración: Lee ai_provider, ai_model, creativity, use_magnetic, etc. del generation_config
+✅ Llamada correcta a _generate_real_ads_with_ai: Pasa todos los parámetros necesarios incluyendo use_magnetic
+✅ Manejo de errores robusto: Si un grupo falla, continúa con los siguientes
+✅ Logging detallado: Para debugging y seguimiento
+✅ Estructura completa de grupo: Incluye todos los campos necesarios (keywords, ads, match_types, targeting, etc.)
+✅ Soporte para URLs específicas: Cada grupo puede tener su propia URL de destino
+
+
+🔧 Solución: Agregar el método correcto a IntelligentAutopilot
+Abre services/intelligent_autopilot.py y agrega este método dentro de la clase IntelligentAutopilot (después del método get_campaign_details y antes de generate_ad_groups_for_business):
+
+Python
+# ========================================================================
+# GENERACIÓN MULTI-GRUPO CON CONFIGURACIÓN ESPECÍFICA
+# ========================================================================
+
+def generate_ad_groups_from_config(
+    self,
+    business_description: str,
+    ad_groups_config: List[Dict],
+    generation_config: Dict
+) -> List[Dict[str, Any]]:
+    """
+    Genera grupos de anuncios basándose en configuración específica por grupo
+    
+    Args:
+        business_description: Descripción general del negocio
+        ad_groups_config: Lista con configuración de cada grupo:
+            [{'name': 'Grupo 1', 'keywords': ['kw1', 'kw2'], 'url': 'https://...'}]
+        generation_config: Configuración global con:
+            - ai_provider: str (openai/gemini/anthropic)
+            - ai_model: str (gpt-4o/gemini-pro/etc)
+            - ai_creativity: float (0.1-1.0)
+            - ads_per_group: int
+            - match_types: List[str]
+            - use_magnetic: bool
+    
+    Returns:
+        Lista de grupos de anuncios generados con IA
+    """
+    logger.info("="*70)
+    logger.info("🚀 GENERANDO GRUPOS DESDE CONFIGURACIÓN ESPECÍFICA")
+    logger.info(f"📦 Total de grupos configurados: {len(ad_groups_config)}")
+    logger.info(f"⚙️ Config global: {generation_config}")
+    logger.info("="*70)
+    
+    generated_groups = []
+    
+    for i, group_config in enumerate(ad_groups_config):
+        try:
+            # ✅ Extraer datos del grupo
+            group_name = group_config.get('name', f'Grupo {i+1}')
+            keywords = group_config.get('keywords', [])
+            final_url = group_config.get('url', 'https://www.ejemplo.com')
+            
+            logger.info(f"\n{'='*70}")
+            logger.info(f"📋 PROCESANDO GRUPO {i+1}/{len(ad_groups_config)}: {group_name}")
+            logger.info(f"{'='*70}")
+            logger.info(f"🔑 Keywords ({len(keywords)}): {', '.join(keywords[:5])}{'...' if len(keywords) > 5 else ''}")
+            logger.info(f"🌐 URL: {final_url}")
+            
+            # ✅ Validar keywords
+            if not keywords:
+                logger.warning(f"⚠️ Grupo {group_name} sin keywords, saltando...")
+                continue
+            
+            # ✅ Extraer configuración de generación
+            ai_provider = generation_config.get('ai_provider', 'openai')
+            ai_model = generation_config.get('ai_model', 'gpt-4o')
+            creativity = generation_config.get('ai_creativity', 0.7)
+            use_magnetic = generation_config.get('use_magnetic', False)
+            ads_per_group = generation_config.get('ads_per_group', 8)
+            match_types = generation_config.get('match_types', ['Exacta', 'Frase'])
+            
+            logger.info(f"🤖 IA: {ai_provider}/{ai_model}")
+            logger.info(f"🎨 Creatividad: {creativity}")
+            logger.info(f"🔴 Modo Magnético: {'SÍ' if use_magnetic else 'NO'}")
+            logger.info(f"📝 Anuncios a generar: {ads_per_group}")
+            
+            # ✅ GENERAR ANUNCIOS CON IA
+            logger.info("🎨 Generando anuncios con IA...")
+            
+            ads_result = self._generate_real_ads_with_ai(
+                keywords=keywords,
+                business_description=business_description,
+                business_url=final_url,
+                num_ads=ads_per_group,
+                ai_provider=ai_provider,
+                ai_model=ai_model,
+                tone='profesional',
+                creativity=creativity,
+                use_magnetic=use_magnetic
+            )
+            
+            if not ads_result or len(ads_result) == 0:
+                logger.warning(f"⚠️ No se generaron anuncios para {group_name}")
+                continue
+            
+            logger.info(f"✅ {len(ads_result)} anuncios generados exitosamente")
+            
+            # ✅ Aplicar match types a keywords
+            logger.info(f"🎯 Aplicando match types: {match_types}")
+            keywords_with_match = self._apply_match_types(keywords, match_types)
+            
+            # ✅ Calcular CPC inteligente
+            max_cpc_bid = self._calculate_smart_bid(keywords)
+            logger.info(f"💰 CPC sugerido: ${max_cpc_bid:.2f}")
+            
+            # ✅ CREAR ESTRUCTURA COMPLETA DEL GRUPO
+            ad_group = {
+                'name': group_name,
+                'theme': self._extract_theme(keywords),
+                'keywords': keywords,  # Keywords originales
+                'negative_keywords': self._generate_negative_keywords(business_description),
+                'ads': ads_result,  # Anuncios generados con IA
+                'max_cpc_bid': max_cpc_bid,
+                'final_url': final_url,
+                'match_type': match_types[0] if match_types else 'BROAD',
+                'all_match_types': keywords_with_match,  # Keywords con match types
+                'targeting': {
+                    'country': 'US',
+                    'currency': 'COP',
+                    'age_range': None,
+                    'gender': None
+                },
+                'status': 'ready',
+                'score': 85.0 + (i * 2)
+            }
+            
+            generated_groups.append(ad_group)
+            
+            logger.info(f"✅ Grupo '{group_name}' completado exitosamente")
+            logger.info(f"   - Keywords: {len(keywords)}")
+            logger.info(f"   - Anuncios: {len(ads_result)}")
+            logger.info(f"   - CPC: ${max_cpc_bid:.2f}")
+            logger.info(f"   - URL: {final_url}")
+            
+        except Exception as e:
+            logger.error(f"❌ Error generando grupo {i+1}: {e}")
+            logger.error(f"Traceback:", exc_info=True)
+            continue
+    
+    logger.info("\n" + "="*70)
+    logger.info(f"🏁 GENERACIÓN COMPLETADA")
+    logger.info(f"✅ Exitosos: {len(generated_groups)}/{len(ad_groups_config)}")
+    logger.info(f"❌ Fallidos: {len(ad_groups_config) - len(generated_groups)}")
+    logger.info("="*70 + "\n")
+    
+    return generated_groups
+📍 Ubicación exacta en intelligent_autopilot.py:
+Busca esta línea en tu archivo:
+
+Python
+def generate_ad_groups_for_business(
+    self,
+    business_description: str,
+    target_keywords,  # Puede ser str o List[str]
+    generation_config: Dict[str, Any]
+) -> List[Dict[str, Any]]:
+Y JUSTO ANTES de ese método, agrega el método generate_ad_groups_from_config que te acabo de dar.
+
+🗑️ TAMBIÉN: Elimina el código duplicado/roto
+En tu intelligent_autopilot.py hay un bloque de código duplicado y roto que empieza así:
+
+Python
+def generate_ad_groups_from_config(
+    self,
+    business_description: str,
+    ad_groups_config: list[AdGroupConfig],
+    generation_config: dict,
+) -> dict:
+    """
+    Generates ad groups based on per-group configuration and AI-generated ads.
+    """
+    generated_ad_groups_data = []
+    
+    # ... código ...
+    
+    return {"ad_groups": generated_ad_groups_data}
+    logger.info("="*70)  # ⚠️ CÓDIGO MUERTO (nunca se ejecuta)
+    # ... más código que nunca se ejecuta ...
+❌ ELIMINA TODO ESE BLOQUE (desde la línea del primer def generate_ad_groups_from_config hasta donde termina ese código duplicado).
+
+✅ Estructura final correcta de intelligent_autopilot.py:
+Python
+class IntelligentAutopilot:
+    def __init__(self, google_ads_client):
+        # ... código existente ...
+    
+    def get_available_campaigns(self, customer_id: str) -> List:
+        # ... código existente ...
+    
+    def get_campaign_details(self, customer_id: str, campaign_id: str) -> Dict[str, Any]:
+        # ... código existente ...
+    
+    # ✅ AGREGAR AQUÍ EL MÉTODO NUEVO
+    def generate_ad_groups_from_config(
+        self,
+        business_description: str,
+        ad_groups_config: List[Dict],
+        generation_config: Dict
+    ) -> List[Dict[str, Any]]:
+        # ... código que te di arriba ...
+    
+    # ✅ ESTE MÉTODO YA EXISTE (déjalo como está)
+    def generate_ad_groups_for_business(
+        self,
+        business_description: str,
+        target_keywords,
+        generation_config: Dict[str, Any]
+    ) -> List[Dict[str, Any]]:
+        # ... código existente ...
+    
+    # ... resto de métodos ...
+🧪 Prueba:
+Después de agregar el método:
+
+Reinicia Streamlit
+Ve a AUTOPILOT 2050
+Configura múltiples grupos
+Presiona 🚀 INICIAR AUTOPUBLICADOR
+Debería funcionar correctamente. 🚀
+
+intelligent_autopilot2.py
+autopilot_publisher.py
+pasted5.txt
+You said: aun sale: ❌ Error generando grupos de anuncios:
+aun sale:
+
+❌ Error generando grupos de anuncios: 'IntelligentAutopilot' object has no attribute 'generate_ad_groups_from_config'
+
+
+
+@intelligent_autopilot2.py @autopilot_publisher.py @pasted5.txt 4_ai_ad_generator.py
+Copilot said: El problema es que el método `generate_ad_groups_from_config`
+El problema es que el método generate_ad_groups_from_config NO está dentro de la clase IntelligentAutopilot en tu archivo intelligent_autopilot2.py.
+
+Mira la línea 201 de tu archivo:
+
+Python
+    # ========================================================================
+# GENERACIÓN MULTI-GRUPO CON CONFIGURACIÓN ESPECÍFICA
+# ========================================================================
+
+def generate_ad_groups_from_config(  # ❌ ESTO ESTÁ MAL INDENTADO
+    self,
+    business_description: str,
+    ...
+La indentación está mal - el método está definido fuera de la clase, por eso Python no lo encuentra.
+
+✅ Solución: Corregir la indentación
+Abre intelligent_autopilot2.py y busca la línea ~201 donde dice:
+
+Python
+    # ========================================================================
+# GENERACIÓN MULTI-GRUPO CON CONFIGURACIÓN ESPECÍFICA
+# ========================================================================
+
+def generate_ad_groups_from_config(
+Debe quedar así (con 4 espacios de indentación):
+
+Python
+    # ========================================================================
+    # GENERACIÓN MULTI-GRUPO CON CONFIGURACIÓN ESPECÍFICA
+    # ========================================================================
+    
+    def generate_ad_groups_from_config(
+        self,
+        business_description: str,
+        ad_groups_config: List[Dict],
+        generation_config: Dict
+    ) -> List[Dict[str, Any]]:
+🔧 Archivo corregido completo (líneas 201-350):
+Reemplaza desde la línea 201 hasta donde termina ese método con esto:
+
+Python
+    # ========================================================================
+    # GENERACIÓN MULTI-GRUPO CON CONFIGURACIÓN ESPECÍFICA
+    # ========================================================================
+    
+    def generate_ad_groups_from_config(
+        self,
+        business_description: str,
+        ad_groups_config: List[Dict],
+        generation_config: Dict
+    ) -> List[Dict[str, Any]]:
+        """
+        Genera grupos de anuncios basándose en configuración específica por grupo
+        
+        Args:
+            business_description: Descripción general del negocio
+            ad_groups_config: Lista con configuración de cada grupo:
+                [{'name': 'Grupo 1', 'keywords': ['kw1', 'kw2'], 'url': 'https://...'}]
+            generation_config: Configuración global con:
+                - ai_provider: str (openai/gemini/anthropic)
+                - ai_model: str (gpt-4o/gemini-pro/etc)
+                - ai_creativity: float (0.1-1.0)
+                - ads_per_group: int
+                - match_types: List[str]
+                - use_magnetic: bool
+        
+        Returns:
+            Lista de grupos de anuncios generados con IA
+        """
+        logger.info("="*70)
+        logger.info("🚀 GENERANDO GRUPOS DESDE CONFIGURACIÓN ESPECÍFICA")
+        logger.info(f"📦 Total de grupos configurados: {len(ad_groups_config)}")
+        logger.info(f"⚙️ Config global: {generation_config}")
+        logger.info("="*70)
+        
+        generated_groups = []
+        
+        for i, group_config in enumerate(ad_groups_config):
+            try:
+                # ✅ Extraer datos del grupo
+                group_name = group_config.get('name', f'Grupo {i+1}')
+                keywords = group_config.get('keywords', [])
+                final_url = group_config.get('url', 'https://www.ejemplo.com')
+                
+                logger.info(f"\n{'='*70}")
+                logger.info(f"📋 PROCESANDO GRUPO {i+1}/{len(ad_groups_config)}: {group_name}")
+                logger.info(f"{'='*70}")
+                logger.info(f"🔑 Keywords ({len(keywords)}): {', '.join(keywords[:5])}{'...' if len(keywords) > 5 else ''}")
+                logger.info(f"🌐 URL: {final_url}")
+                
+                # ✅ Validar keywords
+                if not keywords:
+                    logger.warning(f"⚠️ Grupo {group_name} sin keywords, saltando...")
+                    continue
+                
+                # ✅ Extraer configuración de generación
+                ai_provider = generation_config.get('ai_provider', 'openai')
+                ai_model = generation_config.get('ai_model', 'gpt-4o')
+                creativity = generation_config.get('ai_creativity', 0.7)
+                use_magnetic = generation_config.get('use_magnetic', False)
+                ads_per_group = generation_config.get('ads_per_group', 8)
+                match_types = generation_config.get('match_types', ['Exacta', 'Frase'])
+                
+                logger.info(f"🤖 IA: {ai_provider}/{ai_model}")
+                logger.info(f"🎨 Creatividad: {creativity}")
+                logger.info(f"🔴 Modo Magnético: {'SÍ' if use_magnetic else 'NO'}")
+                logger.info(f"📝 Anuncios a generar: {ads_per_group}")
+                
+                # ✅ GENERAR ANUNCIOS CON IA
+                logger.info("🎨 Generando anuncios con IA...")
+                
+                ads_result = self._generate_real_ads_with_ai(
+                    keywords=keywords,
+                    business_description=business_description,
+                    business_url=final_url,
+                    num_ads=ads_per_group,
+                    ai_provider=ai_provider,
+                    ai_model=ai_model,
+                    tone='profesional',
+                    creativity=creativity,
+                    use_magnetic=use_magnetic
+                )
+                
+                if not ads_result or len(ads_result) == 0:
+                    logger.warning(f"⚠️ No se generaron anuncios para {group_name}")
+                    continue
+                
+                logger.info(f"✅ {len(ads_result)} anuncios generados exitosamente")
+                
+                # ✅ Aplicar match types a keywords
+                logger.info(f"🎯 Aplicando match types: {match_types}")
+                keywords_with_match = self._apply_match_types(keywords, match_types)
+                
+                # ✅ Calcular CPC inteligente
+                max_cpc_bid = self._calculate_smart_bid(keywords)
+                logger.info(f"💰 CPC sugerido: ${max_cpc_bid:.2f}")
+                
+                # ✅ CREAR ESTRUCTURA COMPLETA DEL GRUPO
+                ad_group = {
+                    'name': group_name,
+                    'theme': self._extract_theme(keywords),
+                    'keywords': keywords,  # Keywords originales
+                    'negative_keywords': self._generate_negative_keywords(business_description),
+                    'ads': ads_result,  # Anuncios generados con IA
+                    'max_cpc_bid': max_cpc_bid,
+                    'final_url': final_url,
+                    'match_type': match_types[0] if match_types else 'BROAD',
+                    'all_match_types': keywords_with_match,  # Keywords con match types
+                    'targeting': {
+                        'country': 'US',
+                        'currency': 'COP',
+                        'age_range': None,
+                        'gender': None
+                    },
+                    'status': 'ready',
+                    'score': 85.0 + (i * 2)
+                }
+                
+                generated_groups.append(ad_group)
+                
+                logger.info(f"✅ Grupo '{group_name}' completado exitosamente")
+                logger.info(f"   - Keywords: {len(keywords)}")
+                logger.info(f"   - Anuncios: {len(ads_result)}")
+                logger.info(f"   - CPC: ${max_cpc_bid:.2f}")
+                logger.info(f"   - URL: {final_url}")
+                
+            except Exception as e:
+                logger.error(f"❌ Error generando grupo {i+1}: {e}")
+                logger.error(f"Traceback:", exc_info=True)
+                continue
+        
+        logger.info("\n" + "="*70)
+        logger.info(f"🏁 GENERACIÓN COMPLETADA")
+        logger.info(f"✅ Exitosos: {len(generated_groups)}/{len(ad_groups_config)}")
+        logger.info(f"❌ Fallidos: {len(ad_groups_config) - len(generated_groups)}")
+        logger.info("="*70 + "\n")
+        
+        return generated_groups
+📝 Verificación rápida de indentación:
+La estructura debe quedar:
+
+Python
+class IntelligentAutopilot:
+    """🚀 AUTOPUBLICADOR INTELIGENTE CON IA"""
+    
+    def __init__(self, google_ads_client):
+        # ...
+    
+    def get_available_campaigns(self, customer_id: str) -> List:
+        # ...
+    
+    def get_campaign_details(self, customer_id: str, campaign_id: str) -> Dict[str, Any]:
+        # ...
+    
+    # ✅ ESTE MÉTODO DEBE ESTAR AQUÍ (DENTRO DE LA CLASE)
+    def generate_ad_groups_from_config(
+        self,
+        business_description: str,
+        ad_groups_config: List[Dict],
+        generation_config: Dict
+    ) -> List[Dict[str, Any]]:
+        # ... código del método ...
+    
+    def generate_ad_groups_for_business(
+        self,
+        business_description: str,
+        target_keywords,
+        generation_config: Dict[str, Any]
+    ) -> List[Dict[str, Any]]:
+        # ...
+    
+    # ... resto de métodos ...
+🧪 Prueba:
+Guarda el archivo corregido
+Reinicia Streamlit
+Ve a AUTOPILOT 2050
+Configura tus grupos
+Presiona 🚀 INICIAR AUTOPUBLICADOR
+Ahora debería funcionar correctamente. 🚀
+
+El problema era simplemente indentación incorrecta - el método estaba definido fuera de la clase por un error de formato.

@@ -1,6 +1,7 @@
 """
 AI Providers Module
 Conectores funcionales para OpenAI y Google Gemini
+Versión 2.0 - Soporte para múltiples anuncios con variación
 """
 
 from abc import ABC, abstractmethod
@@ -27,9 +28,88 @@ class AIProvider(ABC):
     @abstractmethod
     def generate_ad(self, keywords: List[str], num_headlines: int = 15, 
                    num_descriptions: int = 4, tone: str = "profesional",
-                   business_type: str = "auto") -> Dict[str, Any]:
+                   business_type: str = "auto", temperature: float = 0.7,
+                   ad_variation_seed: int = 0) -> Dict[str, Any]:
         """Genera anuncios basados en palabras clave"""
         pass
+    
+    def generate_multiple_ads(self, keywords: List[str], num_ads: int = 3,
+                            num_headlines: int = 15, num_descriptions: int = 4,
+                            tone: str = "profesional", business_type: str = "auto",
+                            temperature: float = 0.7) -> List[Dict[str, Any]]:
+        """
+        Genera múltiples anuncios con variación garantizada
+        
+        Args:
+            keywords: Lista de keywords para generar anuncios
+            num_ads: Cantidad de anuncios a generar (default: 3)
+            num_headlines: Títulos por anuncio (default: 15)
+            num_descriptions: Descripciones por anuncio (default: 4)
+            tone: Tono del anuncio (default: "profesional")
+            business_type: Tipo de negocio (default: "auto")
+            temperature: Creatividad de la IA (default: 0.7)
+        
+        Returns:
+            Lista de diccionarios con anuncios generados
+        """
+        ads = []
+        
+        for ad_index in range(num_ads):
+            logger.info(f"🔄 Generando anuncio {ad_index + 1}/{num_ads}...")
+            
+            try:
+                # Generar anuncio con seed de variación
+                ad = self.generate_ad(
+                    keywords=keywords,
+                    num_headlines=num_headlines,
+                    num_descriptions=num_descriptions,
+                    tone=tone,
+                    business_type=business_type,
+                    temperature=temperature,
+                    ad_variation_seed=ad_index
+                )
+                
+                # Validar que el anuncio tenga contenido
+                if ad and ad.get('headlines') and ad.get('descriptions'):
+                    ad['ad_number'] = ad_index + 1
+                    ad['total_ads'] = num_ads
+                    ads.append(ad)
+                    logger.info(f"✅ Anuncio {ad_index + 1}/{num_ads} generado: {len(ad['headlines'])} títulos, {len(ad['descriptions'])} descripciones")
+                else:
+                    logger.warning(f"⚠️ Anuncio {ad_index + 1} vacío o incompleto, saltando...")
+                    
+            except Exception as e:
+                logger.error(f"❌ Error generando anuncio {ad_index + 1}/{num_ads}: {e}")
+                continue
+        
+        if not ads:
+            logger.error("❌ No se pudo generar ningún anuncio válido")
+            return []
+        
+        # Validar que los anuncios sean diferentes
+        if len(ads) > 1:
+            self._validate_ads_are_different(ads)
+        
+        logger.info(f"✅ Total generado: {len(ads)}/{num_ads} anuncios exitosos")
+        return ads
+    
+    def _validate_ads_are_different(self, ads: List[Dict[str, Any]]) -> None:
+        """Valida que los anuncios generados sean suficientemente diferentes"""
+        for i in range(len(ads) - 1):
+            for j in range(i + 1, len(ads)):
+                ad1_headlines = set(ads[i].get('headlines', []))
+                ad2_headlines = set(ads[j].get('headlines', []))
+                
+                # Calcular similitud
+                if ad1_headlines and ad2_headlines:
+                    intersection = ad1_headlines & ad2_headlines
+                    similarity = len(intersection) / max(len(ad1_headlines), len(ad2_headlines))
+                    
+                    if similarity > 0.3:  # Más del 30% de similitud
+                        logger.warning(f"⚠️ Anuncios {i+1} y {j+1} tienen {similarity*100:.1f}% de similitud")
+                        logger.warning(f"   Títulos duplicados: {list(intersection)[:3]}")
+                    else:
+                        logger.info(f"✅ Anuncios {i+1} y {j+1} son suficientemente diferentes ({similarity*100:.1f}% similitud)")
 
 
 class OpenAIProvider(AIProvider):
@@ -72,8 +152,9 @@ class OpenAIProvider(AIProvider):
     
     def generate_ad(self, keywords: List[str], num_headlines: int = 15, 
                    num_descriptions: int = 4, tone: str = "profesional",
-                   business_type: str = "auto") -> Dict[str, Any]:
-        """Genera anuncios usando OpenAI GPT"""
+                   business_type: str = "auto", temperature: float = 0.7,
+                   ad_variation_seed: int = 0) -> Dict[str, Any]:
+        """Genera anuncios usando OpenAI GPT con soporte de variación"""
         try:
             # Validación de entrada
             if not keywords or len(keywords) == 0:
@@ -82,23 +163,23 @@ class OpenAIProvider(AIProvider):
             if not self.api_key:
                 raise ValueError("API key de OpenAI no configurada")
             
-            # ✅ USAR PROMPT ESPECIALIZADO
+            # ✅ USAR PROMPT ESPECIALIZADO CON SEED DE VARIACIÓN
             prompt = AdPromptTemplates.get_prompt_for_keywords(
                 keywords=keywords,
                 num_headlines=num_headlines,
                 num_descriptions=num_descriptions,
                 tone=tone,
-                business_type=business_type
+                business_type=business_type,
+                temperature=temperature,
+                ad_variation_seed=ad_variation_seed
             )
             
-            logger.info(f"🤖 Generando anuncio con OpenAI {self.model}...")
-            logger.info(f"📋 Keywords: {', '.join(keywords)}")
-            logger.info(f"🏢 Business type: {business_type}")
-            logger.info(f"🎯 Tone: {tone}")
-            logger.info(f"📊 Solicitados: {num_headlines} títulos, {num_descriptions} descripciones")
+            logger.info(f"🤖 OpenAI - Anuncio #{ad_variation_seed + 1} - {self.model}")
+            logger.info(f"📋 Keywords: {', '.join(keywords[:5])}{'...' if len(keywords) > 5 else ''}")
+            logger.info(f"🎨 Temperature: {temperature} | Seed: {ad_variation_seed}")
             
-            # Verificar conexión antes de generar
-            if not self.test_connection():
+            # Verificar conexión solo en el primer anuncio
+            if ad_variation_seed == 0 and not self.test_connection():
                 raise ConnectionError("No se pudo conectar con OpenAI. Verifica tu API key.")
             
             response = self.client.chat.completions.create(
@@ -106,15 +187,15 @@ class OpenAIProvider(AIProvider):
                 messages=[
                     {
                         "role": "system", 
-                        "content": "Eres un experto copywriter de Google Ads especializado en crear anuncios que convierten. SIEMPRE respetas los límites de caracteres y políticas de Google. Respondes en JSON válido."
+                        "content": "Eres un experto copywriter de Google Ads. SIEMPRE generas contenido ÚNICO y DIFERENTE. Respetas límites de caracteres. Respondes en JSON válido."
                     },
                     {
                         "role": "user", 
                         "content": prompt
                     }
                 ],
-                temperature=0.7,
-                max_tokens=3000,  # ✅ Aumentado para prompt más largo
+                temperature=temperature,  # ⚠️ CRÍTICO: Usar temperature del parámetro
+                max_tokens=3000,
                 response_format={"type": "json_object"}
             )
             
@@ -143,11 +224,10 @@ class OpenAIProvider(AIProvider):
             for h in result["headlines"]:
                 h = h.strip()
                 if len(h) > 30:
-                    logger.warning(f"⚠️ Título excede 30 chars ({len(h)}): '{h}' - Truncando...")
-                    # Truncar en el último espacio antes de 30 caracteres
+                    logger.warning(f"⚠️ Título excede 30 chars ({len(h)}): '{h[:40]}...' - Truncando")
                     h = h[:30].rsplit(' ', 1)[0] if ' ' in h[:30] else h[:30]
                 
-                if len(h) >= 10:  # Solo agregar si tiene al menos 10 caracteres
+                if 10 <= len(h) <= 30:
                     validated_headlines.append(h)
             
             # Validar y truncar descripciones
@@ -155,98 +235,41 @@ class OpenAIProvider(AIProvider):
             for d in result["descriptions"]:
                 d = d.strip()
                 if len(d) > 90:
-                    logger.warning(f"⚠️ Descripción excede 90 chars ({len(d)}): '{d[:50]}...' - Truncando...")
-                    # Truncar en el último espacio antes de 90 caracteres
+                    logger.warning(f"⚠️ Descripción excede 90 chars ({len(d)}): '{d[:50]}...' - Truncando")
                     d = d[:90].rsplit(' ', 1)[0] if ' ' in d[:90] else d[:90]
                 
-                if len(d) >= 30:  # Solo agregar si tiene al menos 30 caracteres
+                if 30 <= len(d) <= 90:
                     validated_descriptions.append(d)
             
-            # Verificar que tenemos suficientes
+            # Verificar suficientes elementos
             if len(validated_headlines) < 3:
-                raise ValueError(f"Solo se generaron {len(validated_headlines)} títulos válidos (mínimo 3)")
+                raise ValueError(f"Solo {len(validated_headlines)} títulos válidos (mínimo 3)")
             
             if len(validated_descriptions) < 2:
-                raise ValueError(f"Solo se generaron {len(validated_descriptions)} descripciones válidas (mínimo 2)")
+                raise ValueError(f"Solo {len(validated_descriptions)} descripciones válidas (mínimo 2)")
             
             # Agregar metadatos
             final_result = {
                 "headlines": validated_headlines,
                 "descriptions": validated_descriptions,
                 "provider": "OpenAI",
-                "model": self.model
+                "model": self.model,
+                "variation_seed": ad_variation_seed
             }
             
-            logger.info(f"✅ Anuncio generado y validado: {len(validated_headlines)} títulos, {len(validated_descriptions)} descripciones")
-            
-            # Log de verificación final
-            max_headline = max(len(h) for h in validated_headlines) if validated_headlines else 0
-            max_description = max(len(d) for d in validated_descriptions) if validated_descriptions else 0
-            logger.info(f"📏 Longitud máxima - Títulos: {max_headline}/30, Descripciones: {max_description}/90")
-            
-            # ✅ AL FINAL, ANTES DEL RETURN
-            logger.info(f"✅ OpenAI - Retornando resultado")
-            logger.info(f"   - Headlines: {len(final_result.get('headlines', []))}")
-            logger.info(f"   - Descriptions: {len(final_result.get('descriptions', []))}")
+            logger.info(f"✅ Anuncio #{ad_variation_seed + 1} OK: {len(validated_headlines)} títulos, {len(validated_descriptions)} descripciones")
             
             return final_result
             
-        except json.JSONDecodeError as e:
-            logger.error(f"❌ Error parseando JSON de OpenAI: {e}")
-            logger.error(f"📄 Contenido recibido: {content[:200] if 'content' in locals() else 'No disponible'}...")
-            return {
-                "headlines": [],
-                "descriptions": [],
-                "error": f"Error parseando respuesta JSON: {str(e)}",
-                "provider": "OpenAI",
-                "model": self.model,
-                "debug_info": {
-                    "raw_content": content[:500] if 'content' in locals() else None,
-                    "error_type": "json_decode_error"
-                }
-            }
-            
-        except ConnectionError as e:
-            logger.error(f"❌ Error de conexión con OpenAI: {e}")
-            return {
-                "headlines": [],
-                "descriptions": [],
-                "error": f"Error de conexión: {str(e)}",
-                "provider": "OpenAI",
-                "model": self.model,
-                "debug_info": {
-                    "error_type": "connection_error",
-                    "suggestion": "Verifica tu API key y conexión a internet"
-                }
-            }
-            
-        except ValueError as e:
-            logger.error(f"❌ Error de validación en OpenAI: {e}")
-            return {
-                "headlines": [],
-                "descriptions": [],
-                "error": f"Error de validación: {str(e)}",
-                "provider": "OpenAI",
-                "model": self.model,
-                "debug_info": {
-                    "error_type": "validation_error",
-                    "keywords": keywords,
-                    "business_type": business_type
-                }
-            }
-            
         except Exception as e:
-            logger.error(f"❌ Error inesperado generando anuncio con OpenAI: {e}", exc_info=True)
+            logger.error(f"❌ Error generando anuncio #{ad_variation_seed + 1} con OpenAI: {e}")
             return {
                 "headlines": [],
                 "descriptions": [],
-                "error": f"Error inesperado: {str(e)}",
+                "error": str(e),
                 "provider": "OpenAI",
                 "model": self.model,
-                "debug_info": {
-                    "error_type": "unexpected_error",
-                    "full_error": str(e)
-                }
+                "variation_seed": ad_variation_seed
             }
 
 
@@ -263,7 +286,7 @@ class GeminiProvider(AIProvider):
             logger.info(f"✅ Gemini client inicializado con modelo {model}")
         except ImportError:
             logger.error("❌ google-generativeai no está instalado. Ejecuta: pip install google-generativeai")
-            raise ImportError("Paquete 'google-generativeai' no encontrado. Instala con: pip install google-generativeai")
+            raise ImportError("Paquete 'google-generativeai' no encontrado")
         except Exception as e:
             logger.error(f"❌ Error inicializando Gemini: {e}")
             raise
@@ -286,8 +309,9 @@ class GeminiProvider(AIProvider):
     
     def generate_ad(self, keywords: List[str], num_headlines: int = 15, 
                    num_descriptions: int = 4, tone: str = "profesional",
-                   business_type: str = "auto") -> Dict[str, Any]:
-        """Genera anuncios usando Google Gemini con validación estricta de longitud"""
+                   business_type: str = "auto", temperature: float = 0.7,
+                   ad_variation_seed: int = 0) -> Dict[str, Any]:
+        """Genera anuncios usando Google Gemini con soporte de variación"""
         try:
             # Validación de entrada
             if not keywords or len(keywords) == 0:
@@ -296,23 +320,23 @@ class GeminiProvider(AIProvider):
             if not self.api_key:
                 raise ValueError("API key de Gemini no configurada")
             
-            # ✅ USAR PROMPT ESPECIALIZADO
+            # ✅ USAR PROMPT ESPECIALIZADO CON SEED DE VARIACIÓN
             prompt = AdPromptTemplates.get_prompt_for_keywords(
                 keywords=keywords,
                 num_headlines=num_headlines,
                 num_descriptions=num_descriptions,
                 tone=tone,
-                business_type=business_type
+                business_type=business_type,
+                temperature=temperature,
+                ad_variation_seed=ad_variation_seed
             )
             
-            logger.info(f"🤖 Generando anuncio con Gemini {self.model}...")
-            logger.info(f"📋 Keywords: {', '.join(keywords)}")
-            logger.info(f"🏢 Business type: {business_type}")
-            logger.info(f"🎯 Tone: {tone}")
-            logger.info(f"📊 Solicitados: {num_headlines} títulos, {num_descriptions} descripciones")
+            logger.info(f"🤖 Gemini - Anuncio #{ad_variation_seed + 1} - {self.model}")
+            logger.info(f"📋 Keywords: {', '.join(keywords[:5])}{'...' if len(keywords) > 5 else ''}")
+            logger.info(f"🎨 Temperature: {temperature} | Seed: {ad_variation_seed}")
             
-            # Verificar conexión antes de generar
-            if not self.test_connection():
+            # Verificar conexión solo en el primer anuncio
+            if ad_variation_seed == 0 and not self.test_connection():
                 raise ConnectionError("No se pudo conectar con Gemini. Verifica tu API key.")
 
             response = self.client.generate_content(prompt)
@@ -323,7 +347,7 @@ class GeminiProvider(AIProvider):
             
             content = response.text.strip()
             
-            # Limpiar markdown si existe
+            # Limpiar markdown
             if content.startswith("```json"):
                 content = content.replace("```json", "").replace("```", "").strip()
             elif content.startswith("```"):
@@ -336,136 +360,54 @@ class GeminiProvider(AIProvider):
             if not isinstance(result, dict) or "headlines" not in result or "descriptions" not in result:
                 raise ValueError("Respuesta no tiene el formato JSON esperado")
             
-            if not isinstance(result["headlines"], list) or not isinstance(result["descriptions"], list):
-                raise ValueError("Headlines y descriptions deben ser listas")
-            
-            if len(result["headlines"]) == 0 or len(result["descriptions"]) == 0:
-                raise ValueError("Gemini retornó listas vacías")
-            
-            # VALIDACIÓN Y TRUNCADO FORZADO - IGUAL QUE OPENAI
+            # VALIDACIÓN Y TRUNCADO
             validated_headlines = []
-            validated_descriptions = []
-            
-            # Procesar títulos
             for headline in result["headlines"]:
                 if isinstance(headline, str):
-                    # Truncar si excede 30 caracteres
+                    headline = headline.strip()
                     if len(headline) > 30:
-                        truncated = headline[:30].strip()
-                        logger.warning(f"🔧 Título truncado: '{headline}' -> '{truncated}' ({len(headline)} -> {len(truncated)} chars)")
-                        headline = truncated
+                        headline = headline[:30].rsplit(' ', 1)[0] if ' ' in headline[:30] else headline[:30]
                     
-                    if len(headline) <= 30 and len(headline) > 0:
+                    if 10 <= len(headline) <= 30:
                         validated_headlines.append(headline)
-                    else:
-                        logger.warning(f"⚠️ Título descartado por longitud: '{headline}' ({len(headline)} chars)")
             
-            # Procesar descripciones
+            validated_descriptions = []
             for description in result["descriptions"]:
                 if isinstance(description, str):
-                    # Truncar si excede 90 caracteres
+                    description = description.strip()
                     if len(description) > 90:
-                        truncated = description[:90].strip()
-                        logger.warning(f"🔧 Descripción truncada: '{description}' -> '{truncated}' ({len(description)} -> {len(truncated)} chars)")
-                        description = truncated
+                        description = description[:90].rsplit(' ', 1)[0] if ' ' in description[:90] else description[:90]
                     
-                    if len(description) <= 90 and len(description) > 0:
+                    if 30 <= len(description) <= 90:
                         validated_descriptions.append(description)
-                    else:
-                        logger.warning(f"⚠️ Descripción descartada por longitud: '{description}' ({len(description)} chars)")
             
-            # Verificar que tenemos suficientes elementos válidos
+            # Verificar suficientes elementos
             if len(validated_headlines) < 3:
-                logger.error(f"❌ Solo {len(validated_headlines)} títulos válidos (mínimo 3)")
-                return {
-                    "headlines": [],
-                    "descriptions": [],
-                    "error": f"Gemini generó solo {len(validated_headlines)} títulos válidos (mínimo 3)",
-                    "provider": "Gemini",
-                    "model": self.model
-                }
+                raise ValueError(f"Solo {len(validated_headlines)} títulos válidos (mínimo 3)")
             
             if len(validated_descriptions) < 2:
-                logger.error(f"❌ Solo {len(validated_descriptions)} descripciones válidas (mínimo 2)")
-                return {
-                    "headlines": [],
-                    "descriptions": [],
-                    "error": f"Gemini generó solo {len(validated_descriptions)} descripciones válidas (mínimo 2)",
-                    "provider": "Gemini",
-                    "model": self.model
-                }
+                raise ValueError(f"Solo {len(validated_descriptions)} descripciones válidas (mínimo 2)")
             
-            # Resultado final con elementos validados
+            # Resultado final
             final_result = {
                 "headlines": validated_headlines,
                 "descriptions": validated_descriptions,
                 "provider": "Gemini",
-                "model": self.model
+                "model": self.model,
+                "variation_seed": ad_variation_seed
             }
             
-            logger.info(f"✅ Anuncio generado y validado: {len(validated_headlines)} títulos, {len(validated_descriptions)} descripciones")
-            
-            # Log de verificación final
-            max_headline = max(len(h) for h in validated_headlines) if validated_headlines else 0
-            max_description = max(len(d) for d in validated_descriptions) if validated_descriptions else 0
-            logger.info(f"📏 Longitud máxima - Títulos: {max_headline}/30, Descripciones: {max_description}/90")
+            logger.info(f"✅ Anuncio #{ad_variation_seed + 1} OK: {len(validated_headlines)} títulos, {len(validated_descriptions)} descripciones")
             
             return final_result
             
-        except json.JSONDecodeError as e:
-            logger.error(f"❌ Error parseando JSON de Gemini: {e}")
-            logger.error(f"📄 Contenido recibido: {content[:200] if 'content' in locals() else 'No disponible'}...")
-            return {
-                "headlines": [],
-                "descriptions": [],
-                "error": f"Error parseando respuesta JSON: {str(e)}",
-                "provider": "Gemini",
-                "model": self.model,
-                "debug_info": {
-                    "raw_content": content[:500] if 'content' in locals() else None,
-                    "error_type": "json_decode_error"
-                }
-            }
-            
-        except ConnectionError as e:
-            logger.error(f"❌ Error de conexión con Gemini: {e}")
-            return {
-                "headlines": [],
-                "descriptions": [],
-                "error": f"Error de conexión: {str(e)}",
-                "provider": "Gemini",
-                "model": self.model,
-                "debug_info": {
-                    "error_type": "connection_error",
-                    "suggestion": "Verifica tu API key y conexión a internet"
-                }
-            }
-            
-        except ValueError as e:
-            logger.error(f"❌ Error de validación en Gemini: {e}")
-            return {
-                "headlines": [],
-                "descriptions": [],
-                "error": f"Error de validación: {str(e)}",
-                "provider": "Gemini",
-                "model": self.model,
-                "debug_info": {
-                    "error_type": "validation_error",
-                    "keywords": keywords,
-                    "business_type": business_type
-                }
-            }
-            
         except Exception as e:
-            logger.error(f"❌ Error inesperado generando anuncio con Gemini: {e}", exc_info=True)
+            logger.error(f"❌ Error generando anuncio #{ad_variation_seed + 1} con Gemini: {e}")
             return {
                 "headlines": [],
                 "descriptions": [],
-                "error": f"Error inesperado: {str(e)}",
+                "error": str(e),
                 "provider": "Gemini",
                 "model": self.model,
-                "debug_info": {
-                    "error_type": "unexpected_error",
-                    "full_error": str(e)
-                }
+                "variation_seed": ad_variation_seed
             }

@@ -1,0 +1,34 @@
+[server]
+# Desactivar watchdog para archivos (acelera en proyectos grandes)
+fileWatcherType = "none"
+
+# Puerto por defecto
+port = 8501
+
+# Desactivar CORS (solo desarrollo local)
+enableCORS = false
+
+# WebSocket compression
+enableWebsocketCompression = true
+
+# Tamaño máximo de mensaje
+maxMessageSize = 200
+
+[browser]
+# No abrir navegador automáticamente
+gatherUsageStats = false
+
+[runner]
+# Ejecutar script más rápido
+magicEnabled = true
+fastReruns = true
+
+[client]
+# Toolbar visible solo cuando se necesita
+toolbarMode = "minimal"
+
+# Mostrar spinner más corto
+showErrorDetails = true
+
+[theme]
+# Tema oscuro (
