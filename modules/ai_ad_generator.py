@@ -230,10 +230,12 @@ class AIAdGenerator:
         validate: bool = True,
         business_type: str = "esoteric",
         save_to_csv: bool = True,
-        temperature: float = 0.7  # ✅ NUEVO
+        temperature: float = 0.7,  # ✅ NUEVO
+        use_magnetic: bool = False,  # ✅ FLAG MAGNÉTICO
+        use_location_insertion: bool = False  # ✅ INSERCIONES DE UBICACIÓN
     ) -> Dict[str, Any]:
         """
-        ✨ Genera múltiples anuncios en batch con soporte de temperatura
+        ✨ Genera múltiples anuncios en batch con soporte de temperatura, modo magnético e inserciones de ubicación
         """
         batch_id = f"BATCH_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
         
@@ -241,6 +243,8 @@ class AIAdGenerator:
         logger.info(f"🎨 GENERACIÓN MASIVA - BATCH: {batch_id}")
         logger.info(f"📊 Cantidad de anuncios: {num_ads}")
         logger.info(f"🎨 Creatividad (temperature): {temperature}")
+        logger.info(f"🔴 Modo magnético: {use_magnetic}")
+        logger.info(f"📍 Inserciones de ubicación: {use_location_insertion}")
         logger.info("="*60)
         
         generated_ads = self.generate_ad(
@@ -252,7 +256,9 @@ class AIAdGenerator:
             user=user,
             validate=validate,
             business_type=business_type,
-            temperature=temperature  # ✅ Pasar temperatura
+            temperature=temperature,  # ✅ Pasar temperatura
+            use_magnetic=use_magnetic,  # ✅ Pasar modo magnético
+            use_location_insertion=use_location_insertion  # ✅ Pasar inserciones de ubicación
         )
         
         for idx, ad in enumerate(generated_ads):
@@ -451,11 +457,13 @@ RESPONDE SOLO CON LA NUEVA DESCRIPCIÓN."""
         user: str = "saltbalente",
         validate: bool = True,
         business_type: str = "esoteric",
-        temperature: float = 0.7  # ✅ NUEVO: Parámetro de creatividad
+        temperature: float = 0.7,  # ✅ NUEVO: Parámetro de creatividad
+        use_magnetic: bool = False,  # ✅ FLAG MAGNÉTICO
+        use_location_insertion: bool = False  # ✅ INSERCIONES DE UBICACIÓN
     ) -> List[Dict[str, Any]]:
         """
         Genera múltiples anuncios con variación garantizada
-        Versión 3.0 - Usa generate_multiple_ads() del provider
+        Versión 3.0 - Usa generate_multiple_ads() del provider con soporte para inserciones de ubicación
         """
         
         logger.info("="*60)
@@ -464,6 +472,8 @@ RESPONDE SOLO CON LA NUEVA DESCRIPCIÓN."""
         logger.info(f"🔢 Cantidad solicitada: {num_ads}")
         logger.info(f"🎨 Temperatura/Creatividad: {temperature}")
         logger.info(f"🏢 Business type: {business_type}")
+        logger.info(f"🔴 Modo magnético: {use_magnetic}")
+        logger.info(f"📍 Inserciones de ubicación: {use_location_insertion}")
         logger.info("="*60)
         
         if not self.provider:
@@ -481,7 +491,9 @@ RESPONDE SOLO CON LA NUEVA DESCRIPCIÓN."""
                 num_descriptions=num_descriptions,
                 tone=tone,
                 business_type=business_type,
-                temperature=temperature  # ✅ Pasar temperatura
+                temperature=temperature,  # ✅ Pasar temperatura
+                use_magnetic=use_magnetic,  # ✅ Pasar modo magnético
+                use_location_insertion=use_location_insertion  # ✅ Pasar inserciones de ubicación
             )
             
             logger.info(f"📥 Provider retornó {len(generated_ads_raw)} anuncios")

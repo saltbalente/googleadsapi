@@ -322,6 +322,26 @@ RESPONDE SOLO ESTO (sin ``` ni json):
 □ Cero verbos prohibidos
 □ JSON válido sin markdown
 
+════════════════════════════════════════════════════════════════
+🚨 ADVERTENCIA CRÍTICA - LEER ANTES DE GENERAR
+════════════════════════════════════════════════════════════════
+
+❌ **PROHIBIDO ABSOLUTAMENTE:**
+1. Copiar los ejemplos del prompt textualmente
+2. Usar las mismas descripciones que los ejemplos
+3. Repetir descripciones entre anuncios
+
+✅ **OBLIGATORIO:**
+1. ADAPTAR los ejemplos con TUS keywords reales
+2. Cada descripción DEBE ser ÚNICA y DIFERENTE
+3. Ninguna descripción puede repetirse
+
+**EJEMPLO DE LO QUE NO DEBES HACER:**
+❌ "¿Perdiste A Tu amor? Recupera Con Rituales. Consulta 24/7" (copiado del ejemplo)
+
+**EJEMPLO DE LO QUE SÍ DEBES HACER:**
+✅ "¿Tu Pareja Te Dejó? Amarres Efectivos De Retorno. Whatsapp 24h" (adaptado con keywords reales)
+
 🚀 GENERA AHORA (SOLO EL JSON, SIN EXPLICACIONES)"""
 
     @staticmethod

@@ -29,16 +29,18 @@ class AIProvider(ABC):
     def generate_ad(self, keywords: List[str], num_headlines: int = 15, 
                    num_descriptions: int = 4, tone: str = "profesional",
                    business_type: str = "auto", temperature: float = 0.7,
-                   ad_variation_seed: int = 0) -> Dict[str, Any]:
-        """Genera anuncios basados en palabras clave"""
+                   ad_variation_seed: int = 0, use_magnetic: bool = False,
+                   use_location_insertion: bool = False) -> Dict[str, Any]:
+        """Genera anuncios basados en palabras clave con soporte para modo magnético e inserciones de ubicación"""
         pass
     
     def generate_multiple_ads(self, keywords: List[str], num_ads: int = 3,
                             num_headlines: int = 15, num_descriptions: int = 4,
                             tone: str = "profesional", business_type: str = "auto",
-                            temperature: float = 0.7) -> List[Dict[str, Any]]:
+                            temperature: float = 0.7, use_magnetic: bool = False,
+                            use_location_insertion: bool = False) -> List[Dict[str, Any]]:
         """
-        Genera múltiples anuncios con variación garantizada
+        Genera múltiples anuncios con variación garantizada, soporte magnético e inserciones de ubicación
         
         Args:
             keywords: Lista de keywords para generar anuncios
@@ -66,7 +68,9 @@ class AIProvider(ABC):
                     tone=tone,
                     business_type=business_type,
                     temperature=temperature,
-                    ad_variation_seed=ad_index
+                    ad_variation_seed=ad_index,
+                    use_magnetic=use_magnetic,  # ✅ Pasar modo magnético
+                    use_location_insertion=use_location_insertion  # ✅ Pasar inserciones de ubicación
                 )
                 
                 # Validar que el anuncio tenga contenido
@@ -153,8 +157,9 @@ class OpenAIProvider(AIProvider):
     def generate_ad(self, keywords: List[str], num_headlines: int = 15, 
                    num_descriptions: int = 4, tone: str = "profesional",
                    business_type: str = "auto", temperature: float = 0.7,
-                   ad_variation_seed: int = 0) -> Dict[str, Any]:
-        """Genera anuncios usando OpenAI GPT con soporte de variación"""
+                   ad_variation_seed: int = 0, use_magnetic: bool = False,
+                   use_location_insertion: bool = False) -> Dict[str, Any]:
+        """Genera anuncios usando OpenAI GPT con soporte de variación, modo magnético e inserciones de ubicación"""
         try:
             # Validación de entrada
             if not keywords or len(keywords) == 0:
@@ -171,12 +176,14 @@ class OpenAIProvider(AIProvider):
                 tone=tone,
                 business_type=business_type,
                 temperature=temperature,
-                ad_variation_seed=ad_variation_seed
+                ad_variation_seed=ad_variation_seed,
+                use_location_insertion=use_location_insertion  # ✅ Pasar inserciones de ubicación
             )
             
             logger.info(f"🤖 OpenAI - Anuncio #{ad_variation_seed + 1} - {self.model}")
             logger.info(f"📋 Keywords: {', '.join(keywords[:5])}{'...' if len(keywords) > 5 else ''}")
             logger.info(f"🎨 Temperature: {temperature} | Seed: {ad_variation_seed}")
+            logger.info(f"📍 Inserciones de ubicación: {use_location_insertion}")
             
             # Verificar conexión solo en el primer anuncio
             if ad_variation_seed == 0 and not self.test_connection():
@@ -187,7 +194,7 @@ class OpenAIProvider(AIProvider):
                 messages=[
                     {
                         "role": "system", 
-                        "content": "Eres un experto copywriter de Google Ads. SIEMPRE generas contenido ÚNICO y DIFERENTE. Respetas límites de caracteres. Respondes en JSON válido."
+                        "content": "Eres un experto copywriter de Google Ads. REGLAS CRÍTICAS: 1) NUNCA copies los ejemplos del prompt, son SOLO PARA REFERENCIA. 2) Genera contenido ÚNICO y DIFERENTE en CADA anuncio. 3) Las descripciones DEBEN ser COMPLETAMENTE DIFERENTES entre sí. 4) Respeta límites de caracteres. 5) Responde SOLO en JSON válido sin markdown."
                     },
                     {
                         "role": "user", 
@@ -310,8 +317,9 @@ class GeminiProvider(AIProvider):
     def generate_ad(self, keywords: List[str], num_headlines: int = 15, 
                    num_descriptions: int = 4, tone: str = "profesional",
                    business_type: str = "auto", temperature: float = 0.7,
-                   ad_variation_seed: int = 0) -> Dict[str, Any]:
-        """Genera anuncios usando Google Gemini con soporte de variación"""
+                   ad_variation_seed: int = 0, use_magnetic: bool = False,
+                   use_location_insertion: bool = False) -> Dict[str, Any]:
+        """Genera anuncios usando Google Gemini con soporte de variación, modo magnético e inserciones de ubicación"""
         try:
             # Validación de entrada
             if not keywords or len(keywords) == 0:
@@ -328,12 +336,14 @@ class GeminiProvider(AIProvider):
                 tone=tone,
                 business_type=business_type,
                 temperature=temperature,
-                ad_variation_seed=ad_variation_seed
+                ad_variation_seed=ad_variation_seed,
+                use_location_insertion=use_location_insertion  # ✅ Pasar inserciones de ubicación
             )
             
             logger.info(f"🤖 Gemini - Anuncio #{ad_variation_seed + 1} - {self.model}")
             logger.info(f"📋 Keywords: {', '.join(keywords[:5])}{'...' if len(keywords) > 5 else ''}")
             logger.info(f"🎨 Temperature: {temperature} | Seed: {ad_variation_seed}")
+            logger.info(f"📍 Inserciones de ubicación: {use_location_insertion}")
             
             # Verificar conexión solo en el primer anuncio
             if ad_variation_seed == 0 and not self.test_connection():

@@ -239,12 +239,14 @@ class IntelligentAutopilot:
                 ai_model = generation_config.get('ai_model', 'gpt-4o')
                 creativity = generation_config.get('ai_creativity', 0.7)
                 use_magnetic = generation_config.get('use_magnetic', False)
+                use_location_insertion = group_config.get('use_location_insertion', False)  # ✅ Desde config del grupo
                 ads_per_group = generation_config.get('ads_per_group', 8)
                 match_types = generation_config.get('match_types', ['Exacta', 'Frase'])
                 
                 logger.info(f"🤖 IA: {ai_provider}/{ai_model}")
                 logger.info(f"🎨 Creatividad: {creativity}")
                 logger.info(f"🔴 Modo Magnético: {'SÍ' if use_magnetic else 'NO'}")
+                logger.info(f"📍 Inserciones de Ubicación: {'SÍ' if use_location_insertion else 'NO'}")
                 logger.info(f"📝 Anuncios a generar: {ads_per_group}")
                 
                 # ✅ GENERAR ANUNCIOS CON IA
@@ -259,7 +261,8 @@ class IntelligentAutopilot:
                     ai_model=ai_model,
                     tone='profesional',
                     creativity=creativity,
-                    use_magnetic=use_magnetic
+                    use_magnetic=use_magnetic,
+                    use_location_insertion=use_location_insertion  # ✅ PASAR INSERCIONES DE UBICACIÓN
                 )
                 
                 if not ads_result or len(ads_result) == 0:
@@ -502,6 +505,9 @@ class IntelligentAutopilot:
                     if progress_callback:
                         progress_callback(f"🎨 Generando {ads_per_group} anuncios con IA...", progress + 5)
                     
+                    # ✅ Obtener configuración de inserciones de ubicación
+                    use_location_insertion = generation_config.get('use_location_insertion', False)
+                    
                     ads = self._generate_real_ads_with_ai(
                         keywords=unique_keywords,
                         business_description=business_description,
@@ -511,7 +517,8 @@ class IntelligentAutopilot:
                         ai_model=ai_model,
                         tone=tone,
                         creativity=creativity,
-                        use_magnetic=use_magnetic  # ✅ PASAR PARÁMETRO MAGNÉTICO
+                        use_magnetic=use_magnetic,  # ✅ PASAR PARÁMETRO MAGNÉTICO
+                        use_location_insertion=use_location_insertion  # ✅ PASAR INSERCIONES DE UBICACIÓN
                     )
                     
                     logger.info(f"✅ {len(ads)} anuncios generados para grupo {idx+1}")
@@ -714,16 +721,18 @@ class IntelligentAutopilot:
         ai_model: str,
         tone: str,
         creativity: float,
-        use_magnetic: bool = False  # ✅ PARÁMETRO MAGNÉTICO
+        use_magnetic: bool = False,  # ✅ PARÁMETRO MAGNÉTICO
+        use_location_insertion: bool = False  # ✅ PARÁMETRO INSERCIONES DE UBICACIÓN
     ) -> List[Dict[str, Any]]:
         """
-        Genera anuncios REALES usando IA con soporte magnético
+        Genera anuncios REALES usando IA con soporte magnético e inserciones de ubicación
         """
         try:
             logger.info(f"🤖 Generando {num_ads} anuncios con {ai_provider}/{ai_model}")
             logger.info(f"🔑 Keywords: {keywords}")
             logger.info(f"🎨 Tono: {tone}, Creatividad: {creativity}")
             logger.info(f"🔴 Modo magnético: {use_magnetic}")
+            logger.info(f"📍 Inserciones de ubicación: {use_location_insertion}")
             
             # ✅ CONFIGURAR IA
             from utils.user_storage import get_user_storage
@@ -782,7 +791,8 @@ class IntelligentAutopilot:
                     validate=True,
                     business_type='esoteric',  # ✅ IMPORTANTE para activar modo magnético
                     save_to_csv=False,
-                    use_magnetic=True  # ✅ FLAG MAGNÉTICO
+                    use_magnetic=True,  # ✅ FLAG MAGNÉTICO
+                    use_location_insertion=use_location_insertion  # ✅ INSERCIONES DE UBICACIÓN
                 )
                 
                 logger.info(f"📥 Resultado magnético: {result}")
@@ -799,7 +809,8 @@ class IntelligentAutopilot:
                     tone=tone,
                     validate=True,
                     business_type=business_type,
-                    save_to_csv=False
+                    save_to_csv=False,
+                    use_location_insertion=use_location_insertion  # ✅ INSERCIONES DE UBICACIÓN
                 )
                 
                 logger.info(f"📥 Resultado normal: {result}")
