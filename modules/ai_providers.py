@@ -29,18 +29,16 @@ class AIProvider(ABC):
     def generate_ad(self, keywords: List[str], num_headlines: int = 15, 
                    num_descriptions: int = 4, tone: str = "profesional",
                    business_type: str = "auto", temperature: float = 0.7,
-                   ad_variation_seed: int = 0, use_magnetic: bool = False,
-                   use_location_insertion: bool = False) -> Dict[str, Any]:
-        """Genera anuncios basados en palabras clave con soporte para modo magnético e inserciones de ubicación"""
+                   ad_variation_seed: int = 0) -> Dict[str, Any]:
+        """Genera anuncios basados en palabras clave"""
         pass
     
     def generate_multiple_ads(self, keywords: List[str], num_ads: int = 3,
                             num_headlines: int = 15, num_descriptions: int = 4,
                             tone: str = "profesional", business_type: str = "auto",
-                            temperature: float = 0.7, use_magnetic: bool = False,
-                            use_location_insertion: bool = False) -> List[Dict[str, Any]]:
+                            temperature: float = 0.7) -> List[Dict[str, Any]]:
         """
-        Genera múltiples anuncios con variación garantizada, soporte magnético e inserciones de ubicación
+        Genera múltiples anuncios con variación garantizada
         
         Args:
             keywords: Lista de keywords para generar anuncios
@@ -68,9 +66,7 @@ class AIProvider(ABC):
                     tone=tone,
                     business_type=business_type,
                     temperature=temperature,
-                    ad_variation_seed=ad_index,
-                    use_magnetic=use_magnetic,  # ✅ Pasar modo magnético
-                    use_location_insertion=use_location_insertion  # ✅ Pasar inserciones de ubicación
+                    ad_variation_seed=ad_index
                 )
                 
                 # Validar que el anuncio tenga contenido
@@ -157,9 +153,8 @@ class OpenAIProvider(AIProvider):
     def generate_ad(self, keywords: List[str], num_headlines: int = 15, 
                    num_descriptions: int = 4, tone: str = "profesional",
                    business_type: str = "auto", temperature: float = 0.7,
-                   ad_variation_seed: int = 0, use_magnetic: bool = False,
-                   use_location_insertion: bool = False) -> Dict[str, Any]:
-        """Genera anuncios usando OpenAI GPT con soporte de variación, modo magnético e inserciones de ubicación"""
+                   ad_variation_seed: int = 0) -> Dict[str, Any]:
+        """Genera anuncios usando OpenAI GPT con soporte de variación"""
         try:
             # Validación de entrada
             if not keywords or len(keywords) == 0:
@@ -176,30 +171,42 @@ class OpenAIProvider(AIProvider):
                 tone=tone,
                 business_type=business_type,
                 temperature=temperature,
-                ad_variation_seed=ad_variation_seed,
-                use_location_insertion=use_location_insertion  # ✅ Pasar inserciones de ubicación
+                ad_variation_seed=ad_variation_seed
             )
             
             logger.info(f"🤖 OpenAI - Anuncio #{ad_variation_seed + 1} - {self.model}")
             logger.info(f"📋 Keywords: {', '.join(keywords[:5])}{'...' if len(keywords) > 5 else ''}")
             logger.info(f"🎨 Temperature: {temperature} | Seed: {ad_variation_seed}")
-            logger.info(f"📍 Inserciones de ubicación: {use_location_insertion}")
             
             # Verificar conexión solo en el primer anuncio
             if ad_variation_seed == 0 and not self.test_connection():
                 raise ConnectionError("No se pudo conectar con OpenAI. Verifica tu API key.")
             
+            # ✅ SYSTEM MESSAGE MEJORADO: Anti-copia de ejemplos
+            system_message = """Eres un experto copywriter de Google Ads especializado en crear contenido único y original.
+
+REGLAS CRÍTICAS Y NO NEGOCIABLES:
+1. ❌ NUNCA copies ejemplos literalmente del prompt
+2. ✅ SIEMPRE genera contenido 100% ÚNICO y DIFERENTE
+3. ✅ Cada descripción debe ser COMPLETAMENTE DISTINTA a las anteriores
+4. ✅ Cada título debe ser ÚNICO y NO REPETIR conceptos
+5. ✅ Usa sinónimos, estructuras diferentes y enfoques variados
+6. ✅ Respetas límites de caracteres estrictamente (Títulos: 10-30, Descripciones: 30-90)
+7. ✅ Respondes SOLO en JSON válido sin markdown
+
+⚠️ IMPORTANTE: Si ves ejemplos en el prompt (como "Ej: ..."), úsalos SOLO como inspiración conceptual.
+NUNCA copies el texto exacto. Genera versiones completamente diferentes adaptadas a las keywords específicas.
+
+VALIDACIÓN: Antes de responder, verifica que:
+- Ninguna descripción sea similar a otra (< 85% de similitud)
+- Ningún título sea similar a otro (< 85% de similitud)
+- Todo el contenido es original y no copia ejemplos"""
+
             response = self.client.chat.completions.create(
                 model=self.model,
                 messages=[
-                    {
-                        "role": "system", 
-                        "content": "Eres un experto copywriter de Google Ads. REGLAS CRÍTICAS: 1) NUNCA copies los ejemplos del prompt, son SOLO PARA REFERENCIA. 2) Genera contenido ÚNICO y DIFERENTE en CADA anuncio. 3) Las descripciones DEBEN ser COMPLETAMENTE DIFERENTES entre sí. 4) Respeta límites de caracteres. 5) Responde SOLO en JSON válido sin markdown."
-                    },
-                    {
-                        "role": "user", 
-                        "content": prompt
-                    }
+                    {"role": "system", "content": system_message},
+                    {"role": "user", "content": prompt}
                 ],
                 temperature=temperature,  # ⚠️ CRÍTICO: Usar temperature del parámetro
                 max_tokens=3000,
@@ -317,9 +324,8 @@ class GeminiProvider(AIProvider):
     def generate_ad(self, keywords: List[str], num_headlines: int = 15, 
                    num_descriptions: int = 4, tone: str = "profesional",
                    business_type: str = "auto", temperature: float = 0.7,
-                   ad_variation_seed: int = 0, use_magnetic: bool = False,
-                   use_location_insertion: bool = False) -> Dict[str, Any]:
-        """Genera anuncios usando Google Gemini con soporte de variación, modo magnético e inserciones de ubicación"""
+                   ad_variation_seed: int = 0) -> Dict[str, Any]:
+        """Genera anuncios usando Google Gemini con soporte de variación"""
         try:
             # Validación de entrada
             if not keywords or len(keywords) == 0:
@@ -336,20 +342,31 @@ class GeminiProvider(AIProvider):
                 tone=tone,
                 business_type=business_type,
                 temperature=temperature,
-                ad_variation_seed=ad_variation_seed,
-                use_location_insertion=use_location_insertion  # ✅ Pasar inserciones de ubicación
+                ad_variation_seed=ad_variation_seed
             )
             
             logger.info(f"🤖 Gemini - Anuncio #{ad_variation_seed + 1} - {self.model}")
             logger.info(f"📋 Keywords: {', '.join(keywords[:5])}{'...' if len(keywords) > 5 else ''}")
             logger.info(f"🎨 Temperature: {temperature} | Seed: {ad_variation_seed}")
-            logger.info(f"📍 Inserciones de ubicación: {use_location_insertion}")
             
             # Verificar conexión solo en el primer anuncio
             if ad_variation_seed == 0 and not self.test_connection():
                 raise ConnectionError("No se pudo conectar con Gemini. Verifica tu API key.")
+            
+            # ✅ AGREGAR INSTRUCCIONES ANTI-COPIA AL PROMPT
+            enhanced_prompt = f"""INSTRUCCIONES CRÍTICAS:
+- NUNCA copies ejemplos literalmente
+- SIEMPRE genera contenido 100% ÚNICO
+- Cada descripción debe ser COMPLETAMENTE DISTINTA
+- Usa sinónimos y estructuras variadas
+- Respeta límites: Títulos 10-30 chars, Descripciones 30-90 chars
+- Responde SOLO en JSON válido
 
-            response = self.client.generate_content(prompt)
+Los ejemplos en el prompt son SOLO inspiración. NO copies el texto exacto.
+
+{prompt}"""
+
+            response = self.client.generate_content(enhanced_prompt)
             
             # Validar respuesta de la API
             if not response or not response.text:

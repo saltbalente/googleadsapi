@@ -230,12 +230,10 @@ class AIAdGenerator:
         validate: bool = True,
         business_type: str = "esoteric",
         save_to_csv: bool = True,
-        temperature: float = 0.7,  # ✅ NUEVO
-        use_magnetic: bool = False,  # ✅ FLAG MAGNÉTICO
-        use_location_insertion: bool = False  # ✅ INSERCIONES DE UBICACIÓN
+        temperature: float = 0.7  # ✅ NUEVO
     ) -> Dict[str, Any]:
         """
-        ✨ Genera múltiples anuncios en batch con soporte de temperatura, modo magnético e inserciones de ubicación
+        ✨ Genera múltiples anuncios en batch con soporte de temperatura
         """
         batch_id = f"BATCH_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
         
@@ -243,8 +241,6 @@ class AIAdGenerator:
         logger.info(f"🎨 GENERACIÓN MASIVA - BATCH: {batch_id}")
         logger.info(f"📊 Cantidad de anuncios: {num_ads}")
         logger.info(f"🎨 Creatividad (temperature): {temperature}")
-        logger.info(f"🔴 Modo magnético: {use_magnetic}")
-        logger.info(f"📍 Inserciones de ubicación: {use_location_insertion}")
         logger.info("="*60)
         
         generated_ads = self.generate_ad(
@@ -256,9 +252,7 @@ class AIAdGenerator:
             user=user,
             validate=validate,
             business_type=business_type,
-            temperature=temperature,  # ✅ Pasar temperatura
-            use_magnetic=use_magnetic,  # ✅ Pasar modo magnético
-            use_location_insertion=use_location_insertion  # ✅ Pasar inserciones de ubicación
+            temperature=temperature  # ✅ Pasar temperatura
         )
         
         for idx, ad in enumerate(generated_ads):
@@ -447,6 +441,143 @@ RESPONDE SOLO CON LA NUEVA DESCRIPCIÓN."""
             logger.error(f"❌ Error regenerando description: {e}")
             return None
     
+    def generate_descriptions_only(
+        self,
+        keywords: List[str],
+        business_description: str,
+        num_descriptions: int = 4,
+        tone: str = "profesional",
+        temperature: float = 0.8,
+        exclude_descriptions: List[str] = []
+    ) -> List[str]:
+        """
+        Genera SOLO descripciones sin títulos (para regeneración rápida)
+        
+        Args:
+            keywords: Keywords del anuncio
+            business_description: Descripción del negocio
+            num_descriptions: Cantidad de descripciones a generar
+            tone: Tono deseado
+            temperature: Nivel de creatividad
+            exclude_descriptions: Descripciones a evitar
+        
+        Returns:
+            Lista de descripciones nuevas y únicas
+        """
+        if not self.provider:
+            logger.error("❌ No hay proveedor configurado")
+            return []
+        
+        try:
+            logger.info(f"🔄 Generando {num_descriptions} descripciones nuevas...")
+            
+            # Construir texto de exclusiones
+            excluded_text = ""
+            if exclude_descriptions:
+                excluded_text = f"\n\n⚠️ EVITA ESTAS DESCRIPCIONES (ya fueron usadas):\n" + "\n".join([f"- {desc[:50]}..." for desc in exclude_descriptions[:10]])
+            
+            prompt = f"""Genera {num_descriptions} DESCRIPCIONES ÚNICAS para Google Ads.
+
+KEYWORDS: {', '.join(keywords[:10])}
+NEGOCIO: {business_description}
+TONO: {tone}
+
+REQUISITOS ESTRICTOS:
+- Entre 60-90 caracteres cada una
+- Cada descripción debe ser TOTALMENTE DIFERENTE a las demás
+- Incluir CTA efectivo (Llama Ya, Consulta Gratis, etc.)
+- Tono {tone}
+- Capitalizar Cada Palabra
+- NO repetir estructuras ni conceptos{excluded_text}
+
+FORMATO: Responde SOLO en JSON:
+{{
+    "descriptions": ["descripción 1", "descripción 2", "descripción 3", "descripción 4"]
+}}"""
+
+            # Generar según el proveedor
+            if isinstance(self.provider, OpenAIProvider):
+                response = self.provider.client.chat.completions.create(
+                    model=self.provider.model,
+                    messages=[
+                        {"role": "system", "content": "Experto en Google Ads. Genera SOLO descripciones únicas y diferentes."},
+                        {"role": "user", "content": prompt}
+                    ],
+                    temperature=temperature,
+                    max_tokens=800,
+                    response_format={"type": "json_object"}
+                )
+                
+                content = response.choices[0].message.content.strip()
+            
+            elif isinstance(self.provider, GeminiProvider):
+                response = self.provider.client.generate_content(prompt)
+                content = response.text.strip()
+            
+            else:
+                logger.error("❌ Proveedor no soportado")
+                return []
+            
+            # Limpiar y parsear JSON
+            if content.startswith("```json"):
+                content = content.replace("```json", "").replace("```", "").strip()
+            elif content.startswith("```"):
+                content = content.replace("```", "").strip()
+            
+            result = json.loads(content)
+            descriptions = result.get("descriptions", [])
+            
+            # Validar y truncar
+            validated = []
+            for desc in descriptions:
+                desc = desc.strip()
+                
+                # Truncar si excede
+                if len(desc) > 90:
+                    logger.warning(f"⚠️ Descripción excede 90 chars ({len(desc)}), truncando...")
+                    desc = desc[:90].rsplit(' ', 1)[0] if ' ' in desc[:90] else desc[:90]
+                
+                # Validar rango
+                if 30 <= len(desc) <= 90:
+                    validated.append(desc)
+                else:
+                    logger.warning(f"⚠️ Descripción fuera de rango ({len(desc)} chars): {desc[:40]}...")
+            
+            # Validar similitud entre las generadas
+            from difflib import SequenceMatcher
+            
+            unique_descriptions = []
+            for desc in validated:
+                is_duplicate = False
+                
+                # Verificar contra las ya validadas
+                for existing_desc in unique_descriptions:
+                    similarity = SequenceMatcher(None, desc.lower(), existing_desc.lower()).ratio()
+                    if similarity >= 0.85:
+                        logger.warning(f"⚠️ Descripción similar rechazada: '{desc[:40]}...' (similitud: {similarity*100:.1f}%)")
+                        is_duplicate = True
+                        break
+                
+                # Verificar contra las excluidas
+                if not is_duplicate and exclude_descriptions:
+                    for excluded_desc in exclude_descriptions:
+                        similarity = SequenceMatcher(None, desc.lower(), excluded_desc.lower()).ratio()
+                        if similarity >= 0.85:
+                            logger.warning(f"⚠️ Descripción muy similar a una excluida: '{desc[:40]}...'")
+                            is_duplicate = True
+                            break
+                
+                if not is_duplicate:
+                    unique_descriptions.append(desc)
+            
+            logger.info(f"✅ {len(unique_descriptions)}/{num_descriptions} descripciones únicas generadas")
+            
+            return unique_descriptions
+            
+        except Exception as e:
+            logger.error(f"❌ Error generando descripciones: {e}")
+            return []
+    
     def generate_ad(
         self,
         keywords: List[str],
@@ -457,13 +588,11 @@ RESPONDE SOLO CON LA NUEVA DESCRIPCIÓN."""
         user: str = "saltbalente",
         validate: bool = True,
         business_type: str = "esoteric",
-        temperature: float = 0.7,  # ✅ NUEVO: Parámetro de creatividad
-        use_magnetic: bool = False,  # ✅ FLAG MAGNÉTICO
-        use_location_insertion: bool = False  # ✅ INSERCIONES DE UBICACIÓN
+        temperature: float = 0.7  # ✅ NUEVO: Parámetro de creatividad
     ) -> List[Dict[str, Any]]:
         """
         Genera múltiples anuncios con variación garantizada
-        Versión 3.0 - Usa generate_multiple_ads() del provider con soporte para inserciones de ubicación
+        Versión 3.0 - Usa generate_multiple_ads() del provider
         """
         
         logger.info("="*60)
@@ -472,8 +601,6 @@ RESPONDE SOLO CON LA NUEVA DESCRIPCIÓN."""
         logger.info(f"🔢 Cantidad solicitada: {num_ads}")
         logger.info(f"🎨 Temperatura/Creatividad: {temperature}")
         logger.info(f"🏢 Business type: {business_type}")
-        logger.info(f"🔴 Modo magnético: {use_magnetic}")
-        logger.info(f"📍 Inserciones de ubicación: {use_location_insertion}")
         logger.info("="*60)
         
         if not self.provider:
@@ -491,9 +618,7 @@ RESPONDE SOLO CON LA NUEVA DESCRIPCIÓN."""
                 num_descriptions=num_descriptions,
                 tone=tone,
                 business_type=business_type,
-                temperature=temperature,  # ✅ Pasar temperatura
-                use_magnetic=use_magnetic,  # ✅ Pasar modo magnético
-                use_location_insertion=use_location_insertion  # ✅ Pasar inserciones de ubicación
+                temperature=temperature  # ✅ Pasar temperatura
             )
             
             logger.info(f"📥 Provider retornó {len(generated_ads_raw)} anuncios")
@@ -560,6 +685,43 @@ RESPONDE SOLO CON LA NUEVA DESCRIPCIÓN."""
                     
                     logger.info(f"   📊 Títulos válidos: {len(valid_headlines)}/{len(ad_data['headlines'])}")
                     logger.info(f"   📊 Descripciones válidas: {len(valid_descriptions)}/{len(ad_data['descriptions'])}")
+                    
+                    # ✅ VALIDACIÓN DE SIMILITUD (Títulos y Descripciones)
+                    from difflib import SequenceMatcher
+                    
+                    def texts_are_similar(text1: str, text2: str, threshold: float = 0.85) -> bool:
+                        """Verifica si dos textos son muy similares (>= 85% de similitud)"""
+                        return SequenceMatcher(None, text1.lower(), text2.lower()).ratio() >= threshold
+                    
+                    # Filtrar títulos demasiado similares
+                    unique_valid_headlines = []
+                    for headline in valid_headlines:
+                        is_duplicate = False
+                        for existing_headline in unique_valid_headlines:
+                            if texts_are_similar(headline, existing_headline):
+                                logger.warning(f"⚠️ Título similar rechazado: '{headline[:40]}...'")
+                                is_duplicate = True
+                                break
+                        if not is_duplicate:
+                            unique_valid_headlines.append(headline)
+                    
+                    logger.info(f"   📊 Títulos únicos: {len(unique_valid_headlines)}/{len(valid_headlines)}")
+                    valid_headlines = unique_valid_headlines
+                    
+                    # Filtrar descripciones demasiado similares
+                    unique_valid_descriptions = []
+                    for desc in valid_descriptions:
+                        is_duplicate = False
+                        for existing_desc in unique_valid_descriptions:
+                            if texts_are_similar(desc, existing_desc):
+                                logger.warning(f"⚠️ Descripción similar rechazada: '{desc[:40]}...'")
+                                is_duplicate = True
+                                break
+                        if not is_duplicate:
+                            unique_valid_descriptions.append(desc)
+                    
+                    logger.info(f"   📊 Descripciones únicas: {len(unique_valid_descriptions)}/{len(valid_descriptions)}")
+                    valid_descriptions = unique_valid_descriptions
                     
                     # Verificar mínimos requeridos
                     if len(valid_headlines) < 3:
