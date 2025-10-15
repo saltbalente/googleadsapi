@@ -239,14 +239,12 @@ class IntelligentAutopilot:
                 ai_model = generation_config.get('ai_model', 'gpt-4o')
                 creativity = generation_config.get('ai_creativity', 0.7)
                 use_magnetic = generation_config.get('use_magnetic', False)
-                use_location_insertion = group_config.get('use_location_insertion', False)  # ✅ Desde config del grupo
                 ads_per_group = generation_config.get('ads_per_group', 8)
                 match_types = generation_config.get('match_types', ['Exacta', 'Frase'])
                 
                 logger.info(f"🤖 IA: {ai_provider}/{ai_model}")
                 logger.info(f"🎨 Creatividad: {creativity}")
                 logger.info(f"🔴 Modo Magnético: {'SÍ' if use_magnetic else 'NO'}")
-                logger.info(f"📍 Inserciones de Ubicación: {'SÍ' if use_location_insertion else 'NO'}")
                 logger.info(f"📝 Anuncios a generar: {ads_per_group}")
                 
                 # ✅ GENERAR ANUNCIOS CON IA
@@ -261,8 +259,7 @@ class IntelligentAutopilot:
                     ai_model=ai_model,
                     tone='profesional',
                     creativity=creativity,
-                    use_magnetic=use_magnetic,
-                    use_location_insertion=use_location_insertion  # ✅ PASAR INSERCIONES DE UBICACIÓN
+                    use_magnetic=use_magnetic
                 )
                 
                 if not ads_result or len(ads_result) == 0:
@@ -505,9 +502,6 @@ class IntelligentAutopilot:
                     if progress_callback:
                         progress_callback(f"🎨 Generando {ads_per_group} anuncios con IA...", progress + 5)
                     
-                    # ✅ Obtener configuración de inserciones de ubicación
-                    use_location_insertion = generation_config.get('use_location_insertion', False)
-                    
                     ads = self._generate_real_ads_with_ai(
                         keywords=unique_keywords,
                         business_description=business_description,
@@ -517,8 +511,7 @@ class IntelligentAutopilot:
                         ai_model=ai_model,
                         tone=tone,
                         creativity=creativity,
-                        use_magnetic=use_magnetic,  # ✅ PASAR PARÁMETRO MAGNÉTICO
-                        use_location_insertion=use_location_insertion  # ✅ PASAR INSERCIONES DE UBICACIÓN
+                        use_magnetic=use_magnetic  # ✅ PASAR PARÁMETRO MAGNÉTICO
                     )
                     
                     logger.info(f"✅ {len(ads)} anuncios generados para grupo {idx+1}")
@@ -721,18 +714,16 @@ class IntelligentAutopilot:
         ai_model: str,
         tone: str,
         creativity: float,
-        use_magnetic: bool = False,  # ✅ PARÁMETRO MAGNÉTICO
-        use_location_insertion: bool = False  # ✅ PARÁMETRO INSERCIONES DE UBICACIÓN
+        use_magnetic: bool = False  # ✅ PARÁMETRO MAGNÉTICO
     ) -> List[Dict[str, Any]]:
         """
-        Genera anuncios REALES usando IA con soporte magnético e inserciones de ubicación
+        Genera anuncios REALES usando IA con soporte magnético
         """
         try:
             logger.info(f"🤖 Generando {num_ads} anuncios con {ai_provider}/{ai_model}")
             logger.info(f"🔑 Keywords: {keywords}")
             logger.info(f"🎨 Tono: {tone}, Creatividad: {creativity}")
             logger.info(f"🔴 Modo magnético: {use_magnetic}")
-            logger.info(f"📍 Inserciones de ubicación: {use_location_insertion}")
             
             # ✅ CONFIGURAR IA
             from utils.user_storage import get_user_storage
@@ -791,8 +782,8 @@ class IntelligentAutopilot:
                     validate=True,
                     business_type='esoteric',  # ✅ IMPORTANTE para activar modo magnético
                     save_to_csv=False,
-                    use_magnetic=True,  # ✅ FLAG MAGNÉTICO
-                    use_location_insertion=use_location_insertion  # ✅ INSERCIONES DE UBICACIÓN
+                    use_magnetic=True  # ✅ FLAG MAGNÉTICO
+                    exclude_descriptions=list(self.used_descriptions)
                 )
                 
                 logger.info(f"📥 Resultado magnético: {result}")
@@ -809,13 +800,13 @@ class IntelligentAutopilot:
                     tone=tone,
                     validate=True,
                     business_type=business_type,
-                    save_to_csv=False,
-                    use_location_insertion=use_location_insertion  # ✅ INSERCIONES DE UBICACIÓN
+                    save_to_csv=False
+                    exclude_descriptions=list(self.used_descriptions)
                 )
                 
                 logger.info(f"📥 Resultado normal: {result}")
             
-            # ✅ PROCESAR ANUNCIOS GENERADOS
+             # ✅ PROCESAR ANUNCIOS GENERADOS CON VALIDACIÓN ESTRICTA
             ads = []
             
             for idx, ad_data in enumerate(result.get('ads', [])):
@@ -823,9 +814,38 @@ class IntelligentAutopilot:
                     logger.warning(f"⚠️ Ad {idx+1} con error: {ad_data['error']}")
                     continue
                 
-                # ✅ VALIDAR UNICIDAD DE TÍTULOS Y DESCRIPCIONES
+                # ✅ VALIDAR UNICIDAD DE TÍTULOS Y DESCRIPCIONES CON SIMILITUD
                 unique_headlines = self._ensure_unique_headlines(ad_data.get('headlines', []))
-                unique_descriptions = self._ensure_unique_descriptions(ad_data.get('descriptions', []))
+                unique_descriptions = self._ensure_unique_descriptions(
+                    ad_data.get('descriptions', []),
+                    min_similarity=0.85  # 85% de similitud = rechazar
+                )
+                
+                # ✅ REGENERAR SI NO HAY SUFICIENTES DESCRIPCIONES ÚNICAS
+                retry_count = 0
+                max_retries = 3
+                
+                while len(unique_descriptions) < 2 and retry_count < max_retries:
+                    logger.warning(f"⚠️ Solo {len(unique_descriptions)} descripciones únicas, regenerando... (intento {retry_count + 1}/{max_retries})")
+                    
+                    # Regenerar solo descripciones
+                    new_descriptions = self._regenerate_descriptions_only(
+                        keywords=keywords,
+                        business_description=business_description,
+                        ai_provider=ai_provider,
+                        ai_model=ai_model,
+                        tone=tone,
+                        creativity=creativity,
+                        num_needed=4,
+                        exclude_descriptions=list(self.used_descriptions)
+                    )
+                    
+                    # Validar nuevas descripciones
+                    unique_descriptions.extend(
+                        self._ensure_unique_descriptions(new_descriptions, min_similarity=0.85)
+                    )
+                    
+                    retry_count += 1
                 
                 # Verificar que tengamos suficientes
                 if len(unique_headlines) < 3:
@@ -833,7 +853,7 @@ class IntelligentAutopilot:
                     continue
                 
                 if len(unique_descriptions) < 2:
-                    logger.warning(f"⚠️ Ad {idx+1}: Solo {len(unique_descriptions)} descriptions únicos (mínimo 2)")
+                    logger.error(f"❌ Ad {idx+1}: Solo {len(unique_descriptions)} descriptions únicos después de {max_retries} intentos")
                     continue
                 
                 # ✅ AGREGAR URL REAL
@@ -845,7 +865,7 @@ class IntelligentAutopilot:
                     'path2': self._extract_path_from_url(business_url, 2)
                 }
                 
-                logger.info(f"✅ Anuncio {idx+1}: {len(unique_headlines)} headlines, {len(unique_descriptions)} descriptions")
+                logger.info(f"✅ Anuncio {idx+1}: {len(unique_headlines)} headlines, {len(unique_descriptions)} descriptions ÚNICOS")
                 
                 ads.append(ad_with_url)
             
@@ -861,6 +881,74 @@ class IntelligentAutopilot:
             logger.error(f"❌ Error generando con IA: {e}", exc_info=True)
             return self._generate_ads_fallback(keywords, business_url, num_ads)
     
+    def _regenerate_descriptions_only(
+        self,
+        keywords: List[str],
+        business_description: str,
+        ai_provider: str,
+        ai_model: str,
+        tone: str,
+        creativity: float,
+        num_needed: int = 4,
+        exclude_descriptions: List[str] = []
+    ) -> List[str]:
+        """
+        Regenera SOLO descripciones sin afectar títulos
+        
+        Args:
+            keywords: Keywords del grupo
+            business_description: Descripción del negocio
+            ai_provider: Proveedor de IA (openai/gemini)
+            ai_model: Modelo de IA
+            tone: Tono deseado
+            creativity: Nivel de creatividad
+            num_needed: Cantidad de descripciones necesarias
+            exclude_descriptions: Descripciones a evitar
+        
+        Returns:
+            Lista de nuevas descripciones
+        """
+        try:
+            logger.info(f"🔄 Regenerando {num_needed} descripciones únicas...")
+            
+            from utils.user_storage import get_user_storage
+            user_storage = get_user_storage('saltbalente')
+            
+            api_key_data = user_storage.get_api_key(ai_provider)
+            
+            if not api_key_data or not api_key_data.get('api_key'):
+                logger.error(f"❌ No hay API key para {ai_provider}")
+                return []
+            
+            # Configurar generador
+            success = self.ai_generator.set_provider(
+                provider_type=ai_provider,
+                api_key=api_key_data['api_key'],
+                model=ai_model
+            )
+            
+            if not success:
+                logger.error("❌ Error configurando provider")
+                return []
+            
+            # Llamar al método específico del provider para generar solo descripciones
+            new_descriptions = self.ai_generator.provider.generate_descriptions_only(
+                keywords=keywords,
+                business_description=business_description,
+                num_descriptions=num_needed,
+                tone=tone,
+                temperature=creativity + 0.1,  # Aumentar creatividad ligeramente
+                exclude_descriptions=exclude_descriptions
+            )
+            
+            logger.info(f"✅ {len(new_descriptions)} nuevas descripciones generadas")
+            
+            return new_descriptions
+            
+        except Exception as e:
+            logger.error(f"❌ Error regenerando descripciones: {e}")
+            return []
+
     def _generate_ads_fallback(
         self,
         keywords: List[str],
@@ -1171,17 +1259,49 @@ class IntelligentAutopilot:
         
         return unique_headlines
     
-    def _ensure_unique_descriptions(self, descriptions: List[str]) -> List[str]:
+    def _ensure_unique_descriptions(self, descriptions: List[str], min_similarity: float = 0.85) -> List[str]:
         """
-        Asegura que las descripciones sean únicas globalmente
+        Asegura que las descripciones sean únicas globalmente con validación de similitud
+        
+        Args:
+            descriptions: Lista de descripciones generadas
+            min_similarity: Umbral de similitud (0.85 = 85% similar = rechazar)
+        
+        Returns:
+            Lista de descripciones únicas validadas
         """
+        from difflib import SequenceMatcher
+        
         unique_descriptions = []
         
         for description in descriptions:
             description_clean = description.strip()
-            if description_clean and description_clean not in self.used_descriptions:
+            
+            if not description_clean:
+                continue
+            
+            # Verificar si ya existe exactamente
+            if description_clean in self.used_descriptions:
+                logger.warning(f"⚠️ Descripción duplicada exacta rechazada: '{description_clean[:50]}...'")
+                continue
+            
+            # Verificar similitud con descripciones existentes
+            is_too_similar = False
+            
+            for used_desc in self.used_descriptions:
+                similarity = SequenceMatcher(None, description_clean.lower(), used_desc.lower()).ratio()
+                
+                if similarity >= min_similarity:
+                    logger.warning(f"⚠️ Descripción muy similar ({similarity*100:.1f}%) rechazada:")
+                    logger.warning(f"   Nueva: '{description_clean[:50]}...'")
+                    logger.warning(f"   Existente: '{used_desc[:50]}...'")
+                    is_too_similar = True
+                    break
+            
+            if not is_too_similar:
                 unique_descriptions.append(description_clean)
                 self.used_descriptions.add(description_clean)
+                logger.info(f"✅ Descripción única aceptada: '{description_clean[:50]}...'")
         
         logger.info(f"📄 Descriptions: {len(descriptions)} originales → {len(unique_descriptions)} únicos")
         

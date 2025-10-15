@@ -40,8 +40,10 @@ cat > .env << EOF
 # ========================================
 # GOOGLE ADS API
 # ========================================
-# Nota: Las credenciales de Google Ads deben estar en config/google-ads.yaml
-# Este script solo configura las API keys de IA
+GOOGLE_ADS_DEVELOPER_TOKEN=tu_developer_token_aqui
+GOOGLE_ADS_CLIENT_ID=tu_client_id_aqui
+GOOGLE_ADS_CLIENT_SECRET=tu_client_secret_aqui
+GOOGLE_ADS_REFRESH_TOKEN=tu_refresh_token_aqui
 
 # ========================================
 # APIs DE IA

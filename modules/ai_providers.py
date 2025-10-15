@@ -8,7 +8,7 @@ from abc import ABC, abstractmethod
 from typing import Dict, List, Optional, Any
 import json
 import logging
-from modules.ad_prompts import AdPromptTemplates
+from modules.ad_prompts import AdPromptTemplates, MagneticAdPrompts 
 
 logger = logging.getLogger(__name__)
 
@@ -172,6 +172,7 @@ class OpenAIProvider(AIProvider):
                 business_type=business_type,
                 temperature=temperature,
                 ad_variation_seed=ad_variation_seed
+                exclude_descriptions=exclude_descriptions 
             )
             
             logger.info(f"🤖 OpenAI - Anuncio #{ad_variation_seed + 1} - {self.model}")
@@ -343,6 +344,7 @@ class GeminiProvider(AIProvider):
                 business_type=business_type,
                 temperature=temperature,
                 ad_variation_seed=ad_variation_seed
+                exclude_descriptions=exclude_descriptions
             )
             
             logger.info(f"🤖 Gemini - Anuncio #{ad_variation_seed + 1} - {self.model}")
