@@ -1946,6 +1946,37 @@ def render_autopilot_tab():
                     help="URL de destino para este grupo específico"
                 )
                 
+                # ✅ NUEVO: Checkbox para inserciones de ubicación
+                col_loc1, col_loc2 = st.columns([3, 1])
+                
+                with col_loc1:
+                    use_location_insertion = st.checkbox(
+                        f"📍 Usar Inserciones de Ubicación en Grupo #{i+1}",
+                        key=f"use_location_{i}",
+                        help="Activa esto para insertar automáticamente la ubicación del usuario en 3-5 títulos (mejora el CTR)"
+                    )
+                
+                with col_loc2:
+                    if use_location_insertion:
+                        st.markdown("""
+                        <div style='background: rgba(0,255,0,0.1); padding: 0.5rem; border-radius: 5px; text-align: center;'>
+                            <span style='color: #00ff00; font-size: 1.5rem;'>✅</span>
+                        </div>
+                        """, unsafe_allow_html=True)
+                
+                # Mostrar información sobre inserciones de ubicación
+                if use_location_insertion:
+                    st.info("""
+                    📍 **Inserciones de Ubicación Activadas**
+                    
+                    Se generarán 3-5 títulos con códigos de inserción:
+                    - 🏙️ `{LOCATION(City)}` - Ej: "Curandero en {LOCATION(City)}"
+                    - 🗺️ `{LOCATION(State)}` - Ej: "Brujos Efectivos {LOCATION(State)}"
+                    - 🌍 `{LOCATION(Country)}` - Ej: "Amarres en {LOCATION(Country)}"
+                    
+                    Esto personaliza los anuncios según la ubicación del usuario y mejora el CTR.
+                    """)
+                
                 # Procesar keywords
                 if group_keywords:
                     keywords_list = [kw.strip() for kw in group_keywords.split('\n') if kw.strip()]
@@ -1955,7 +1986,8 @@ def render_autopilot_tab():
                         ad_groups_config.append({
                             'name': group_name,
                             'keywords': keywords_list,
-                            'url': group_url
+                            'url': group_url,
+                            'use_location_insertion': use_location_insertion  # ✅ Agregar flag
                         })
                     elif keywords_list or group_url:
                         st.warning(f"⚠️ Completa keywords Y URL para el Grupo #{i+1}")
@@ -1970,6 +2002,39 @@ def render_autopilot_tab():
             height=120,
             help="Palabras clave principales separadas por comas o líneas"
         )
+        
+        # ✅ NUEVO: Checkbox para inserciones de ubicación (grupo único)
+        st.markdown("---")
+        
+        col_loc1, col_loc2 = st.columns([3, 1])
+        
+        with col_loc1:
+            use_location_insertion_single = st.checkbox(
+                "📍 Usar Inserciones de Ubicación",
+                key="use_location_single",
+                help="Activa esto para insertar automáticamente la ubicación del usuario en 3-5 títulos (mejora el CTR)"
+            )
+        
+        with col_loc2:
+            if use_location_insertion_single:
+                st.markdown("""
+                <div style='background: rgba(0,255,0,0.1); padding: 0.5rem; border-radius: 5px; text-align: center;'>
+                    <span style='color: #00ff00; font-size: 1.5rem;'>✅</span>
+                </div>
+                """, unsafe_allow_html=True)
+        
+        # Mostrar información sobre inserciones de ubicación
+        if use_location_insertion_single:
+            st.info("""
+            📍 **Inserciones de Ubicación Activadas**
+            
+            Se generarán 3-5 títulos con códigos de inserción:
+            - 🏙️ `{LOCATION(City)}` - Ej: "Curandero en {LOCATION(City)}"
+            - 🗺️ `{LOCATION(State)}` - Ej: "Brujos Efectivos {LOCATION(State)}"
+            - 🌍 `{LOCATION(Country)}` - Ej: "Amarres en {LOCATION(Country)}"
+            
+            Esto personaliza los anuncios según la ubicación del usuario y mejora el CTR.
+            """)
     
     st.markdown("---")
     
@@ -1981,6 +2046,7 @@ def render_autopilot_tab():
                 st.write(f"**Grupo {idx}: {group['name']}**")
                 st.write(f"  - Keywords: {len(group['keywords'])}")
                 st.write(f"  - URL: {group['url']}")
+                st.write(f"  - Inserciones de Ubicación: {'✅ Activadas' if group.get('use_location_insertion', False) else '❌ Desactivadas'}")
     
     st.markdown("---")
     
@@ -2166,7 +2232,8 @@ def render_autopilot_tab():
                     'business_url': business_url,
                     'use_magnetic': use_magnetic,
                     'ai_provider': ai_provider,
-                    'ai_model': ai_model
+                    'ai_model': ai_model,
+                    'use_location_insertion': use_location_insertion_single if num_ad_groups == 1 else False  # ✅ Para grupo único
                 }
                 
                 # Generar grupos de anuncios

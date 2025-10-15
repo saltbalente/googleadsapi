@@ -67,10 +67,12 @@ class AdPromptTemplates:
         num_descriptions: int = 4,
         tone: str = "profesional",
         temperature: float = 1.0,
-        ad_variation_seed: int = 0
+        ad_variation_seed: int = 0,
+        use_location_insertion: bool = False  # ✅ NUEVO parámetro
     ) -> str:
         """
         Prompt TRANSACCIONAL con sistema anti-repetición
+        Soporta inserciones de ubicación para mejorar CTR
         """
         
         analysis = AdPromptTemplates.analyze_keywords(keywords)
@@ -80,9 +82,15 @@ class AdPromptTemplates:
         keywords_str = ", ".join(rotated_keywords[:30])
         
         # Calcular distribución
-        transactional_count = int(num_headlines * 0.60)
-        urgent_count = int(num_headlines * 0.25)
-        informational_count = num_headlines - transactional_count - urgent_count
+        # Si use_location_insertion está activo, reservar 3-5 títulos para ubicaciones
+        location_count = 0
+        if use_location_insertion:
+            location_count = min(5, max(3, int(num_headlines * 0.25)))  # 3-5 títulos con ubicación
+        
+        remaining_headlines = num_headlines - location_count
+        transactional_count = int(remaining_headlines * 0.60)
+        urgent_count = int(remaining_headlines * 0.25)
+        informational_count = remaining_headlines - transactional_count - urgent_count
         
         # Seleccionar keywords para descripciones (rotar para cada anuncio)
         kw_desc_1 = rotated_keywords[ad_variation_seed % len(rotated_keywords)] if rotated_keywords else "amor"
@@ -117,6 +125,59 @@ class AdPromptTemplates:
 - Ejemplos: "Garantía De Amarres De Pareja", "Testimonios Amarres De Amor"
 """
         
+        # ✅ Instrucciones de inserción de ubicación
+        location_instructions = ""
+        if use_location_insertion:
+            location_instructions = f"""
+════════════════════════════════════════════════════════════════
+📍 INSERCIONES DE UBICACIÓN (OBLIGATORIO - {location_count} TÍTULOS)
+════════════════════════════════════════════════════════════════
+
+**IMPORTANTE:** Debes generar EXACTAMENTE {location_count} títulos con inserciones de ubicación.
+
+**CÓDIGOS DE INSERCIÓN DISPONIBLES:**
+
+1️⃣ **{{LOCATION(City)}}** - Inserta la ciudad del usuario
+   Ejemplos:
+   - "Curandero En {{LOCATION(City)}}"
+   - "Amarres De Amor {{LOCATION(City)}}"
+   - "Brujo Efectivo En {{LOCATION(City)}}"
+
+2️⃣ **{{LOCATION(State)}}** - Inserta el estado/provincia
+   Ejemplos:
+   - "Brujos Especializados {{LOCATION(State)}}"
+   - "Hechizos Reales En {{LOCATION(State)}}"
+   - "Amarres Efectivos {{LOCATION(State)}}"
+
+3️⃣ **{{LOCATION(Country)}}** - Inserta el país
+   Ejemplos:
+   - "Amarres En {{LOCATION(Country)}}"
+   - "Servicios Esotéricos {{LOCATION(Country)}}"
+
+**DISTRIBUCIÓN REQUERIDA:**
+- {location_count} títulos CON inserción de ubicación
+- Usar los 3 tipos: City ({location_count//3 + 1}), State ({location_count//3}), Country ({location_count//3})
+- Los títulos con ubicación MEJORAN EL CTR hasta un 30%
+
+**REGLAS PARA INSERCIONES:**
+✅ Colocar la inserción al FINAL o EN MEDIO del título
+✅ Mantener longitud total: 20-30 caracteres (contando el código)
+✅ NO usar signos de puntuación cerca de las inserciones
+✅ Capitalizar Cada Palabra excepto el código de inserción
+
+**EJEMPLOS CORRECTOS:**
+✅ "Brujo Profesional {{LOCATION(City)}}"
+✅ "Amarres En {{LOCATION(State)}}"
+✅ "Curandero Efectivo {{LOCATION(Country)}}"
+
+**EJEMPLOS INCORRECTOS:**
+❌ "Brujo En {{LOCATION(City)}}!" (signos de puntuación)
+❌ "{{LOCATION(City)}}" (solo la inserción, falta keyword)
+❌ "Brujo {{location(city)}}" (mal formato, debe ser mayúsculas)
+
+════════════════════════════════════════════════════════════════
+"""
+        
         return f"""Eres un experto en copywriting para Google Ads especializado en servicios esotéricos.
 
 **MISIÓN CRÍTICA:** Generar títulos que coincidan EXACTAMENTE con lo que los usuarios buscan en Google.
@@ -125,6 +186,8 @@ class AdPromptTemplates:
 {keywords_str}
 
 {variation_strategy}
+
+{location_instructions}
 
 ════════════════════════════════════════════════════════════════
 ⚠️ REGLA #1 ABSOLUTA - COPY TRANSACCIONAL (NO CREATIVO)
@@ -141,6 +204,8 @@ class AdPromptTemplates:
 ════════════════════════════════════════════════════════════════
 📊 DISTRIBUCIÓN DE {num_headlines} TÍTULOS
 ════════════════════════════════════════════════════════════════
+
+{"**📍 UBICACIÓN (" + str(location_count) + " títulos con inserciones)**" if use_location_insertion else ""}
 
 **🔵 TRANSACCIONAL ({transactional_count} títulos - 60%)**
 
@@ -267,13 +332,14 @@ RESPONDE SOLO ESTO (sin ``` ni json):
         tone: str = "profesional",
         business_type: str = "auto",
         temperature: float = 1.0,
-        ad_variation_seed: int = 0
+        ad_variation_seed: int = 0,
+        use_location_insertion: bool = False  # ✅ NUEVO parámetro
     ) -> str:
         """
-        Selector de prompt con soporte de variación por anuncio
+        Selector de prompt con soporte de variación por anuncio y ubicaciones
         """
         return AdPromptTemplates.get_transactional_esoteric_prompt(
-            keywords, num_headlines, num_descriptions, tone, temperature, ad_variation_seed
+            keywords, num_headlines, num_descriptions, tone, temperature, ad_variation_seed, use_location_insertion
         )
 
 
@@ -290,11 +356,13 @@ class MagneticAdPrompts:
         num_descriptions: int = 4,
         tone: str = "profesional",
         temperature: float = 0.9,
-        ad_variation_seed: int = 0
+        ad_variation_seed: int = 0,
+        use_location_insertion: bool = False  # ✅ NUEVO parámetro
     ) -> str:
         """
         Prompt MAGNÉTICO de alta intensidad psicológica
         Diseñado para máxima conversión en servicios esotéricos
+        Soporta inserciones de ubicación para mejorar CTR
         """
         
         # Rotar keywords según el seed de variación
@@ -302,15 +370,49 @@ class MagneticAdPrompts:
         keywords_str = ", ".join(rotated_keywords[:30])
         
         # Distribución magnética optimizada
-        beneficio_urgencia = int(num_headlines * 0.33)  # 5 títulos
-        credibilidad_exclusividad = int(num_headlines * 0.33)  # 5 títulos
-        control_curiosidad = num_headlines - beneficio_urgencia - credibilidad_exclusividad  # 5 títulos
+        # Si use_location_insertion está activo, reservar 3-5 títulos para ubicaciones
+        location_count = 0
+        if use_location_insertion:
+            location_count = min(5, max(3, int(num_headlines * 0.25)))  # 3-5 títulos con ubicación
+        
+        remaining_headlines = num_headlines - location_count
+        beneficio_urgencia = int(remaining_headlines * 0.33)  # ~33%
+        credibilidad_exclusividad = int(remaining_headlines * 0.33)  # ~33%
+        control_curiosidad = remaining_headlines - beneficio_urgencia - credibilidad_exclusividad  # ~33%
         
         # Keywords específicas para cada descripción
         kw_desc_1 = rotated_keywords[ad_variation_seed % len(rotated_keywords)] if rotated_keywords else "amor"
         kw_desc_2 = rotated_keywords[(ad_variation_seed + 1) % len(rotated_keywords)] if len(rotated_keywords) > 1 else "pareja"
         kw_desc_3 = rotated_keywords[(ad_variation_seed + 2) % len(rotated_keywords)] if len(rotated_keywords) > 2 else "ritual"
         kw_desc_4 = rotated_keywords[(ad_variation_seed + 3) % len(rotated_keywords)] if len(rotated_keywords) > 3 else "brujería"
+        
+        # ✅ Instrucciones de inserción de ubicación (igual que en el prompt transaccional)
+        location_instructions = ""
+        if use_location_insertion:
+            location_instructions = f"""
+════════════════════════════════════════════════════════════════
+📍 INSERCIONES DE UBICACIÓN MAGNÉTICAS ({location_count} TÍTULOS)
+════════════════════════════════════════════════════════════════
+
+**OBLIGATORIO:** Generar {location_count} títulos con MÁXIMA INTENSIDAD + ubicación.
+
+**CÓDIGOS DE INSERCIÓN:**
+- 🏙️ **{{LOCATION(City)}}** - Ciudad
+- 🗺️ **{{LOCATION(State)}}** - Estado/Provincia  
+- 🌍 **{{LOCATION(Country)}}** - País
+
+**EJEMPLOS MAGNÉTICOS CON UBICACIÓN:**
+✅ "Urgente Brujo {{LOCATION(City)}}"
+✅ "Amarres Garantizados {{LOCATION(State)}}"
+✅ "Único Especialista {{LOCATION(Country)}}"
+
+**DISTRIBUCIÓN:**
+- {location_count//3 + 1} con City
+- {location_count//3} con State
+- {location_count//3} con Country
+
+════════════════════════════════════════════════════════════════
+"""
         
         return f"""Eres un experto en copywriting MAGNÉTICO para Google Ads especializado en servicios esotéricos de alta conversión.
 
@@ -320,6 +422,8 @@ class MagneticAdPrompts:
 {keywords_str}
 
 🔴 MODO MAGNÉTICO ACTIVADO - ALTA INTENSIDAD PSICOLÓGICA 🔴
+
+{location_instructions}
 
 ════════════════════════════════════════════════════════════════
 ⚡ DISTRIBUCIÓN MAGNÉTICA DE {num_headlines} TÍTULOS
