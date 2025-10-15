@@ -275,3 +275,189 @@ RESPONDE SOLO ESTO (sin ``` ni json):
         return AdPromptTemplates.get_transactional_esoteric_prompt(
             keywords, num_headlines, num_descriptions, tone, temperature, ad_variation_seed
         )
+
+
+class MagneticAdPrompts:
+    """
+    Prompts de alta intensidad psicológica para servicios esotéricos
+    Modo MAGNÉTICO - Máxima conversión
+    """
+    
+    @staticmethod
+    def get_magnetic_prompt(
+        keywords: List[str],
+        num_headlines: int = 15,
+        num_descriptions: int = 4,
+        tone: str = "profesional",
+        temperature: float = 0.9,
+        ad_variation_seed: int = 0
+    ) -> str:
+        """
+        Prompt MAGNÉTICO de alta intensidad psicológica
+        Diseñado para máxima conversión en servicios esotéricos
+        """
+        
+        # Rotar keywords según el seed de variación
+        rotated_keywords = keywords[ad_variation_seed:] + keywords[:ad_variation_seed]
+        keywords_str = ", ".join(rotated_keywords[:30])
+        
+        # Distribución magnética optimizada
+        beneficio_urgencia = int(num_headlines * 0.33)  # 5 títulos
+        credibilidad_exclusividad = int(num_headlines * 0.33)  # 5 títulos
+        control_curiosidad = num_headlines - beneficio_urgencia - credibilidad_exclusividad  # 5 títulos
+        
+        # Keywords específicas para cada descripción
+        kw_desc_1 = rotated_keywords[ad_variation_seed % len(rotated_keywords)] if rotated_keywords else "amor"
+        kw_desc_2 = rotated_keywords[(ad_variation_seed + 1) % len(rotated_keywords)] if len(rotated_keywords) > 1 else "pareja"
+        kw_desc_3 = rotated_keywords[(ad_variation_seed + 2) % len(rotated_keywords)] if len(rotated_keywords) > 2 else "ritual"
+        kw_desc_4 = rotated_keywords[(ad_variation_seed + 3) % len(rotated_keywords)] if len(rotated_keywords) > 3 else "brujería"
+        
+        return f"""Eres un experto en copywriting MAGNÉTICO para Google Ads especializado en servicios esotéricos de alta conversión.
+
+**MISIÓN CRÍTICA:** Generar anuncios con MÁXIMA INTENSIDAD PSICOLÓGICA que generen acción inmediata.
+
+**KEYWORDS DEL GRUPO ({len(rotated_keywords)} keywords):**
+{keywords_str}
+
+🔴 MODO MAGNÉTICO ACTIVADO - ALTA INTENSIDAD PSICOLÓGICA 🔴
+
+════════════════════════════════════════════════════════════════
+⚡ DISTRIBUCIÓN MAGNÉTICA DE {num_headlines} TÍTULOS
+════════════════════════════════════════════════════════════════
+
+**🎯 BENEFICIO + URGENCIA ({beneficio_urgencia} títulos)**
+Patrones de alta conversión:
+
+1️⃣ [Keyword] + [Resultado Inmediato] + [Tiempo]
+   ADAPTA: "{kw_desc_1}" + En 24 Horas/7 Días/Esta Semana
+
+2️⃣ [Problema] + [Solución Definitiva]
+   ADAPTA: "Perdiste {kw_desc_2}? Recupera Ya"
+
+3️⃣ [Acción] + [Beneficio] + [Garantía]
+   ADAPTA: "Recupera {kw_desc_1} Garantizado"
+
+4️⃣ [Urgencia] + [Servicio] + [Resultado]
+   ADAPTA: "Urgente {kw_desc_2} Que Funciona"
+
+5️⃣ [Tiempo] + para + [Objetivo]
+   ADAPTA: "7 Días Para Recuperar {kw_desc_1}"
+
+**🏆 CREDIBILIDAD + EXCLUSIVIDAD ({credibilidad_exclusividad} títulos)**
+Patrones de autoridad:
+
+1️⃣ [Años] + Años + [Especialidad]
+   ADAPTA: "20 Años En {kw_desc_1}"
+
+2️⃣ [Número] + Casos + [Resultado]
+   ADAPTA: "500 Casos De {kw_desc_2} Exitosos"
+
+3️⃣ [Rol] + Certificado + [Área]
+   ADAPTA: "Brujo Certificado En {kw_desc_1}"
+
+4️⃣ [Exclusividad] + [Servicio]
+   ADAPTA: "Único Especialista En {kw_desc_2}"
+
+5️⃣ [Garantía] + [Servicio] + [Resultado]
+   ADAPTA: "Garantía Total {kw_desc_1}"
+
+**🧠 CONTROL + CURIOSIDAD ({control_curiosidad} títulos)**
+Patrones psicológicos:
+
+1️⃣ [Secreto] + [Técnica] + [Resultado]
+   ADAPTA: "Secreto Para {kw_desc_1} Efectivo"
+
+2️⃣ [Método] + Que + [Autoridades] + [Acción]
+   ADAPTA: "Método Que Brujos Usan Para {kw_desc_2}"
+
+3️⃣ [Descubrimiento] + [Beneficio]
+   ADAPTA: "Descubre Cómo {kw_desc_1} Funciona"
+
+4️⃣ [Razón] + Por Qué + [Problema]
+   ADAPTA: "Por Qué {kw_desc_2} No Funciona"
+
+5️⃣ [Técnica] + [Resultado] + Sin + [Obstáculo]
+   ADAPTA: "{kw_desc_1} Sin Fallar"
+
+════════════════════════════════════════════════════════════════
+🔥 DESCRIPCIONES MAGNÉTICAS ({num_descriptions} requeridas)
+════════════════════════════════════════════════════════════════
+
+**Desc 1 - DOLOR + SOLUCIÓN INMEDIATA (60-75 chars):**
+Keyword: "{kw_desc_1}"
+Patrón: "¿[Problema]? [Solución] En [Tiempo]. [Acción]"
+ADAPTA: "¿Perdiste Tu {{keyword}}? Recupera En 7 Días. Consulta Ya"
+
+**Desc 2 - AUTORIDAD + PRUEBA (65-80 chars):**
+Keyword: "{kw_desc_2}"
+Patrón: "[Experiencia] En [Área]. [Resultado]. [Contacto]"
+ADAPTA: "20 Años En {{keyword}}. Resultados Garantizados. Llama 24h"
+
+**Desc 3 - EXCLUSIVIDAD + URGENCIA (70-85 chars):**
+Keyword: "{kw_desc_3}"
+Patrón: "[Único] [Método] Para [Resultado]. [Limitación] [Acción]"
+ADAPTA: "Único Método Para {{keyword}} Efectivo. Solo Hoy. Consulta Gratis"
+
+**Desc 4 - CURIOSIDAD + ACCIÓN (75-90 chars):**
+Keyword: "{kw_desc_4}"
+Patrón: "[Secreto] Que [Expertos] No Quieren Que Sepas. [Acción]"
+ADAPTA: "Secreto De {{keyword}} Que Brujos No Revelan. Descúbrelo Ahora"
+
+════════════════════════════════════════════════════════════════
+🚫 PALABRAS MAGNÉTICAS PERMITIDAS
+════════════════════════════════════════════════════════════════
+
+✅ PODER: Efectivo, Poderoso, Real, Garantizado, Comprobado, Infalible
+✅ TIEMPO: Inmediato, Rápido, 24h, 7 días, Urgente, Ya, Ahora
+✅ EXCLUSIVIDAD: Único, Secreto, Especial, Exclusivo, Privado
+✅ AUTORIDAD: Experto, Maestro, Certificado, Profesional, Años
+✅ RESULTADO: Garantizado, Seguro, Efectivo, Comprobado, Real
+
+════════════════════════════════════════════════════════════════
+🎯 INTEGRACIÓN MAGNÉTICA DE KEYWORDS
+════════════════════════════════════════════════════════════════
+
+- Cada keyword debe generar DESEO INMEDIATO
+- Usar modificadores de INTENSIDAD (muy, súper, ultra, mega)
+- Combinar con EMOCIONES (amor, pasión, deseo, necesidad)
+- Agregar URGENCIA temporal (hoy, ya, ahora, inmediato)
+
+════════════════════════════════════════════════════════════════
+📏 ESPECIFICACIONES MAGNÉTICAS
+════════════════════════════════════════════════════════════════
+
+**TÍTULOS:** 20-30 caracteres | Capitalizar Cada Palabra | SIN signos ! ? ¡ ¿
+**DESCRIPCIONES:** 60-90 caracteres | Capitalizar Cada Palabra | SIN signos
+
+════════════════════════════════════════════════════════════════
+📦 FORMATO JSON MAGNÉTICO (SIN MARKDOWN, SIN ```)
+════════════════════════════════════════════════════════════════
+
+RESPONDE SOLO ESTO (sin ``` ni json):
+
+{{
+  "headlines": [
+    "Título Magnético 1 (20-30 chars)",
+    "Título Magnético 2 (20-30 chars)",
+    ...{num_headlines} títulos ÚNICOS con MÁXIMA INTENSIDAD
+  ],
+  "descriptions": [
+    "Desc magnética 1 con {kw_desc_1} (60-75 chars)",
+    "Desc magnética 2 con {kw_desc_2} (65-80 chars)",
+    "Desc magnética 3 con {kw_desc_3} (70-85 chars)",
+    "Desc magnética 4 con {kw_desc_4} (75-90 chars)"
+  ]
+}}
+
+════════════════════════════════════════════════════════════════
+🔥 VERIFICACIÓN MAGNÉTICA FINAL
+════════════════════════════════════════════════════════════════
+
+□ {num_headlines} títulos con MÁXIMA INTENSIDAD PSICOLÓGICA
+□ {num_descriptions} descripciones que generan ACCIÓN INMEDIATA
+□ Cada elemento provoca DESEO y URGENCIA
+□ Keywords integradas con PODER EMOCIONAL
+□ JSON válido sin markdown
+□ CERO palabras débiles o genéricas
+
+🚀 GENERA ANUNCIOS MAGNÉTICOS AHORA (SOLO EL JSON, SIN EXPLICACIONES)"""

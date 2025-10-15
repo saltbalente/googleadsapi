@@ -18,7 +18,6 @@ from pathlib import Path
 from modules.ai_ad_generator import AIAdGenerator
 from modules.ad_group_config import AdGroupConfig, CampaignAdGroupsConfig
 from utils.logger import get_logger
-
 # ============================================================================
 # CONFIGURAR PATH
 # ============================================================================
@@ -34,12 +33,13 @@ try:
     from modules.ai_ad_generator import AIAdGenerator
     from utils.ad_scorer import AdScorer
     from utils.user_storage import get_user_storage
-    from services.intelligent_autopilot import CampaignOption
+    from services.intelligent_autopilot import CampaignOption, IntelligentAutopilot
     logger = logging.getLogger(__name__)
     logger.info("✅ Módulos importados correctamente")
 except ImportError as e:
     st.error(f"❌ Error importando módulos: {e}")
-    st.stop()
+    logger.error(f"Error de importación: {e}")
+    # No usar st.stop() aquí para permitir que otras pestañas funcionen
 
 # ============================================================================
 # CONFIGURACIÓN DE PÁGINA
@@ -283,6 +283,14 @@ def load_api_config(provider: str) -> Dict[str, Any]:
 def get_configured_providers() -> List[str]:
     """Obtiene proveedores configurados (función legacy - usar get_available_providers)"""
     return get_available_providers()
+
+def clear_api_config(provider: str):
+    """Limpia configuración de API"""
+    if 'api_configs' not in st.session_state:
+        st.session_state.api_configs = {}
+    
+    if provider in st.session_state.api_configs:
+        del st.session_state.api_configs[provider]
 
 def save_ad_for_campaigns(ad: Dict[str, Any]) -> bool:
     """
@@ -1436,6 +1444,24 @@ def render_settings_tab():
 def render_autopilot_tab():
     """Renderiza la pestaña AUTOPILOT 2050 con selector de campañas inteligente"""
     
+    st.markdown("### 🤖 AUTOPILOT 2050")
+    st.markdown("**Autopublicador Inteligente con Detección de Campañas**")
+    
+    # Verificar disponibilidad de módulos críticos
+    modules_available = True
+    error_messages = []
+    
+    try:
+        # Intentar importar los módulos necesarios
+        from services.intelligent_autopilot import IntelligentAutopilot
+        from modules.ai_ad_generator import AIAdGenerator
+    except ImportError as import_err:
+        modules_available = False
+        error_messages.append(f"Error importando módulos: {import_err}")
+    except Exception as e:
+        modules_available = False
+        error_messages.append(f"Error general: {e}")
+    
     # CSS futurístico específico para AUTOPILOT 2050
     st.markdown("""
     <style>
@@ -1584,27 +1610,107 @@ def render_autopilot_tab():
     <div class="autopilot-header">
         <h1>🤖 AUTOPILOT 2050</h1>
         <div class="autopilot-subtitle">
-            Autopublicador Inteligente con Detección de Campañas
+            Autopublicador Inteligente con Detección de Campañas - VERSIÓN COMPLETA RESTAURADA ✅
         </div>
     </div>
     """, unsafe_allow_html=True)
     
-    # Importar servicios necesarios
-    try:
-        from services.intelligent_autopilot import IntelligentAutopilot
-        from modules.ai_ad_generator import AIAdGenerator
+    # Verificar si los módulos están disponibles
+    if not modules_available:
+        st.error("❌ **AUTOPILOT 2050 no está completamente disponible**")
         
+        for error_msg in error_messages:
+            st.warning(f"⚠️ {error_msg}")
+        
+        st.markdown("""
+        <div class="neural-card">
+            <h3>🔧 Soluciones Posibles</h3>
+            <p>• Verifica que todos los módulos estén instalados correctamente</p>
+            <p>• Reinicia la aplicación</p>
+            <p>• Usa la pestaña <strong>🚀 Generar</strong> para funciones básicas</p>
+            <p>• Contacta al administrador si el problema persiste</p>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        return
+    
+    # Verificar importaciones necesarias
+    try:
         # Verificar cliente de Google Ads
         google_ads_client = st.session_state.get('google_ads_client')
         if not google_ads_client:
             st.error("❌ Cliente de Google Ads no inicializado")
+            st.info("💡 Ve a la aplicación principal para conectar con Google Ads primero.")
+            return
+        
+        # ✅ VERIFICAR Y CONFIGURAR API KEYS
+        import os
+        openai_key = os.getenv('OPENAI_API_KEY')
+        
+        if not openai_key or openai_key == 'tu_openai_api_key_aqui':
+            st.error("❌ **API Key de OpenAI no configurada**")
+            
+            st.markdown("""
+            <div class="neural-card">
+                <h3>🔑 Configuración de API Keys Requerida</h3>
+                <p>Para usar el AUTOPILOT 2050, necesitas configurar tu API key de OpenAI:</p>
+                <ol>
+                    <li>Ve a <a href="https://platform.openai.com/api-keys" target="_blank">OpenAI API Keys</a></li>
+                    <li>Crea una nueva API key</li>
+                    <li>Configúrala usando una de estas opciones:</li>
+                </ol>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            # Opción 1: Configuración temporal en la sesión
+            with st.expander("🔧 Configuración Temporal (Solo para esta sesión)"):
+                temp_api_key = st.text_input(
+                    "🔑 OpenAI API Key",
+                    type="password",
+                    placeholder="sk-...",
+                    help="Esta key solo se usará durante esta sesión y no se guardará"
+                )
+                
+                if st.button("✅ Configurar API Key Temporal"):
+                    if temp_api_key and temp_api_key.startswith('sk-'):
+                        os.environ['OPENAI_API_KEY'] = temp_api_key
+                        st.success("✅ API Key configurada temporalmente")
+                        st.info("🔄 Recarga la página para continuar")
+                        st.rerun()
+                    else:
+                        st.error("❌ API Key inválida. Debe comenzar con 'sk-'")
+            
+            # Opción 2: Configuración permanente
+            with st.expander("💾 Configuración Permanente"):
+                st.markdown("""
+                **Para configuración permanente, ejecuta estos comandos en tu terminal:**
+                
+                ```bash
+                # 1. Ir al directorio del proyecto
+                cd /Users/edwarbechara/dashboard-api-googleads
+                
+                # 2. Ejecutar el script de configuración
+                ./setup_env.sh
+                
+                # 3. Reiniciar la aplicación
+                source venv/bin/activate && streamlit run app.py --server.port 8501 --server.address 0.0.0.0
+                ```
+                """)
+            
             return
         
         # Crear instancias
-        ai_generator = AIAdGenerator()
-        intelligent_autopilot = IntelligentAutopilot(google_ads_client)
-    except ImportError as e:
-        st.error(f"❌ Error importando servicios: {e}")
+        try:
+            ai_generator = AIAdGenerator()
+            intelligent_autopilot = IntelligentAutopilot(google_ads_client)
+        except Exception as init_error:
+            st.error(f"❌ Error inicializando servicios: {init_error}")
+            st.info("💡 Verifica que todos los módulos estén correctamente configurados.")
+            return
+            
+    except Exception as e:
+        st.error(f"❌ Error general en AUTOPILOT: {e}")
+        st.info("💡 Usa las otras pestañas mientras se resuelve este problema.")
         return
     
     # Verificar customer seleccionado
@@ -2187,176 +2293,6 @@ def render_autopilot_tab():
                 st.error(f"❌ Error en el autopublicador: {e}")
                 progress_bar.progress(0)
                 status_text.empty()
-    
-    # Mostrar resultados si existen
-    if 'autopilot_blueprint' in st.session_state:
-        blueprint = st.session_state['autopilot_blueprint']
-        
-        st.markdown("---")
-        st.markdown("""
-        <div class="neural-card">
-            <h3>📊 BLUEPRINT DE CAMPAÑA GENERADO</h3>
-        </div>
-        """, unsafe_allow_html=True)
-        
-        # Mostrar información de la campaña
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            st.markdown("**🎯 Información General:**")
-            st.write(f"**Nombre:** {blueprint.campaign_name}")
-            st.write(f"**Presupuesto Diario:** ${blueprint.budget_daily:.2f}")
-            st.write(f"**Total Keywords:** {blueprint.total_keywords}")
-            st.write(f"**Total Anuncios:** {blueprint.total_ads}")
-        
-        with col2:
-            st.markdown("**📍 Targeting:**")
-            st.write(f"**Ubicaciones:** {', '.join(blueprint.target_locations)}")
-            st.write(f"**Idiomas:** {', '.join(blueprint.languages)}")
-            st.write(f"**Grupos:** {len(blueprint.ad_groups)}")
-            st.write(f"**CTR Estimado:** {blueprint.estimated_ctr}%")
-        
-        # Mostrar keywords generadas (si hay)
-        if blueprint.total_keywords > 0:
-            st.markdown("**🔑 Keywords por Grupo:**")
-            for i, ad_group in enumerate(blueprint.ad_groups[:3]):  # Mostrar solo primeros 3
-                with st.expander(f"📦 {ad_group['name']}"):
-                    # Mostrar primeras 10 keywords
-                    keywords_text = ', '.join(ad_group['keywords'][:10])
-                    if len(ad_group['keywords']) > 10:
-                        keywords_text += f" ... (+{len(ad_group['keywords']) - 10} más)"
-                    st.write(f"**Keywords ({len(ad_group['keywords'])}):** {keywords_text}")
-                    
-                    # Mostrar info del grupo
-                    st.write(f"**CPC Sugerido:** ${ad_group['max_cpc_bid']:.2f}")
-                    st.write(f"**Score:** {ad_group['score']:.1f}/100")
-                    st.write(f"**Anuncios:** {len(ad_group['ads'])}")
-        
-        # Botones de acción
-        st.markdown("---")
-        
-        # NUEVO: Verificar si hay customer_id seleccionado
-        has_customer = st.session_state.get('selected_customer') is not None
-        
-        if not has_customer:
-            st.warning("⚠️ Selecciona una cuenta de Google Ads en el sidebar para poder publicar")
-        
-        col1, col2, col3 = st.columns(3)
-        
-        with col1:
-            if st.button("💾 Guardar Blueprint", type="secondary", use_container_width=True):
-                try:
-                    # Convertir blueprint a diccionario serializable
-                    blueprint_data = {
-                        'campaign_name': blueprint.campaign_name,
-                        'business_description': blueprint.business_description,
-                        'budget_daily': blueprint.budget_daily,
-                        'target_locations': blueprint.target_locations,
-                        'languages': blueprint.languages,
-                        'total_keywords': blueprint.total_keywords,
-                        'total_ads': blueprint.total_ads,
-                        'estimated_ctr': blueprint.estimated_ctr,
-                        'ad_groups': blueprint.ad_groups,
-                        'created_at': blueprint.created_at,
-                        'status': blueprint.status
-                    }
-                    
-                    # Guardar en historial
-                    user_storage = get_user_storage()
-                    user_storage.add_to_history('autopilot_blueprint_created', blueprint_data)
-                    st.success("✅ Blueprint guardado exitosamente en el historial")
-                    
-                except Exception as e:
-                    st.error(f"❌ Error guardando blueprint: {e}")
-        
-        with col2:
-            if st.button("📊 Exportar CSV", type="secondary", use_container_width=True):
-                # Crear CSV con los datos de la campaña
-                csv_data = []
-                for ad_group in blueprint.ad_groups:
-                    for keyword in ad_group.get('keywords', []):
-                        csv_data.append({
-                            'Campaign': blueprint.campaign_name,
-                            'Ad Group': ad_group.get('name', ''),
-                            'Keyword': keyword,
-                            'Match Type': 'Broad',
-                            'Max CPC': f"${ad_group.get('max_cpc_bid', 1.00):.2f}"
-                        })
-                
-                if csv_data:
-                    df = pd.DataFrame(csv_data)
-                    csv = df.to_csv(index=False)
-                    st.download_button(
-                        label="⬇️ Descargar CSV",
-                        data=csv,
-                        file_name=f"autopilot_campaign_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv",
-                        mime="text/csv",
-                        use_container_width=True
-                    )
-        
-        with col3:
-            if st.button("🔄 Nueva Campaña", type="secondary", use_container_width=True):
-                if 'autopilot_blueprint' in st.session_state:
-                    del st.session_state['autopilot_blueprint']
-                st.success("✅ Listo para nueva campaña")
-                st.rerun()
-        
-        # ============================================================
-        # 🚀 NUEVO: BOTÓN PRINCIPAL DE PUBLICACIÓN
-        # ============================================================
-        
-        st.markdown("---")
-        st.markdown("### 🚀 Publicación a Google Ads")
-        
-        if not has_customer:
-            st.error("❌ Debes seleccionar una cuenta de Google Ads en el sidebar antes de publicar")
-        else:
-            customer_id = st.session_state.selected_customer
-            
-            # Mostrar información de la cuenta
-            account_names = {
-                '7094116152': 'Página 3',
-                '1803044752': 'Página 5',
-                '9759913462': 'Página 4',
-                '6639082872': 'Account',
-                '1919262845': 'Marketing',
-                '7004285893': 'Página 9'
-            }
-            account_name = account_names.get(customer_id, 'Cuenta')
-            
-            st.info(f"📍 **Cuenta seleccionada:** {account_name} (`{customer_id}`)")
-            
-            # Modal de confirmación
-            with st.expander("⚠️ CONFIRMAR PUBLICACIÓN", expanded=True):
-                st.warning(f"""
-                **Estás a punto de publicar a Google Ads:**
-                
-                📊 **Detalles de la campaña:**
-                - **Nombre:** {blueprint.campaign_name}
-                - **Presupuesto diario:** ${blueprint.budget_daily:.2f}
-                - **Grupos de anuncios:** {len(blueprint.ad_groups)}
-                - **Total de anuncios:** {blueprint.total_ads}
-                - **Total de keywords:** {blueprint.total_keywords}
-                - **Ubicaciones:** {', '.join(blueprint.target_locations[:3])}{'...' if len(blueprint.target_locations) > 3 else ''}
-                
-                ⚠️ **IMPORTANTE:**
-                - La campaña se creará en estado **PAUSADO**
-                - Debes activarla manualmente desde Google Ads
-                - Se aplicarán los cargos según el presupuesto configurado
-                - Esta acción **NO se puede deshacer** fácilmente
-                
-                ¿Deseas continuar?
-                """)
-                
-                col_a, col_b = st.columns(2)
-                
-                with col_a:
-                    if st.button("✅ SÍ, PUBLICAR AHORA", type="primary", use_container_width=True):
-                        publish_autopilot_campaign(autopilot, blueprint, customer_id)
-                
-                with col_b:
-                    if st.button("❌ Cancelar", use_container_width=True):
-                        st.info("❌ Publicación cancelada")
 
 # ============================================================================
 # FUNCIÓN DE PUBLICACIÓN AUTOPILOT
@@ -2407,6 +2343,10 @@ def publish_autopilot_campaign(autopilot, blueprint, customer_id):
             
             # Validar acceso a la cuenta
             try:
+                # Obtener cliente primero
+                wrapper = st.session_state.google_ads_client
+                client = wrapper.get_client()
+                
                 # Hacer una consulta simple para verificar acceso
                 query = "SELECT customer.id, customer.descriptive_name FROM customer LIMIT 1"
                 response = client.search(customer_id, query)
