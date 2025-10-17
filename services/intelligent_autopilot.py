@@ -840,6 +840,15 @@ class IntelligentAutopilot:
             
             logger.info(f"📥 Resultado: {result}")
             
+            # ✅ VERIFICAR TÍTULOS CON INSERCIONES DE UBICACIÓN
+            if use_location_insertion:
+                total_location_headlines = 0
+                for ad_data in result.get('ads', []):
+                    if ad_data.get('headlines'):
+                        location_count = sum(1 for h in ad_data['headlines'] if '{LOCATION(' in h)
+                        total_location_headlines += location_count
+                logger.info(f"📍 VERIFICACIÓN: {total_location_headlines} títulos con {LOCATION()} generados en total")
+            
              # ✅ PROCESAR ANUNCIOS GENERADOS CON VALIDACIÓN ESTRICTA
             ads = []
             
