@@ -260,7 +260,8 @@ class IntelligentAutopilot:
                     ai_model=ai_model,
                     tone='profesional',
                     creativity=creativity,
-                    use_magnetic=use_magnetic
+                    use_magnetic=use_magnetic,
+                    use_location_insertion=group_config.get('use_location_insertion', False)  # ✅ PASAR PARÁMETRO
                 )
                 
                 if not ads_result or len(ads_result) == 0:
@@ -389,7 +390,8 @@ class IntelligentAutopilot:
         business_url: str,
         user_keywords: List[str],
         advanced_config: Dict[str, Any],
-        progress_callback=None
+        progress_callback=None,
+        use_location_insertion: bool = False
     ) -> List[Dict[str, Any]]:
         """
         Genera grupos con IA usando keywords del usuario
@@ -409,6 +411,7 @@ class IntelligentAutopilot:
                 - tone: str
                 - use_magnetic: bool (opcional, para prompts magnéticos)
             progress_callback: Callback de progreso
+            use_location_insertion: bool para inserciones de ubicación
         """
         try:
             # ✅ REINICIAR CONTROL DE UNICIDAD PARA NUEVA GENERACIÓN
@@ -446,6 +449,10 @@ class IntelligentAutopilot:
             logger.info(f"📝 Anuncios por grupo: {ads_per_group}")
             logger.info(f"🎨 Match types: {match_types}")
             logger.info(f"🤖 IA: {ai_provider} / {ai_model}")
+            
+            if use_location_insertion:
+                logger.info("📍 INSERCIONES DE UBICACIÓN ACTIVADAS")
+                logger.info("📍 Se generarán títulos con {LOCATION(City)}, {LOCATION(State)}, {LOCATION(Country)}")
             
             # ✅ DIVIDIR KEYWORDS DEL USUARIO EN GRUPOS
             if progress_callback:
@@ -512,10 +519,21 @@ class IntelligentAutopilot:
                         ai_model=ai_model,
                         tone=tone,
                         creativity=creativity,
-                        use_magnetic=use_magnetic  # ✅ PASAR PARÁMETRO MAGNÉTICO
+                        use_magnetic=use_magnetic,  # ✅ PASAR PARÁMETRO MAGNÉTICO
+                        use_location_insertion=use_location_insertion  # ✅ PASAR AQUÍ
                     )
                     
                     logger.info(f"✅ {len(ads)} anuncios generados para grupo {idx+1}")
+                    
+                    # ✅ VERIFICAR SI HAY TÍTULOS CON INSERCIONES
+                    if use_location_insertion:
+                        for ad_data in ads:
+                            headlines = ad_data.get('headlines', [])
+                            location_count = sum(1 for h in headlines if '{LOCATION(' in h)
+                            if location_count > 0:
+                                logger.info(f"✅ Anuncio con {location_count} títulos con inserción")
+                            else:
+                                logger.warning(f"⚠️ Anuncio sin títulos con inserción")
                     
                     # ✅ APLICAR MATCH TYPES A KEYWORDS
                     keywords_with_match = self._apply_match_types(
@@ -715,16 +733,24 @@ class IntelligentAutopilot:
         ai_model: str,
         tone: str,
         creativity: float,
-        use_magnetic: bool = False  # ✅ PARÁMETRO MAGNÉTICO
+        use_magnetic: bool = False,  # ✅ PARÁMETRO MAGNÉTICO
+        use_location_insertion: bool = False
     ) -> List[Dict[str, Any]]:
         """
         Genera anuncios REALES usando IA con soporte magnético
         """
         try:
+            # ✅ LOGS DE DEBUG PARA INSERCIONES DE UBICACIÓN
+            logger.info("="*60)
+            logger.info("DEBUG: _generate_real_ads_with_ai llamado con:")
+            logger.info(f"  use_location_insertion = {use_location_insertion}")
+            logger.info("="*60)
+            
             logger.info(f"🤖 Generando {num_ads} anuncios con {ai_provider}/{ai_model}")
             logger.info(f"🔑 Keywords: {keywords}")
             logger.info(f"🎨 Tono: {tone}, Creatividad: {creativity}")
             logger.info(f"🔴 Modo magnético: {use_magnetic}")
+            logger.info(f"📍 Inserciones de ubicación: {use_location_insertion}")
             
             # ✅ CONFIGURAR IA
             from utils.user_storage import get_user_storage
@@ -805,11 +831,11 @@ class IntelligentAutopilot:
                 num_descriptions=4,
                 tone=tone,
                 validate=True,
-                business_type=business_type,
+                business_type="esoteric",
                 save_to_csv=False,
-                custom_prompt=custom_prompt, # ✅ Pasar el prompt avanzado
                 temperature=creativity,
-                # El flag `use_magnetic` se podría manejar aquí si se refina la lógica
+                use_location_insertion=use_location_insertion,
+                exclude_descriptions=list(self.used_descriptions)
             )
             
             logger.info(f"📥 Resultado: {result}")

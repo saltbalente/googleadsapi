@@ -153,7 +153,8 @@ class OpenAIProvider(AIProvider):
     def generate_ad(self, keywords: List[str], num_headlines: int = 15, 
                    num_descriptions: int = 4, tone: str = "profesional",
                    business_type: str = "auto", temperature: float = 0.7,
-                   ad_variation_seed: int = 0, custom_prompt: str = None) -> Dict[str, Any]:
+                   ad_variation_seed: int = 0, custom_prompt: str = None,
+                   use_location_insertion: bool = False) -> Dict[str, Any]:
         """Genera anuncios usando OpenAI GPT con soporte de variación"""
         try:
             # Validación de entrada
@@ -163,11 +164,12 @@ class OpenAIProvider(AIProvider):
             if not self.api_key:
                 raise ValueError("API key de OpenAI no configurada")
             
-            # ✅ USAR PROMPT PERSONALIZADO O ESPECIALIZADO CON SEED DE VARIACIÓN
+            # Si hay prompt personalizado, usarlo
             if custom_prompt:
                 prompt = custom_prompt
-                logger.info("🧠 Usando prompt personalizado proporcionado")
             else:
+                # Generar prompt estándar
+                from modules.ad_prompt_generator import AdPromptTemplates
                 prompt = AdPromptTemplates.get_prompt_for_keywords(
                     keywords=keywords,
                     num_headlines=num_headlines,
@@ -176,7 +178,7 @@ class OpenAIProvider(AIProvider):
                     business_type=business_type,
                     temperature=temperature,
                     ad_variation_seed=ad_variation_seed,
-                    exclude_descriptions=exclude_descriptions 
+                    use_location_insertion=use_location_insertion  # ✅ CRÍTICO
                 )
                 logger.info("🔄 Usando prompt generado automáticamente")
             
@@ -188,8 +190,17 @@ class OpenAIProvider(AIProvider):
             if ad_variation_seed == 0 and not self.test_connection():
                 raise ConnectionError("No se pudo conectar con OpenAI. Verifica tu API key.")
             
-            # ✅ SYSTEM MESSAGE MEJORADO: Anti-copia de ejemplos
-            system_message = """Eres un experto copywriter de Google Ads especializado en crear contenido único y original.
+            # ✅ INSTRUCCIÓN ADICIONAL PARA REFORZAR INSERCIONES
+            if use_location_insertion:
+                system_message = """Eres un experto en Google Ads. 
+IMPORTANTE: Cuando veas instrucciones de INSERCIONES DE UBICACIÓN, debes usar EXACTAMENTE los códigos:
+- {LOCATION(City)} para ciudad
+- {LOCATION(State)} para estado  
+- {LOCATION(Country)} para país
+
+NO escribas "cerca de ti" o "en tu ciudad". USA LOS CÓDIGOS LITERALES con llaves."""
+            else:
+                system_message = """Eres un experto copywriter de Google Ads especializado en crear contenido único y original.
 
 REGLAS CRÍTICAS Y NO NEGOCIABLES:
 1. ❌ NUNCA copies ejemplos literalmente del prompt
@@ -234,6 +245,11 @@ VALIDACIÓN: Antes de responder, verifica que:
             
             # Parsear JSON
             result = json.loads(content)
+            
+            # ✅ VERIFICACIÓN DE INSERCIONES
+            if use_location_insertion:
+                location_count = sum(1 for h in result.get('headlines', []) if '{LOCATION(' in h)
+                logger.info(f"   📍 Títulos con inserción generados: {location_count}")
             
             # ✅ VALIDACIÓN Y TRUNCADO FORZADO
             if "headlines" not in result or "descriptions" not in result:
@@ -330,7 +346,8 @@ class GeminiProvider(AIProvider):
     def generate_ad(self, keywords: List[str], num_headlines: int = 15, 
                    num_descriptions: int = 4, tone: str = "profesional",
                    business_type: str = "auto", temperature: float = 0.7,
-                   ad_variation_seed: int = 0, custom_prompt: str = None) -> Dict[str, Any]:
+                   ad_variation_seed: int = 0, custom_prompt: str = None,
+                   use_location_insertion: bool = False) -> Dict[str, Any]:
         """Genera anuncios usando Google Gemini con soporte de variación"""
         try:
             # Validación de entrada
@@ -340,11 +357,12 @@ class GeminiProvider(AIProvider):
             if not self.api_key:
                 raise ValueError("API key de Gemini no configurada")
             
-            # ✅ USAR PROMPT PERSONALIZADO O ESPECIALIZADO CON SEED DE VARIACIÓN
+            # Si hay prompt personalizado, usarlo
             if custom_prompt:
                 prompt = custom_prompt
-                logger.info("🧠 Usando prompt personalizado proporcionado")
             else:
+                # Generar prompt estándar
+                from modules.ad_prompt_generator import AdPromptTemplates
                 prompt = AdPromptTemplates.get_prompt_for_keywords(
                     keywords=keywords,
                     num_headlines=num_headlines,
@@ -353,7 +371,7 @@ class GeminiProvider(AIProvider):
                     business_type=business_type,
                     temperature=temperature,
                     ad_variation_seed=ad_variation_seed,
-                    exclude_descriptions=exclude_descriptions
+                    use_location_insertion=use_location_insertion  # ✅ CRÍTICO
                 )
                 logger.info("🔄 Usando prompt generado automáticamente")
             
@@ -365,8 +383,18 @@ class GeminiProvider(AIProvider):
             if ad_variation_seed == 0 and not self.test_connection():
                 raise ConnectionError("No se pudo conectar con Gemini. Verifica tu API key.")
             
-            # ✅ AGREGAR INSTRUCCIONES ANTI-COPIA AL PROMPT
-            enhanced_prompt = f"""INSTRUCCIONES CRÍTICAS:
+            # ✅ INSTRUCCIÓN ADICIONAL PARA REFORZAR INSERCIONES
+            if use_location_insertion:
+                enhanced_prompt = f"""IMPORTANTE: Cuando veas instrucciones de INSERCIONES DE UBICACIÓN, debes usar EXACTAMENTE los códigos:
+- {{LOCATION(City)}} para ciudad
+- {{LOCATION(State)}} para estado  
+- {{LOCATION(Country)}} para país
+
+NO escribas "cerca de ti" o "en tu ciudad". USA LOS CÓDIGOS LITERALES con llaves.
+
+{prompt}"""
+            else:
+                enhanced_prompt = f"""INSTRUCCIONES CRÍTICAS:
 - NUNCA copies ejemplos literalmente
 - SIEMPRE genera contenido 100% ÚNICO
 - Cada descripción debe ser COMPLETAMENTE DISTINTA
@@ -394,6 +422,11 @@ Los ejemplos en el prompt son SOLO inspiración. NO copies el texto exacto.
             
             # Parsear JSON
             result = json.loads(content)
+            
+            # ✅ VERIFICACIÓN DE INSERCIONES
+            if use_location_insertion:
+                location_count = sum(1 for h in result.get('headlines', []) if '{LOCATION(' in h)
+                logger.info(f"   📍 Títulos con inserción generados: {location_count}")
             
             # Validar estructura
             if not isinstance(result, dict) or "headlines" not in result or "descriptions" not in result:

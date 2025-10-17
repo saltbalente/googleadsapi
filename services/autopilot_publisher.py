@@ -722,15 +722,16 @@ class AutopilotPublisher:
     # =======================================================================
     
     def _create_responsive_search_ad(
-        self,
-        customer_id: str,
-        ad_group_resource_name: str,
-        headlines: List[str],
-        descriptions: List[str],
-        final_url: str
-    ) -> Dict[str, Any]:
-        """
-        Crea un Responsive Search Ad
+    self,
+    customer_id: str,
+    ad_group_resource: str,
+    headlines: List[str],
+    descriptions: List[str],
+    final_url: str,
+    path1: Optional[str] = None,
+    path2: Optional[str] = None
+    ) -> Optional[str]:
+        """Crea un Responsive Search Ad"""
         
         Returns:
             {
@@ -745,6 +746,13 @@ class AutopilotPublisher:
             logger.info(f"   - Headlines: {len(headlines)}")
             logger.info(f"   - Descriptions: {len(descriptions)}")
             logger.info(f"   - URL: {final_url}")
+            
+            # ✅ LOG para verificar títulos con inserciones
+            location_headlines = [h for h in headlines if '{LOCATION(' in h]
+            if location_headlines:
+                logger.info(f"📍 Publicando {len(location_headlines)} títulos con inserciones:")
+                for h in location_headlines:
+                    logger.info(f"   - {h}")
             
             ad_group_ad_service = self.client.get_service("AdGroupAdService")
             
@@ -763,9 +771,23 @@ class AutopilotPublisher:
             # Headlines (mínimo 3, máximo 15)
             for headline_text in headlines[:15]:
                 headline = self.client.get_type("AdTextAsset")
-                # ✅ LIMPIAR SÍMBOLOS PROHIBIDOS
-                clean_headline = self._clean_prohibited_symbols(headline_text)
+                
+                # ✅ IMPORTANTE: Google Ads acepta {LOCATION(City)} tal cual
+                # NO necesitas modificar el texto, Google lo procesa automáticamente
+                if '{LOCATION(' in headline_text:
+                    # Para títulos con inserción, NO limpiar los códigos {LOCATION()}
+                    clean_headline = headline_text
+                    logger.info(f"   ✅ Título con inserción agregado: {headline_text}")
+                else:
+                    # ✅ LIMPIAR SÍMBOLOS PROHIBIDOS solo en títulos normales
+                    clean_headline = self._clean_prohibited_symbols(headline_text)
+                
                 headline.text = clean_headline[:30]  # Límite de 30 caracteres
+                
+                # Si tiene inserción, NO fijar posición (dejar que rote)
+                if '{LOCATION(' not in headline_text:
+                    headline.pinned_field = self.client.enums.ServedAssetFieldTypeEnum.UNSPECIFIED
+                
                 rsa.headlines.append(headline)
             
             # Descriptions (mínimo 2, máximo 4)

@@ -237,13 +237,25 @@ class AIAdGenerator:
         business_type: str = "esoteric",
         save_to_csv: bool = False,
         temperature: float = 0.7,
-        custom_prompt: Optional[str] = None
+        custom_prompt: Optional[str] = None,
+        use_location_insertion: bool = False,  # ✅ AGREGAR
+        exclude_descriptions: List[str] = []   # ✅ AGREGAR
     ) -> Dict[str, Any]:
         """
         Genera un lote de anuncios y opcionalmente guarda los resultados en un CSV.
         """
         ads = []
         start_time = time.time()
+        
+        # ✅ LOGS DE DEBUG PARA INSERCIONES DE UBICACIÓN
+        logger.info("="*60)
+        logger.info("DEBUG: generate_batch llamado con:")
+        logger.info(f"  use_location_insertion = {use_location_insertion}")
+        logger.info("="*60)
+        
+        # ✅ LOG si se usan inserciones
+        if use_location_insertion:
+            logger.info("📍 MODO DE INSERCIONES DE UBICACIÓN ACTIVADO")
         
         for i in range(num_ads):
             logger.info(f"--- Generando anuncio {i+1}/{num_ads} ---")
@@ -256,9 +268,17 @@ class AIAdGenerator:
                     validate=validate,
                     business_type=business_type,
                     temperature=temperature,
-                    custom_prompt=custom_prompt
+                    custom_prompt=custom_prompt,
+                    ad_variation_seed=i,  # ✅ Usar índice como seed
+                    use_location_insertion=use_location_insertion,  # ✅ PASAR
+                    exclude_descriptions=exclude_descriptions        # ✅ PASAR
                 )
                 ads.append(ad)
+                
+                # ✅ Agregar descripciones usadas al pool de exclusión
+                if 'descriptions' in ad and ad['descriptions']:
+                    exclude_descriptions.extend(ad['descriptions'])
+                
                 time.sleep(1) 
             except Exception as e:
                 logger.error(f"Error generando anuncio {i+1}: {e}")
@@ -607,7 +627,9 @@ FORMATO: Responde SOLO en JSON:
         business_type: str = "esoteric",
         temperature: float = 0.7,
         custom_prompt: Optional[str] = None,
-        ad_variation_seed: int = 0
+        ad_variation_seed: int = 0,
+        use_location_insertion: bool = False,  # ✅ AGREGAR ESTE PARÁMETRO
+        exclude_descriptions: List[str] = []   # ✅ AGREGAR ESTE PARÁMETRO
     ) -> Dict[str, Any]:
         """
         Genera un solo anuncio para un conjunto de palabras clave.
@@ -616,7 +638,11 @@ FORMATO: Responde SOLO en JSON:
         logger.info(f"🚀 Iniciando generación de anuncio con {self.provider_type}")
         logger.info(f"   - Keywords: {keywords[:3]}...")
         logger.info(f"   - Tono: {tone}, Tipo: {business_type}")
-
+        
+        # ✅ NUEVO: Log de inserciones de ubicación
+        if use_location_insertion:
+            logger.info("   📍 INSERCIONES DE UBICACIÓN ACTIVADAS")
+        
         ad_data = {
             "keywords": keywords,
             "headlines": [],
@@ -626,7 +652,8 @@ FORMATO: Responde SOLO en JSON:
             "model": self.model,
             "tone": tone,
             "validation_results": None,
-            "timestamp": datetime.now().isoformat()
+            "timestamp": datetime.now().isoformat(),
+            "use_location_insertion": use_location_insertion  # ✅ GUARDAR FLAG
         }
 
         try:
@@ -635,23 +662,37 @@ FORMATO: Responde SOLO en JSON:
                 prompt = custom_prompt
                 logger.info("   - 🧠 Usando prompt personalizado.")
             else:
-                logger.info("   - 📝 Generando prompt estándar desde ad_prompt_generator.")
+                logger.info("   - 📝 Generando prompt estándar con inserciones de ubicación.")
+                
+                # ✅ IMPORTAR Y USAR AdPromptTemplates CORRECTAMENTE
                 from modules.ad_prompt_generator import AdPromptTemplates
-                prompt_generator = AdPromptTemplates()
-                prompt = prompt_generator.get_prompt_for_keywords(
+                
+                # ✅ GENERAR PROMPT CON TODOS LOS PARÁMETROS
+                prompt = AdPromptTemplates.get_prompt_for_keywords(
                     keywords=keywords,
                     num_headlines=num_headlines,
                     num_descriptions=num_descriptions,
                     tone=tone,
                     business_type=business_type,
+                    temperature=temperature,
+                    ad_variation_seed=ad_variation_seed,
+                    use_location_insertion=use_location_insertion,  # ✅ CRÍTICO
+                    exclude_descriptions=exclude_descriptions        # ✅ CRÍTICO
                 )
+                
+                # ✅ DEBUG: Verificar que el prompt contenga instrucciones de ubicación
+                if use_location_insertion:
+                    if "{LOCATION(City)}" in prompt:
+                        logger.info("   ✅ Prompt contiene instrucciones de LOCATION")
+                    else:
+                        logger.warning("   ⚠️ Prompt NO contiene instrucciones de LOCATION")
 
             if not self.provider:
                 raise ValueError("El proveedor de IA no ha sido configurado.")
 
-            logger.info(f"📡 Llamando a provider.generate_ad() con el prompt correcto...")
+            logger.info(f"📡 Llamando a provider.generate_ad() con inserciones={use_location_insertion}...")
             
-            # Llamada corregida al proveedor para generar un solo anuncio
+            # ✅ MODIFICAR: Pasar el prompt COMPLETO al proveedor
             generated_ad = self.provider.generate_ad(
                 keywords=keywords,
                 num_headlines=num_headlines,
@@ -660,13 +701,34 @@ FORMATO: Responde SOLO en JSON:
                 business_type=business_type,
                 temperature=temperature,
                 ad_variation_seed=ad_variation_seed,
-                custom_prompt=custom_prompt  # ✅ Pasar el prompt personalizado
+                custom_prompt=prompt,  # ✅ USAR EL PROMPT GENERADO
+                use_location_insertion=use_location_insertion  # ✅ PASAR FLAG
             )
 
             if not generated_ad or not generated_ad.get("headlines"):
                 raise ValueError("La respuesta del proveedor de IA está vacía o mal formada.")
             
             ad_data.update(generated_ad)
+            
+            # ✅ VALIDACIÓN ESPECÍFICA PARA INSERCIONES DE UBICACIÓN
+            if use_location_insertion:
+                logger.info("🔍 Verificando inserciones de ubicación en títulos...")
+                
+                location_headlines = []
+                regular_headlines = []
+                
+                for headline in ad_data.get('headlines', []):
+                    if '{LOCATION(' in headline:
+                        location_headlines.append(headline)
+                        logger.info(f"   ✅ Título con inserción: {headline}")
+                    else:
+                        regular_headlines.append(headline)
+                
+                logger.info(f"   📊 Títulos con inserción: {len(location_headlines)}")
+                logger.info(f"   📊 Títulos regulares: {len(regular_headlines)}")
+                
+                if len(location_headlines) < 3:
+                    logger.warning(f"   ⚠️ Solo {len(location_headlines)} títulos con inserción (esperado: mínimo 3)")
 
             # Validar y procesar el anuncio generado
             logger.info(f"🔍 Procesando el anuncio generado...")
@@ -674,7 +736,7 @@ FORMATO: Responde SOLO en JSON:
             # Filtrar y validar longitudes
             valid_headlines = [
                 h.strip() for h in ad_data.get('headlines', [])
-                if isinstance(h, str) and 10 <= len(h.strip()) <= 30
+                if isinstance(h, str) and self._is_valid_headline_length(h.strip())
             ]
             
             valid_descriptions = [
@@ -800,6 +862,21 @@ FORMATO: Responde SOLO en JSON:
         except:
             return []
     
+    def _is_valid_headline_length(self, headline: str) -> bool:
+        """
+        ✅ NUEVO: Valida longitud de headline considerando inserciones
+        """
+        # Si tiene inserción de ubicación, la longitud real será mayor
+        if '{LOCATION(' in headline:
+            # Contar solo la parte sin la inserción
+            import re
+            clean_headline = re.sub(r'\{LOCATION\([^)]+\)\}', '', headline)
+            # Permitir hasta 15 chars antes de la inserción (porque la ciudad agregará ~15 chars)
+            return 5 <= len(clean_headline.strip()) <= 15
+        else:
+            # Validación normal
+            return 10 <= len(headline) <= 30
+    
     def load_history(self, limit: int = 100) -> List[Dict[str, Any]]:
         """Carga historial"""
         history = []
@@ -834,7 +911,7 @@ FORMATO: Responde SOLO en JSON:
             return {
                 'total_ads': len(history),
                 'published_ads': len([ad for ad in history if ad.get('published', 'False').lower() == 'true']),
-                'providers': {},
+                'providers': {}, 
                 'tones': {},
                 'batches': {}
             }

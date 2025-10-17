@@ -1511,9 +1511,21 @@ RESPONDE SOLO ESTO (sin ``` ni json):
         exclude_descriptions: List[str] = []
     ) -> str:
         """Selector de prompt v6.0 con validación"""
+        
+        # ✅ LOGS DE DEBUG PARA INSERCIONES DE UBICACIÓN
+        if use_location_insertion:
+            logger.info("✅ GENERANDO PROMPT CON INSERCIONES DE UBICACIÓN")
+            logger.info("✅ El prompt contendrá instrucciones para {LOCATION(City)}, etc.")
+        
         return AdPromptTemplates.get_transactional_esoteric_prompt(
-            keywords, num_headlines, num_descriptions, tone, temperature, 
-            ad_variation_seed, use_location_insertion, exclude_descriptions
+            keywords=keywords,
+            num_headlines=num_headlines,
+            num_descriptions=num_descriptions,
+            tone=tone,
+            temperature=temperature,
+            ad_variation_seed=ad_variation_seed,
+            use_location_insertion=use_location_insertion,  # ✅ CRÍTICO: PASAR ESTE PARÁMETRO
+            exclude_descriptions=exclude_descriptions
         )
 
 
@@ -1636,6 +1648,9 @@ Usar códigos LITERALES:
 # ============================================================================
 
 import logging
+
+# ✅ Logger global para debug
+logger = logging.getLogger(__name__)
 
 class CTROptimizer:
     """
