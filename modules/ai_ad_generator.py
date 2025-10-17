@@ -8,6 +8,7 @@ import os
 import csv
 import json
 import logging
+import time
 from datetime import datetime
 from typing import Dict, List, Optional, Any
 from pathlib import Path
@@ -146,6 +147,8 @@ class AIAdGenerator:
             storage_path: Ruta personalizada para el CSV. Si es None, usa ~/dashboard-google-ads-data/
         """
         self.provider: Optional[AIProvider] = None
+        self.provider_type: Optional[str] = None  # ✅ Inicializar provider_type
+        self.model: Optional[str] = None  # ✅ Inicializar model
         self.validator = GoogleAdsValidator()
         self.storage_path = self._setup_storage_path(storage_path)
         self._initialize_csv()
@@ -198,13 +201,16 @@ class AIAdGenerator:
         """Configura el proveedor de IA"""
         try:
             provider_type = provider_type.lower().strip()
+            self.provider_type = provider_type  # ✅ Guardar el tipo de proveedor
             
             if provider_type == 'openai':
-                self.provider = OpenAIProvider(api_key, model or "gpt-4")
-                logger.info(f"🤖 Proveedor: OpenAI ({model or 'gpt-4'})")
+                self.model = model or "gpt-4"  # ✅ Guardar el modelo
+                self.provider = OpenAIProvider(api_key, self.model)
+                logger.info(f"🤖 Proveedor: OpenAI ({self.model})")
             elif provider_type == 'gemini':
-                self.provider = GeminiProvider(api_key, model or "gemini-pro")
-                logger.info(f"🤖 Proveedor: Gemini ({model or 'gemini-pro'})")
+                self.model = model or "gemini-pro"  # ✅ Guardar el modelo
+                self.provider = GeminiProvider(api_key, self.model)
+                logger.info(f"🤖 Proveedor: Gemini ({self.model})")
             else:
                 raise ValueError(f"Proveedor no soportado: {provider_type}")
             
@@ -229,12 +235,40 @@ class AIAdGenerator:
         user: str = "saltbalente",
         validate: bool = True,
         business_type: str = "esoteric",
-        save_to_csv: bool = True,
-        temperature: float = 0.7  # ✅ NUEVO
+        save_to_csv: bool = False,
+        temperature: float = 0.7,
+        custom_prompt: Optional[str] = None
     ) -> Dict[str, Any]:
         """
-        ✨ Genera múltiples anuncios en batch con soporte de temperatura
+        Genera un lote de anuncios y opcionalmente guarda los resultados en un CSV.
         """
+        ads = []
+        start_time = time.time()
+        
+        for i in range(num_ads):
+            logger.info(f"--- Generando anuncio {i+1}/{num_ads} ---")
+            try:
+                ad = self.generate_ad(
+                    keywords=keywords,
+                    num_headlines=num_headlines,
+                    num_descriptions=num_descriptions,
+                    tone=tone,
+                    validate=validate,
+                    business_type=business_type,
+                    temperature=temperature,
+                    custom_prompt=custom_prompt
+                )
+                ads.append(ad)
+                time.sleep(1) 
+            except Exception as e:
+                logger.error(f"Error generando anuncio {i+1}: {e}")
+                ads.append({
+                    "keywords": keywords,
+                    "error": str(e)
+                })
+        
+        end_time = time.time()
+        
         batch_id = f"BATCH_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
         
         logger.info("="*60)
@@ -243,24 +277,8 @@ class AIAdGenerator:
         logger.info(f"🎨 Creatividad (temperature): {temperature}")
         logger.info("="*60)
         
-        generated_ads = self.generate_ad(
-            keywords=keywords,
-            num_ads=num_ads,
-            num_headlines=num_headlines,
-            num_descriptions=num_descriptions,
-            tone=tone,
-            user=user,
-            validate=validate,
-            business_type=business_type,
-            temperature=temperature  # ✅ Pasar temperatura
-        )
-        
-        for idx, ad in enumerate(generated_ads):
-            ad['batch_id'] = batch_id
-            ad['index_in_batch'] = idx + 1
-        
-        successful = len([ad for ad in generated_ads if 'error' not in ad or not ad['error']])
-        failed = len(generated_ads) - successful
+        successful = len([ad for ad in ads if 'error' not in ad or not ad['error']])
+        failed = len(ads) - successful
         
         batch_result = {
             'batch_id': batch_id,
@@ -269,7 +287,7 @@ class AIAdGenerator:
             'successful': successful,
             'failed': failed,
             'success_rate': (successful / num_ads * 100) if num_ads > 0 else 0,
-            'ads': generated_ads,
+            'ads': ads,
             'keywords': keywords,
             'tone': tone,
             'temperature': temperature,
@@ -277,7 +295,7 @@ class AIAdGenerator:
         }
         
         if save_to_csv and successful > 0:
-            for ad in generated_ads:
+            for ad in ads:
                 if 'error' not in ad or not ad['error']:
                     try:
                         self._save_to_csv(ad)
@@ -581,242 +599,140 @@ FORMATO: Responde SOLO en JSON:
     def generate_ad(
         self,
         keywords: List[str],
-        num_ads: int = 1,
         num_headlines: int = 15,
         num_descriptions: int = 4,
         tone: str = "profesional",
         user: str = "saltbalente",
         validate: bool = True,
         business_type: str = "esoteric",
-        temperature: float = 0.7  # ✅ NUEVO: Parámetro de creatividad
-    ) -> List[Dict[str, Any]]:
+        temperature: float = 0.7,
+        custom_prompt: Optional[str] = None,
+        ad_variation_seed: int = 0
+    ) -> Dict[str, Any]:
         """
-        Genera múltiples anuncios con variación garantizada
-        Versión 3.0 - Usa generate_multiple_ads() del provider
+        Genera un solo anuncio para un conjunto de palabras clave.
+        Si se proporciona un custom_prompt, lo utiliza en lugar de generar uno nuevo.
         """
-        
-        logger.info("="*60)
-        logger.info("🚀 GENERACIÓN DE ANUNCIOS v3.0")
-        logger.info(f"📋 Keywords: {', '.join(keywords[:5])}{'...' if len(keywords) > 5 else ''}")
-        logger.info(f"🔢 Cantidad solicitada: {num_ads}")
-        logger.info(f"🎨 Temperatura/Creatividad: {temperature}")
-        logger.info(f"🏢 Business type: {business_type}")
-        logger.info("="*60)
-        
-        if not self.provider:
-            logger.error("❌ No hay proveedor configurado")
-            return [{'error': 'No hay proveedor configurado', 'headlines': [], 'descriptions': []}]
-        
+        logger.info(f"🚀 Iniciando generación de anuncio con {self.provider_type}")
+        logger.info(f"   - Keywords: {keywords[:3]}...")
+        logger.info(f"   - Tono: {tone}, Tipo: {business_type}")
+
+        ad_data = {
+            "keywords": keywords,
+            "headlines": [],
+            "descriptions": [],
+            "error": None,
+            "provider": self.provider_type,
+            "model": self.model,
+            "tone": tone,
+            "validation_results": None,
+            "timestamp": datetime.now().isoformat()
+        }
+
         try:
-            # ✅ USAR EL NUEVO MÉTODO generate_multiple_ads() DEL PROVIDER
-            logger.info(f"📡 Llamando a provider.generate_multiple_ads()...")
+            # Si se proporciona un prompt personalizado, se usa. Si no, se genera.
+            if custom_prompt:
+                prompt = custom_prompt
+                logger.info("   - 🧠 Usando prompt personalizado.")
+            else:
+                logger.info("   - 📝 Generando prompt estándar desde ad_prompt_generator.")
+                from modules.ad_prompt_generator import AdPromptTemplates
+                prompt_generator = AdPromptTemplates()
+                prompt = prompt_generator.get_prompt_for_keywords(
+                    keywords=keywords,
+                    num_headlines=num_headlines,
+                    num_descriptions=num_descriptions,
+                    tone=tone,
+                    business_type=business_type,
+                )
+
+            if not self.provider:
+                raise ValueError("El proveedor de IA no ha sido configurado.")
+
+            logger.info(f"📡 Llamando a provider.generate_ad() con el prompt correcto...")
             
-            generated_ads_raw = self.provider.generate_multiple_ads(
+            # Llamada corregida al proveedor para generar un solo anuncio
+            generated_ad = self.provider.generate_ad(
                 keywords=keywords,
-                num_ads=num_ads,
                 num_headlines=num_headlines,
                 num_descriptions=num_descriptions,
                 tone=tone,
                 business_type=business_type,
-                temperature=temperature  # ✅ Pasar temperatura
+                temperature=temperature,
+                ad_variation_seed=ad_variation_seed,
+                custom_prompt=custom_prompt  # ✅ Pasar el prompt personalizado
             )
+
+            if not generated_ad or not generated_ad.get("headlines"):
+                raise ValueError("La respuesta del proveedor de IA está vacía o mal formada.")
             
-            logger.info(f"📥 Provider retornó {len(generated_ads_raw)} anuncios")
+            ad_data.update(generated_ad)
+
+            # Validar y procesar el anuncio generado
+            logger.info(f"🔍 Procesando el anuncio generado...")
+
+            # Filtrar y validar longitudes
+            valid_headlines = [
+                h.strip() for h in ad_data.get('headlines', [])
+                if isinstance(h, str) and 10 <= len(h.strip()) <= 30
+            ]
             
-            # Procesar y validar cada anuncio
-            processed_ads = []
+            valid_descriptions = [
+                d.strip() for d in ad_data.get('descriptions', [])
+                if isinstance(d, str) and 30 <= len(d.strip()) <= 90
+            ]
             
-            for i, ad_data in enumerate(generated_ads_raw):
-                try:
-                    ad_index = i + 1
-                    logger.info(f"🔍 Procesando anuncio {ad_index}/{len(generated_ads_raw)}...")
-                    
-                    # Validar estructura básica
-                    if not isinstance(ad_data, dict):
-                        logger.warning(f"⚠️ Anuncio {ad_index}: Estructura inválida")
-                        processed_ads.append({
-                            'error': 'Estructura de datos inválida',
-                            'headlines': [],
-                            'descriptions': [],
-                            'ad_number': ad_index
-                        })
-                        continue
-                    
-                    # Si hay error en el anuncio
-                    if 'error' in ad_data and ad_data['error']:
-                        logger.warning(f"⚠️ Anuncio {ad_index}: Error reportado - {ad_data['error']}")
-                        processed_ads.append({
-                            **ad_data,
-                            'ad_number': ad_index
-                        })
-                        continue
-                    
-                    # Validar que tenga headlines y descriptions
-                    if 'headlines' not in ad_data or not ad_data['headlines']:
-                        logger.warning(f"⚠️ Anuncio {ad_index}: Sin títulos")
-                        processed_ads.append({
-                            'error': 'No se generaron títulos',
-                            'headlines': [],
-                            'descriptions': ad_data.get('descriptions', []),
-                            'ad_number': ad_index
-                        })
-                        continue
-                    
-                    if 'descriptions' not in ad_data or not ad_data['descriptions']:
-                        logger.warning(f"⚠️ Anuncio {ad_index}: Sin descripciones")
-                        processed_ads.append({
-                            'error': 'No se generaron descripciones',
-                            'headlines': ad_data.get('headlines', []),
-                            'descriptions': [],
-                            'ad_number': ad_index
-                        })
-                        continue
-                    
-                    # Filtrar y validar longitudes
-                    valid_headlines = [
-                        h.strip() for h in ad_data['headlines'] 
-                        if isinstance(h, str) and 10 <= len(h.strip()) <= 30
-                    ]
-                    
-                    valid_descriptions = [
-                        d.strip() for d in ad_data['descriptions']
-                        if isinstance(d, str) and 30 <= len(d.strip()) <= 90
-                    ]
-                    
-                    logger.info(f"   📊 Títulos válidos: {len(valid_headlines)}/{len(ad_data['headlines'])}")
-                    logger.info(f"   📊 Descripciones válidas: {len(valid_descriptions)}/{len(ad_data['descriptions'])}")
-                    
-                    # ✅ VALIDACIÓN DE SIMILITUD (Títulos y Descripciones)
-                    from difflib import SequenceMatcher
-                    
-                    def texts_are_similar(text1: str, text2: str, threshold: float = 0.85) -> bool:
-                        """Verifica si dos textos son muy similares (>= 85% de similitud)"""
-                        return SequenceMatcher(None, text1.lower(), text2.lower()).ratio() >= threshold
-                    
-                    # Filtrar títulos demasiado similares
-                    unique_valid_headlines = []
-                    for headline in valid_headlines:
-                        is_duplicate = False
-                        for existing_headline in unique_valid_headlines:
-                            if texts_are_similar(headline, existing_headline):
-                                logger.warning(f"⚠️ Título similar rechazado: '{headline[:40]}...'")
-                                is_duplicate = True
-                                break
-                        if not is_duplicate:
-                            unique_valid_headlines.append(headline)
-                    
-                    logger.info(f"   📊 Títulos únicos: {len(unique_valid_headlines)}/{len(valid_headlines)}")
-                    valid_headlines = unique_valid_headlines
-                    
-                    # Filtrar descripciones demasiado similares
-                    unique_valid_descriptions = []
-                    for desc in valid_descriptions:
-                        is_duplicate = False
-                        for existing_desc in unique_valid_descriptions:
-                            if texts_are_similar(desc, existing_desc):
-                                logger.warning(f"⚠️ Descripción similar rechazada: '{desc[:40]}...'")
-                                is_duplicate = True
-                                break
-                        if not is_duplicate:
-                            unique_valid_descriptions.append(desc)
-                    
-                    logger.info(f"   📊 Descripciones únicas: {len(unique_valid_descriptions)}/{len(valid_descriptions)}")
-                    valid_descriptions = unique_valid_descriptions
-                    
-                    # Verificar mínimos requeridos
-                    if len(valid_headlines) < 3:
-                        logger.warning(f"⚠️ Anuncio {ad_index}: Solo {len(valid_headlines)} títulos válidos (mínimo 3)")
-                        processed_ads.append({
-                            'error': f'Insuficientes títulos válidos: {len(valid_headlines)}/3',
-                            'headlines': valid_headlines,
-                            'descriptions': valid_descriptions,
-                            'ad_number': ad_index
-                        })
-                        continue
-                    
-                    if len(valid_descriptions) < 2:
-                        logger.warning(f"⚠️ Anuncio {ad_index}: Solo {len(valid_descriptions)} descripciones válidas (mínimo 2)")
-                        processed_ads.append({
-                            'error': f'Insuficientes descripciones válidas: {len(valid_descriptions)}/2',
-                            'headlines': valid_headlines,
-                            'descriptions': valid_descriptions,
-                            'ad_number': ad_index
-                        })
-                        continue
-                    
-                    # Actualizar el ad_data con elementos validados
-                    ad_data['headlines'] = valid_headlines
-                    ad_data['descriptions'] = valid_descriptions
-                    
-                    # Validar con GoogleAdsValidator si está habilitado
-                    if validate:
-                        try:
-                            validation_result = self.validator.validate_ad(
-                                headlines=valid_headlines,
-                                descriptions=valid_descriptions
-                            )
-                            ad_data['validation_result'] = validation_result
-                            logger.info(f"   ✅ Validación Google Ads: {validation_result.get('valid', False)}")
-                        except Exception as val_error:
-                            logger.warning(f"   ⚠️ Error en validación: {val_error}")
-                            ad_data['validation_result'] = {'valid': False, 'error': str(val_error)}
-                    
-                    # Agregar metadatos
-                    ad_data['id'] = f"AD_{datetime.now().strftime('%Y%m%d%H%M%S%f')}_{ad_index}"
-                    ad_data['timestamp'] = datetime.now().isoformat()
-                    ad_data['keywords'] = keywords
-                    ad_data['tone'] = tone
-                    ad_data['user'] = user
-                    ad_data['business_type'] = business_type
-                    ad_data['temperature'] = temperature
-                    ad_data['ad_number'] = ad_index
-                    ad_data['total_ads_in_batch'] = num_ads
-                    
-                    # Metadatos del provider (si no existen)
-                    if 'provider' not in ad_data:
-                        ad_data['provider'] = self.provider.__class__.__name__.replace('Provider', '')
-                    if 'model' not in ad_data:
-                        ad_data['model'] = getattr(self.provider, 'model', 'unknown')
-                    
-                    ad_data['num_headlines'] = len(valid_headlines)
-                    ad_data['num_descriptions'] = len(valid_descriptions)
-                    ad_data['regeneration_count'] = 0
-                    ad_data['published'] = False
-                    ad_data['campaign_id'] = None
-                    ad_data['ad_group_id'] = None
-                    
-                    processed_ads.append(ad_data)
-                    logger.info(f"✅ Anuncio {ad_index} procesado correctamente")
-                
-                except Exception as e:
-                    logger.error(f"❌ Error procesando anuncio {i+1}: {e}", exc_info=True)
-                    processed_ads.append({
-                        'error': f'Error procesando anuncio: {str(e)}',
-                        'headlines': [],
-                        'descriptions': [],
-                        'ad_number': i + 1
-                    })
+            logger.info(f"   📊 Títulos válidos: {len(valid_headlines)}/{len(ad_data.get('headlines', []))}")
+            logger.info(f"   📊 Descripciones válidas: {len(valid_descriptions)}/{len(ad_data.get('descriptions', []))}")
+
+            # Validación de similitud
+            from difflib import SequenceMatcher
+            def texts_are_similar(text1: str, text2: str, threshold: float = 0.85) -> bool:
+                return SequenceMatcher(None, text1.lower(), text2.lower()).ratio() >= threshold
+
+            unique_valid_headlines = []
+            for headline in valid_headlines:
+                is_duplicate = any(texts_are_similar(headline, existing) for existing in unique_valid_headlines)
+                if not is_duplicate:
+                    unique_valid_headlines.append(headline)
             
-            # Estadísticas finales
-            successful = len([ad for ad in processed_ads if 'error' not in ad or not ad['error']])
-            failed = len(processed_ads) - successful
+            unique_valid_descriptions = []
+            for desc in valid_descriptions:
+                is_duplicate = any(texts_are_similar(desc, existing) for existing in unique_valid_descriptions)
+                if not is_duplicate:
+                    unique_valid_descriptions.append(desc)
+
+            ad_data['headlines'] = unique_valid_headlines
+            ad_data['descriptions'] = unique_valid_descriptions
             
-            logger.info("="*60)
-            logger.info(f"🏁 GENERACIÓN COMPLETADA")
-            logger.info(f"   ✅ Exitosos: {successful}/{num_ads}")
-            logger.info(f"   ❌ Fallidos: {failed}/{num_ads}")
-            logger.info(f"   📊 Tasa de éxito: {(successful/num_ads*100):.1f}%")
-            logger.info("="*60)
+            logger.info(f"   📊 Títulos únicos: {len(ad_data['headlines'])}/{len(valid_headlines)}")
+            logger.info(f"   📊 Descripciones únicas: {len(ad_data['descriptions'])}/{len(valid_descriptions)}")
+
+            # Verificar mínimos requeridos
+            if len(ad_data['headlines']) < 3:
+                ad_data['error'] = f'Insuficientes títulos válidos: {len(ad_data["headlines"])}/3'
+                logger.warning(ad_data['error'])
+                return ad_data
+
+            if len(ad_data['descriptions']) < 2:
+                ad_data['error'] = f'Insuficientes descripciones válidas: {len(ad_data["descriptions"])}/2'
+                logger.warning(ad_data['error'])
+                return ad_data
+
+            if validate:
+                validation_result = self.validator.validate_ad(
+                    headlines=ad_data['headlines'],
+                    descriptions=ad_data['descriptions']
+                )
+                ad_data['validation_results'] = validation_result
             
-            return processed_ads
-        
+            logger.info(f"✅ Anuncio procesado correctamente")
+            return ad_data
+
         except Exception as e:
-            logger.error(f"❌ Error crítico en generación: {e}", exc_info=True)
-            return [{
-                'error': f'Error crítico: {str(e)}',
-                'headlines': [],
-                'descriptions': []
-            }]
+            logger.error(f"❌ Error crítico en la generación de un solo anuncio: {e}", exc_info=True)
+            ad_data['error'] = f'Error crítico: {str(e)}'
+            return ad_data
     
     def _save_to_csv(self, ad_data: Dict[str, Any]):
         """Guarda en CSV"""

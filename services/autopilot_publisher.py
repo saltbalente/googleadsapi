@@ -763,13 +763,17 @@ class AutopilotPublisher:
             # Headlines (mínimo 3, máximo 15)
             for headline_text in headlines[:15]:
                 headline = self.client.get_type("AdTextAsset")
-                headline.text = headline_text[:30]  # Límite de 30 caracteres
+                # ✅ LIMPIAR SÍMBOLOS PROHIBIDOS
+                clean_headline = self._clean_prohibited_symbols(headline_text)
+                headline.text = clean_headline[:30]  # Límite de 30 caracteres
                 rsa.headlines.append(headline)
             
             # Descriptions (mínimo 2, máximo 4)
             for description_text in descriptions[:4]:
                 description = self.client.get_type("AdTextAsset")
-                description.text = description_text[:90]  # Límite de 90 caracteres
+                # ✅ LIMPIAR SÍMBOLOS PROHIBIDOS
+                clean_description = self._clean_prohibited_symbols(description_text)
+                description.text = clean_description[:90]  # Límite de 90 caracteres
                 rsa.descriptions.append(description)
             
             # Validar mínimos
@@ -1013,3 +1017,46 @@ class AutopilotPublisher:
             
             result['errors'].append(error_msg)
             return result
+    
+    def _clean_prohibited_symbols(self, text: str) -> str:
+        """
+        Limpia símbolos prohibidos por Google Ads
+        
+        Símbolos problemáticos identificados:
+        - Comillas dobles (") - Causa POLICY_FINDING SYMBOLS
+        - Comillas simples excesivas
+        - Caracteres especiales no permitidos
+        """
+        if not text:
+            return text
+        
+        # ✅ LIMPIAR SÍMBOLOS ESPECÍFICOS
+        cleaned = text
+        
+        # Remover comillas dobles (principal causa del error)
+        cleaned = cleaned.replace('"', '')
+        
+        # Remover comillas simples excesivas (mantener solo las necesarias)
+        cleaned = cleaned.replace("'", '')
+        
+        # Remover otros símbolos problemáticos
+        prohibited_symbols = [
+            '`', '´', ''', ''', '"', '"',  # Comillas tipográficas
+            '«', '»',  # Comillas angulares
+            '‹', '›',  # Comillas angulares simples
+            '„', '‚',  # Comillas bajas
+            '〈', '〉', '《', '》',  # Comillas asiáticas
+            '【', '】', '「', '」',  # Corchetes asiáticos
+        ]
+        
+        for symbol in prohibited_symbols:
+            cleaned = cleaned.replace(symbol, '')
+        
+        # Limpiar espacios múltiples
+        cleaned = ' '.join(cleaned.split())
+        
+        # Log si se hicieron cambios
+        if cleaned != text:
+            logger.debug(f"🧹 Texto limpiado: '{text}' → '{cleaned}'")
+        
+        return cleaned.strip()

@@ -18,6 +18,7 @@ from pathlib import Path
 from modules.ai_ad_generator import AIAdGenerator
 from modules.ad_group_config import AdGroupConfig, CampaignAdGroupsConfig
 from utils.logger import get_logger
+from modules.ad_prompt_generator import build_enhanced_prompt, LOCATION_LEVELS, TONE_PRESETS
 # ============================================================================
 # CONFIGURAR PATH
 # ============================================================================
@@ -61,6 +62,7 @@ AI_MODELS_2025 = {
         'name': '🔵 OpenAI',
         'icon': '🔵',
         'models': [
+            'gpt-5-pro',
             'gpt-4o',
             'gpt-4-turbo',
             'gpt-4',
@@ -68,7 +70,7 @@ AI_MODELS_2025 = {
             'o1-preview',
             'o1-mini'
         ],
-        'default': 'gpt-4o',
+        'default': 'gpt-5-pro',
         'api_url': 'https://platform.openai.com/api-keys',
         'color': '#10a37f'
     },
@@ -76,12 +78,13 @@ AI_MODELS_2025 = {
         'name': '🔴 Google Gemini',
         'icon': '🔴',
         'models': [
+            'gemini-2.0-pro',
             'gemini-2.0-flash-exp',
             'gemini-1.5-pro',
             'gemini-1.5-flash',
             'gemini-pro'
         ],
-        'default': 'gemini-2.0-flash-exp',
+        'default': 'gemini-2.0-pro',
         'api_url': 'https://makersuite.google.com/app/apikey',
         'color': '#4285f4'
     },
@@ -99,16 +102,6 @@ AI_MODELS_2025 = {
         'api_url': 'https://console.anthropic.com/account/keys',
         'color': '#d97706'
     }
-}
-
-TONE_PRESETS = {
-    'emocional': {'icon': '❤️', 'description': 'Apela a sentimientos profundos'},
-    'urgente': {'icon': '⚡', 'description': 'Crea sentido de inmediatez'},
-    'profesional': {'icon': '💼', 'description': 'Tono corporativo y confiable'},
-    'místico': {'icon': '🔮', 'description': 'Lenguaje espiritual y mágico'},
-    'poderoso': {'icon': '💪', 'description': 'Resultados y efectividad'},
-    'esperanzador': {'icon': '🌟', 'description': 'Optimismo y posibilidad'},
-    'tranquilizador': {'icon': '🕊️', 'description': 'Calma y tranquilidad'}
 }
 
 # ============================================================================
@@ -878,7 +871,8 @@ def generate_ads_with_storage(
             tone=tone,
             validate=validate,
             business_type=business_type,
-            save_to_csv=True
+            save_to_csv=True,
+            custom_prompt=enhanced_prompt if apply_best_practices else None
         )
         
         progress_bar.progress(0.8)
@@ -2106,13 +2100,13 @@ def render_autopilot_tab():
             if ai_provider == "openai":
                 ai_model = st.selectbox(
                     "🎯 Modelo",
-                    ["gpt-4o", "gpt-4-turbo", "gpt-4", "gpt-3.5-turbo"],
+                    ["gpt-5-pro", "gpt-4o", "gpt-4-turbo", "gpt-4", "gpt-3.5-turbo"],
                     help="Modelo de OpenAI"
                 )
             elif ai_provider == "gemini":
                 ai_model = st.selectbox(
                     "🎯 Modelo",
-                    ["gemini-2.0-flash-exp", "gemini-1.5-pro", "gemini-1.5-flash"],
+                    ["gemini-2.0-pro", "gemini-2.0-flash-exp", "gemini-1.5-pro", "gemini-1.5-flash"],
                     help="Modelo de Google Gemini"
                 )
             else:  # anthropic

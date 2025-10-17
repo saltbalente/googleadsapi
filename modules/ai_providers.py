@@ -115,7 +115,7 @@ class AIProvider(ABC):
 class OpenAIProvider(AIProvider):
     """Proveedor para OpenAI GPT"""
     
-    def __init__(self, api_key: str, model: str = "gpt-4"):
+    def __init__(self, api_key: str, model: str = "gpt-5-pro"):
         super().__init__(api_key, model)
         
         try:
@@ -153,7 +153,7 @@ class OpenAIProvider(AIProvider):
     def generate_ad(self, keywords: List[str], num_headlines: int = 15, 
                    num_descriptions: int = 4, tone: str = "profesional",
                    business_type: str = "auto", temperature: float = 0.7,
-                   ad_variation_seed: int = 0) -> Dict[str, Any]:
+                   ad_variation_seed: int = 0, custom_prompt: str = None) -> Dict[str, Any]:
         """Genera anuncios usando OpenAI GPT con soporte de variación"""
         try:
             # Validación de entrada
@@ -163,17 +163,22 @@ class OpenAIProvider(AIProvider):
             if not self.api_key:
                 raise ValueError("API key de OpenAI no configurada")
             
-            # ✅ USAR PROMPT ESPECIALIZADO CON SEED DE VARIACIÓN
-            prompt = AdPromptTemplates.get_prompt_for_keywords(
-                keywords=keywords,
-                num_headlines=num_headlines,
-                num_descriptions=num_descriptions,
-                tone=tone,
-                business_type=business_type,
-                temperature=temperature,
-                ad_variation_seed=ad_variation_seed
-                exclude_descriptions=exclude_descriptions 
-            )
+            # ✅ USAR PROMPT PERSONALIZADO O ESPECIALIZADO CON SEED DE VARIACIÓN
+            if custom_prompt:
+                prompt = custom_prompt
+                logger.info("🧠 Usando prompt personalizado proporcionado")
+            else:
+                prompt = AdPromptTemplates.get_prompt_for_keywords(
+                    keywords=keywords,
+                    num_headlines=num_headlines,
+                    num_descriptions=num_descriptions,
+                    tone=tone,
+                    business_type=business_type,
+                    temperature=temperature,
+                    ad_variation_seed=ad_variation_seed,
+                    exclude_descriptions=exclude_descriptions 
+                )
+                logger.info("🔄 Usando prompt generado automáticamente")
             
             logger.info(f"🤖 OpenAI - Anuncio #{ad_variation_seed + 1} - {self.model}")
             logger.info(f"📋 Keywords: {', '.join(keywords[:5])}{'...' if len(keywords) > 5 else ''}")
@@ -291,7 +296,7 @@ VALIDACIÓN: Antes de responder, verifica que:
 class GeminiProvider(AIProvider):
     """Proveedor para Google Gemini"""
     
-    def __init__(self, api_key: str, model: str = "gemini-pro"):
+    def __init__(self, api_key: str, model: str = "gemini-2.0-pro"):
         super().__init__(api_key, model)
         
         try:
@@ -325,7 +330,7 @@ class GeminiProvider(AIProvider):
     def generate_ad(self, keywords: List[str], num_headlines: int = 15, 
                    num_descriptions: int = 4, tone: str = "profesional",
                    business_type: str = "auto", temperature: float = 0.7,
-                   ad_variation_seed: int = 0) -> Dict[str, Any]:
+                   ad_variation_seed: int = 0, custom_prompt: str = None) -> Dict[str, Any]:
         """Genera anuncios usando Google Gemini con soporte de variación"""
         try:
             # Validación de entrada
@@ -335,17 +340,22 @@ class GeminiProvider(AIProvider):
             if not self.api_key:
                 raise ValueError("API key de Gemini no configurada")
             
-            # ✅ USAR PROMPT ESPECIALIZADO CON SEED DE VARIACIÓN
-            prompt = AdPromptTemplates.get_prompt_for_keywords(
-                keywords=keywords,
-                num_headlines=num_headlines,
-                num_descriptions=num_descriptions,
-                tone=tone,
-                business_type=business_type,
-                temperature=temperature,
-                ad_variation_seed=ad_variation_seed
-                exclude_descriptions=exclude_descriptions
-            )
+            # ✅ USAR PROMPT PERSONALIZADO O ESPECIALIZADO CON SEED DE VARIACIÓN
+            if custom_prompt:
+                prompt = custom_prompt
+                logger.info("🧠 Usando prompt personalizado proporcionado")
+            else:
+                prompt = AdPromptTemplates.get_prompt_for_keywords(
+                    keywords=keywords,
+                    num_headlines=num_headlines,
+                    num_descriptions=num_descriptions,
+                    tone=tone,
+                    business_type=business_type,
+                    temperature=temperature,
+                    ad_variation_seed=ad_variation_seed,
+                    exclude_descriptions=exclude_descriptions
+                )
+                logger.info("🔄 Usando prompt generado automáticamente")
             
             logger.info(f"🤖 Gemini - Anuncio #{ad_variation_seed + 1} - {self.model}")
             logger.info(f"📋 Keywords: {', '.join(keywords[:5])}{'...' if len(keywords) > 5 else ''}")

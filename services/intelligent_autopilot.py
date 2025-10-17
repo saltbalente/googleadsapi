@@ -17,6 +17,7 @@ from services.autopilot_publisher import AutopilotPublisher
 from modules.models import Campaign, CampaignStatus
 from utils.logger import get_logger
 from modules.ai_ad_generator import AIAdGenerator
+from modules.ad_prompt_generator import build_enhanced_prompt
 
 logger = get_logger(__name__)
 
@@ -765,46 +766,53 @@ class IntelligentAutopilot:
                 logger.info("🔮 Negocio esotérico detectado")
             
             # ✅ GENERAR CON IA (NORMAL O MAGNÉTICO)
+            
+            # Construir el prompt avanzado
+            logger.info("📝 Construyendo prompt avanzado para Autopilot...")
+            logger.info("🔍 DEBUG: Intentando importar build_enhanced_prompt...")
+            
+            try:
+                custom_prompt = build_enhanced_prompt(
+                keywords=keywords[:10],
+                tone=tone,
+                num_headlines=15,
+                num_descriptions=4,
+                use_location_insertion=False, # Por defecto para Autopilot
+                location_levels=['city', 'state', 'country'], # Por defecto para Autopilot
+                business_type=business_type
+                )
+                logger.info("✅✅✅ PRUEBA: Prompt avanzado construido en AUTOPILOT. Inicio del prompt:")
+                logger.info(custom_prompt[:300] + "...")
+            except Exception as e:
+                logger.error(f"❌ ERROR al construir prompt avanzado: {e}")
+                logger.error(f"❌ Tipo de error: {type(e).__name__}")
+                custom_prompt = None
+
             if use_magnetic and is_esoteric:
-                logger.info("🔴 Usando MODO MAGNÉTICO de alta intensidad")
+                logger.info("🔴 Usando MODO MAGNÉTICO de alta intensidad (NOTA: prompt magnético anulará el avanzado)")
+                # El flag use_magnetic en generate_batch activará el prompt magnético internamente.
+                # Aquí podríamos decidir si el prompt magnético anula el `custom_prompt` o no.
+                # Por ahora, la lógica en ai_ad_generator no usa `custom_prompt` si `use_magnetic` es true.
+                # Esto es un comportamiento que podríamos refinar.
                 
-                # Importar clases de prompts
-                from modules.ad_prompt_generator import MagneticAdPrompts
-                
-                # El generador ya tiene el método para manejar prompts magnéticos
-                # Solo necesitamos pasarle el flag use_magnetic
-                result = self.ai_generator.generate_batch(
-                    keywords=keywords[:10],
-                    num_ads=num_ads,
-                    num_headlines=15,
-                    num_descriptions=4,
-                    tone=tone,
-                    validate=True,
-                    business_type='esoteric',  # ✅ IMPORTANTE para activar modo magnético
-                    save_to_csv=False,
-                    use_magnetic=True  # ✅ FLAG MAGNÉTICO
-                    exclude_descriptions=list(self.used_descriptions)
-                )
-                
-                logger.info(f"📥 Resultado magnético: {result}")
-                
-            else:
-                # ✅ GENERAR CON IA NORMAL
-                logger.info("📤 Llamando a generate_batch normal...")
-                
-                result = self.ai_generator.generate_batch(
-                    keywords=keywords[:10],
-                    num_ads=num_ads,
-                    num_headlines=15,
-                    num_descriptions=4,
-                    tone=tone,
-                    validate=True,
-                    business_type=business_type,
-                    save_to_csv=False
-                    exclude_descriptions=list(self.used_descriptions)
-                )
-                
-                logger.info(f"📥 Resultado normal: {result}")
+            logger.info("📤 Llamando a generate_batch...")
+            logger.info("✅✅✅ PRUEBA: Verificando que `custom_prompt` se pasa a `generate_batch`.")
+            
+            result = self.ai_generator.generate_batch(
+                keywords=keywords[:10],
+                num_ads=num_ads,
+                num_headlines=15,
+                num_descriptions=4,
+                tone=tone,
+                validate=True,
+                business_type=business_type,
+                save_to_csv=False,
+                custom_prompt=custom_prompt, # ✅ Pasar el prompt avanzado
+                temperature=creativity,
+                # El flag `use_magnetic` se podría manejar aquí si se refina la lógica
+            )
+            
+            logger.info(f"📥 Resultado: {result}")
             
              # ✅ PROCESAR ANUNCIOS GENERADOS CON VALIDACIÓN ESTRICTA
             ads = []
