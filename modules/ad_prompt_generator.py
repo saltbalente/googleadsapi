@@ -129,13 +129,20 @@ MEJORES PRÁCTICAS A APLICAR:
    {chr(10).join([f'   - {{{code}}}' for code in location_codes])}
    
    EJEMPLOS DE USO CORRECTO (CORTOS Y EFECTIVOS):
-   - "Brujos {{LOCATION(City)}}"
-   - "Amarres {{LOCATION(State)}}"
-   - "Videntes {{LOCATION(City)}}"
-   - "Rituales {{LOCATION(State)}}"
-   - "Consulta {{LOCATION(City)}}"
+   ✅ **EJEMPLOS CORRECTOS (1-2 PALABRAS + INSERCIÓN):**
+   "Brujos {{LOCATION(City)}}"                    ← 1 palabra
+   "Amarres {{LOCATION(State)}}"                  ← 1 palabra
+   "Brujos En {{LOCATION(City)}}"                 ← 2 palabras
+   "Rituales {{LOCATION(Country)}}"               ← 1 palabra
+   "Hechizos {{LOCATION(City)}}"                  ← 1 palabra
+
+   ❌ **INCORRECTO (MÁS DE 2 PALABRAS):**
+   "Brujos Profesionales {{LOCATION(City)}}"      ← DEMASIADO LARGO
+   "Endulzamientos De Amor {{LOCATION(State)}}"          ← DEMASIADO LARGO
    
    REGLAS CRÍTICAS:
+   - ⚠️ **REGLA CRÍTICA:** 
+   - MÁXIMO 1-2 PALABRAS antes de {{LOCATION(...)}} para evitar TRUNCAMIENTO
    - Usar exactamente la sintaxis: {{LOCATION(City)}}, {{LOCATION(State)}}, {{LOCATION(Country)}}
    - Mínimo 3 títulos con inserción de ubicación
    - Máximo 5 títulos con inserción de ubicación
@@ -144,6 +151,12 @@ MEJORES PRÁCTICAS A APLICAR:
    - Los títulos con ubicación NO deben exceder 30 caracteres (incluyendo el código)
    - Distribuir entre diferentes niveles de ubicación
    - Los títulos con ubicación deben ser naturales y específicos
+
+   📊 **GENERAR:**
+   - {max(1, location_count//3 + location_count%3)} títulos: [Palabra] {{LOCATION(City)}}
+   - {max(1, location_count//3)} títulos: [Palabra] {{LOCATION(State)}}
+   - {max(1, location_count//3)} títulos: [Palabra] {{LOCATION(Country)}}
+
 
 """
 
@@ -1116,12 +1129,13 @@ class DescriptionVariationEngineV2:
         # Exclusiones
         exclusion_text = ""
         if exclude_descriptions:
+            blocked_phrases = [' '.join(desc.split()[:3]) for desc in exclude_descriptions[:3]]
             exclusion_text = f"""
 🚫 **ESTRICTAMENTE PROHIBIDO (Evitar >70% similitud):**
 {chr(10).join([f'❌ "{desc[:60]}..."' for desc in exclude_descriptions[:5]])}
 
 **PALABRAS/FRASES BLOQUEADAS:**
-- {', '.join([desc.split()[:3] for desc in exclude_descriptions[:3]] if exclude_descriptions else [])}
+- {', '.join(blocked_phrases)}
 """
         
         prompt = f"""

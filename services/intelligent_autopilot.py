@@ -193,40 +193,23 @@ class IntelligentAutopilot:
     ) -> List[Dict[str, Any]]:
         """
         Genera grupos de anuncios basándose en configuración específica por grupo
-        
-        Args:
-            business_description: Descripción general del negocio
-            ad_groups_config: Lista con configuración de cada grupo:
-                [{'name': 'Grupo 1', 'keywords': ['kw1', 'kw2'], 'url': 'https://...'}]
-            generation_config: Configuración global con:
-                - ai_provider: str (openai/gemini/anthropic)
-                - ai_model: str (gpt-4o/gemini-pro/etc)
-                - ai_creativity: float (0.1-1.0)
-                - ads_per_group: int
-                - match_types: List[str]
-                - use_magnetic: bool
-        
-        Returns:
-            Lista de grupos de anuncios generados con IA
         """
+        # ✅ EXTRAER use_location_insertion DE generation_config
+        use_location_insertion = generation_config.get('use_location_insertion', False)
+        
+        # ✅ LOG CRÍTICO
+        logger.info("="*70)
+        logger.info(f"📍 USE_LOCATION_INSERTION = {use_location_insertion}")
+        logger.info("="*70)
+        
+        if use_location_insertion:
+            logger.info("📍📍📍 INSERCIONES DE UBICACIÓN ACTIVADAS GLOBALMENTE")
+            logger.info("📍 TODOS los grupos generarán títulos con {LOCATION(...)}")
+
         logger.info("="*70)
         logger.info("🚀 GENERANDO GRUPOS DESDE CONFIGURACIÓN ESPECÍFICA")
         logger.info(f"📦 Total de grupos configurados: {len(ad_groups_config)}")
         logger.info(f"⚙️ Config global: {generation_config}")
-        
-        # ✅ DEBUG: Verificar configuración completa desde UI
-        logger.info("🔍 DEBUG COMPLETO - CONFIGURACIÓN RECIBIDA:")
-        logger.info(f"   generation_config = {generation_config}")
-        logger.info(f"   ad_groups_config = {ad_groups_config}")
-        
-        # ✅ DEBUG: Verificar cada grupo individualmente
-        for i, group_config in enumerate(ad_groups_config):
-            logger.info(f"   Grupo #{i+1}: {group_config}")
-            if 'use_location_insertion' in group_config:
-                logger.info(f"   ✅ Grupo #{i+1} tiene use_location_insertion = {group_config['use_location_insertion']}")
-            else:
-                logger.warning(f"   ❌ Grupo #{i+1} NO tiene use_location_insertion")
-        
         logger.info("="*70)
         
         generated_groups = []
@@ -265,11 +248,6 @@ class IntelligentAutopilot:
                 # ✅ GENERAR ANUNCIOS CON IA
                 logger.info("🎨 Generando anuncios con IA...")
                 
-                # ✅ DEBUG: Verificar valor de use_location_insertion desde UI
-                location_flag = group_config.get('use_location_insertion', False)
-                logger.info(f"🔍 DEBUG: group_config.use_location_insertion = {location_flag}")
-                logger.info(f"🔍 DEBUG: group_config completo = {group_config}")
-                
                 ads_result = self._generate_real_ads_with_ai(
                     keywords=keywords,
                     business_description=business_description,
@@ -280,7 +258,7 @@ class IntelligentAutopilot:
                     tone='profesional',
                     creativity=creativity,
                     use_magnetic=use_magnetic,
-                    use_location_insertion=location_flag  # ✅ PASAR PARÁMETRO
+                    use_location_insertion=use_location_insertion  # ✅ PASAR AQUÍ
                 )
                 
                 if not ads_result or len(ads_result) == 0:
@@ -301,13 +279,13 @@ class IntelligentAutopilot:
                 ad_group = {
                     'name': group_name,
                     'theme': self._extract_theme(keywords),
-                    'keywords': keywords,  # Keywords originales
+                    'keywords': keywords,
                     'negative_keywords': self._generate_negative_keywords(business_description),
-                    'ads': ads_result,  # Anuncios generados con IA
+                    'ads': ads_result,
                     'max_cpc_bid': max_cpc_bid,
                     'final_url': final_url,
                     'match_type': match_types[0] if match_types else 'BROAD',
-                    'all_match_types': keywords_with_match,  # Keywords con match types
+                    'all_match_types': keywords_with_match,
                     'targeting': {
                         'country': 'US',
                         'currency': 'COP',
@@ -372,6 +350,10 @@ class IntelligentAutopilot:
             
             # Extraer configuración del generation_config
             business_url = generation_config.get('business_url', 'https://example.com')
+            use_location_insertion = generation_config.get('use_location_insertion', False)
+            
+            # ✅ LOG CRÍTICO
+            logger.info(f"📍 use_location_insertion extraído de generation_config: {use_location_insertion}")
             
             # Crear advanced_config en el formato esperado
             advanced_config = {
@@ -392,7 +374,8 @@ class IntelligentAutopilot:
                 business_description=business_description,
                 business_url=business_url,
                 user_keywords=target_keywords_list,
-                advanced_config=advanced_config
+                advanced_config=advanced_config,
+                use_location_insertion=use_location_insertion  # ✅ PASAR EL FLAG
             )
             
         except Exception as e:
@@ -433,6 +416,11 @@ class IntelligentAutopilot:
             use_location_insertion: bool para inserciones de ubicación
         """
         try:
+            # ✅ AGREGAR LOG AL INICIO
+            if use_location_insertion:
+                logger.info("="*70)
+                logger.info("📍 INSERCIONES DE UBICACIÓN ACTIVADAS GLOBALMENTE")
+                logger.info("="*70)
             # ✅ REINICIAR CONTROL DE UNICIDAD PARA NUEVA GENERACIÓN
             self.used_headlines = set()
             self.used_descriptions = set()
@@ -770,7 +758,10 @@ class IntelligentAutopilot:
             logger.info(f"🎨 Tono: {tone}, Creatividad: {creativity}")
             logger.info(f"🔴 Modo magnético: {use_magnetic}")
             logger.info(f"📍 Inserciones de ubicación: {use_location_insertion}")
-            
+            if use_location_insertion:
+                logger.info("="*70)
+                logger.info("📍📍📍 INSERCIONES DE UBICACIÓN SOLICITADAS 📍📍📍")
+                logger.info("="*70)
             # ✅ CONFIGURAR IA
             from utils.user_storage import get_user_storage
             user_storage = get_user_storage('saltbalente')
@@ -858,7 +849,16 @@ class IntelligentAutopilot:
             )
             
             logger.info(f"📥 Resultado: {result}")
-            
+            # ✅ AGREGAR VERIFICACIÓN DESPUÉS DE GENERAR
+            if use_location_insertion:
+                logger.info("🔍 VERIFICANDO INSERCIONES EN ANUNCIOS GENERADOS:")
+                for idx, ad_data in enumerate(result.get('ads', [])):
+                    headlines = ad_data.get('headlines', [])
+                    location_count = sum(1 for h in headlines if '{LOCATION(' in h)
+                    logger.info(f"   Anuncio {idx+1}: {location_count}/15 títulos con inserción")
+                    if location_count == 0:
+                        logger.error(f"   ❌❌❌ ANUNCIO {idx+1} SIN INSERCIONES ❌❌❌")
+
             # ✅ VERIFICAR TÍTULOS CON INSERCIONES DE UBICACIÓN
             if use_location_insertion:
                 total_location_headlines = 0
@@ -866,7 +866,7 @@ class IntelligentAutopilot:
                     if ad_data.get('headlines'):
                         location_count = sum(1 for h in ad_data['headlines'] if '{LOCATION(' in h)
                         total_location_headlines += location_count
-                logger.info(f"📍 VERIFICACIÓN: {total_location_headlines} títulos con {LOCATION()} generados en total")
+                logger.info(f"📍 VERIFICACIÓN: {total_location_headlines} títulos con {{LOCATION()}} generados en total")
             
              # ✅ PROCESAR ANUNCIOS GENERADOS CON VALIDACIÓN ESTRICTA
             ads = []

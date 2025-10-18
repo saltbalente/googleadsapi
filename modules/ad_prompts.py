@@ -20,6 +20,179 @@ from difflib import SequenceMatcher
 
 
 # ============================================================================
+# CONSTANTES DE CONFIGURACIÓN DE ANUNCIOS
+# ============================================================================
+
+TONE_PRESETS = {
+    'emocional': {'icon': '❤️', 'description': 'Apela a sentimientos profundos'},
+    'urgente': {'icon': '⚡', 'description': 'Crea sentido de inmediatez'},
+    'profesional': {'icon': '💼', 'description': 'Tono corporativo y confiable'},
+    'místico': {'icon': '🔮', 'description': 'Lenguaje espiritual y mágico'},
+    'poderoso': {'icon': '💪', 'description': 'Resultados y efectividad'},
+    'esperanzador': {'icon': '🌟', 'description': 'Optimismo y posibilidad'},
+    'tranquilizador': {'icon': '🕊️', 'description': 'Calma y tranquilidad'}
+}
+
+LOCATION_LEVELS = {
+    'city': {
+        'label': '🏙️ Ciudad',
+        'code': 'LOCATION(City)',
+        'example': 'Curandero en {LOCATION(City)}',
+        'description': 'Inserta el nombre de la ciudad del usuario'
+    },
+    'state': {
+        'label': '🗺️ Estado/Provincia',
+        'code': 'LOCATION(State)',
+        'example': 'Brujos Efectivos {LOCATION(State)}',
+        'description': 'Inserta el estado o provincia'
+    },
+    'country': {
+        'label': '🌍 País',
+        'code': 'LOCATION(Country)',
+        'example': 'Amarres en {LOCATION(Country)}',
+        'description': 'Inserta el nombre del país'
+    }
+}
+
+
+# ============================================================================
+# BUILDER DE PROMPT MEJORADO
+# ============================================================================
+
+def build_enhanced_prompt(
+    keywords: List[str],
+    tone: str,
+    num_headlines: int,
+    num_descriptions: int,
+    use_location_insertion: bool,
+    location_levels: List[str],
+    business_type: str = 'esoteric'
+) -> str:
+    """
+    Construye un prompt mejorado con mejores prácticas de Google Ads
+    """
+    
+    prompt = f"""Eres un experto copywriter especializado en Google Ads con 15+ años de experiencia.
+
+CONTEXTO DEL NEGOCIO:
+- Tipo de negocio: {business_type}
+- Palabras clave objetivo: {', '.join(keywords)}
+- Tono deseado: {tone}
+
+REQUISITOS TÉCNICOS DE GOOGLE ADS:
+- Generar {num_headlines} títulos únicos (máximo 30 caracteres cada uno)
+- Generar {num_descriptions} descripciones únicas (máximo 90 caracteres cada una)
+- Cumplir con las políticas de Google Ads
+
+MEJORES PRÁCTICAS A APLICAR:
+
+1. TÍTULOS (Headlines):
+   - Incluir palabras clave relevantes en al menos 50% de los títulos
+   - Usar llamados a la acción específicos y claros
+   - Variar la longitud de los títulos (cortos, medianos, largos)
+   - Reflejar beneficios tangibles para el usuario
+   - Evitar lenguaje genérico o vago
+   - Mantener consistencia con la marca
+
+2. DESCRIPCIONES:
+   - Describir beneficios claros y específicos
+   - Incluir propuestas de valor únicas
+   - Agregar llamados a la acción concretos
+   - Mencionar garantías, certificaciones o ventajas competitivas
+   - Ser específico sobre productos/servicios ofrecidos
+
+3. TEMAS A CONSIDERAR EN EL COPY:
+   - Productos/servicios específicos que ofreces
+   - Beneficios claros para el cliente
+   - Identidad de marca
+   - Inventario y selección disponible
+   - Precios competitivos (si aplica)
+   - Promociones actuales (si aplica)
+   - Testimonios o resultados comprobados
+
+4. OPTIMIZACIÓN DE RELEVANCIA:
+   - Los títulos deben conectar directamente con la intención de búsqueda
+   - Las descripciones deben expandir y complementar los títulos
+   - Mantener coherencia temática entre todos los elementos
+
+"""
+
+    # Agregar instrucciones de inserción de ubicación
+    if use_location_insertion:
+        location_codes = [LOCATION_LEVELS[level]['code'] for level in location_levels]
+        
+        prompt += f"""
+5. INSERCIÓN DE UBICACIONES:
+   ⚠️ IMPORTANTE: Debes incluir ENTRE 3 Y 5 inserciones de ubicación en los títulos.
+   
+   Códigos disponibles para usar:
+   {chr(10).join([f'   - {{{code}}}' for code in location_codes])}
+   
+   EJEMPLOS DE USO CORRECTO (CORTOS Y EFECTIVOS):
+   ✅ **EJEMPLOS CORRECTOS (1-2 PALABRAS + INSERCIÓN):**
+   "Brujos {{LOCATION(City)}}"                    ← 1 palabra
+   "Amarres {{LOCATION(State)}}"                  ← 1 palabra
+   "Brujos En {{LOCATION(City)}}"                 ← 2 palabras
+   "Rituales {{LOCATION(Country)}}"               ← 1 palabra
+   "Hechizos {{LOCATION(City)}}"                  ← 1 palabra
+
+   ❌ **INCORRECTO (MÁS DE 2 PALABRAS):**
+   "Brujos Profesionales {{LOCATION(City)}}"      ← DEMASIADO LARGO
+   "Endulzamientos De Amor {{LOCATION(State)}}"          ← DEMASIADO LARGO
+   
+   REGLAS CRÍTICAS:
+   - ⚠️ **REGLA CRÍTICA:** 
+   - MÁXIMO 1-2 PALABRAS antes de {{LOCATION(...)}} para evitar TRUNCAMIENTO
+   - Usar exactamente la sintaxis: {{LOCATION(City)}}, {{LOCATION(State)}}, {{LOCATION(Country)}}
+   - Mínimo 3 títulos con inserción de ubicación
+   - Máximo 5 títulos con inserción de ubicación
+   - ⚠️ CRÍTICO: Usar solo 1-2 PALABRAS antes de {{LOCATION()}} para evitar truncamiento
+   - ⚠️ CRÍTICO: Máximo 15 caracteres ANTES del código {{LOCATION()}}
+   - Los títulos con ubicación NO deben exceder 30 caracteres (incluyendo el código)
+   - Distribuir entre diferentes niveles de ubicación
+   - Los títulos con ubicación deben ser naturales y específicos
+
+   📊 **GENERAR:**
+   - {max(1, location_count//3 + location_count%3)} títulos: [Palabra] {{LOCATION(City)}}
+   - {max(1, location_count//3)} títulos: [Palabra] {{LOCATION(State)}}
+   - {max(1, location_count//3)} títulos: [Palabra] {{LOCATION(Country)}}
+
+
+"""
+
+    prompt += f"""
+TONO Y ESTILO:
+- Tono principal: {tone}
+- Estilo: {TONE_PRESETS[tone]['description']}
+
+FORMATO DE RESPUESTA (JSON ESTRICTO):
+{{
+  "headlines": [
+    "Título 1",
+    "Título 2",
+    ...
+  ],
+  "descriptions": [
+    "Descripción 1",
+    "Descripción 2",
+    ...
+  ]
+}}
+
+RESTRICCIONES IMPORTANTES:
+- NO usar emojis
+- NO usar signos de exclamación ni interrogación
+- NO usar mayúsculas sostenidas (ej: OFERTA es incorrecto, Oferta es correcto)
+- Permitir palabras clave en mayúsculas naturales (ej: USA, NYC)
+- SÍ usar acentos correctamente en español
+- SÍ ser específico y evitar lenguaje vago
+
+¡Genera anuncios que superen las expectativas y maximicen el CTR!
+"""
+    
+    return prompt
+
+# ============================================================================
 # PROCESADOR DE KEYWORDS
 # ============================================================================
 
@@ -1169,11 +1342,11 @@ Para CIUDAD: {{LOCATION(City)}}
 Para ESTADO: {{LOCATION(State)}}
 Para PAÍS: {{LOCATION(Country)}}
 
-✅ **EJEMPLOS CORRECTOS:**
-"Amarres De {{LOCATION(City)}}"
-"Brujos En {{LOCATION(State)}}"
+✅ **EJEMPLOS CORRECTOS (CORTOS):**
+"Amarres {{LOCATION(City)}}"
+"Brujos {{LOCATION(State)}}"
 "Hechizos {{LOCATION(Country)}}"
-"Brujo Profesional {{LOCATION(City)}}"
+"Videntes {{LOCATION(City)}}"
 
 ❌ **INCORRECTO (NO HACER):**
 "Brujos De Tu Ciudad" ← MAL (usar {{LOCATION(City)}})
@@ -1191,7 +1364,7 @@ Para PAÍS: {{LOCATION(Country)}}
 """
         
         # Generar instrucciones de descripción
-        description_instructions = DescriptionVariationEngine.get_varied_descriptions(
+        description_instructions = DescriptionVariationEngineV2.generate_unique_descriptions(
             keywords=rotated_keywords,
             num_descriptions=num_descriptions,
             variation_seed=ad_variation_seed,
@@ -1353,9 +1526,21 @@ RESPONDE SOLO ESTO (sin ``` ni json):
         exclude_descriptions: List[str] = []
     ) -> str:
         """Selector de prompt v6.0 con validación"""
+        
+        # ✅ LOGS DE DEBUG PARA INSERCIONES DE UBICACIÓN
+        if use_location_insertion:
+            logger.info("✅ GENERANDO PROMPT CON INSERCIONES DE UBICACIÓN")
+            logger.info("✅ El prompt contendrá instrucciones para {LOCATION(City)}, etc.")
+        
         return AdPromptTemplates.get_transactional_esoteric_prompt(
-            keywords, num_headlines, num_descriptions, tone, temperature, 
-            ad_variation_seed, use_location_insertion, exclude_descriptions
+            keywords=keywords,
+            num_headlines=num_headlines,
+            num_descriptions=num_descriptions,
+            tone=tone,
+            temperature=temperature,
+            ad_variation_seed=ad_variation_seed,
+            use_location_insertion=use_location_insertion,  # ✅ CRÍTICO: PASAR ESTE PARÁMETRO
+            exclude_descriptions=exclude_descriptions
         )
 
 
@@ -1407,15 +1592,15 @@ Usar códigos LITERALES:
 - {{LOCATION(State)}} para estado
 - {{LOCATION(Country)}} para país
 
-✅ "Urgente Brujo {{LOCATION(City)}}"
-✅ "Amarres Garantizados {{LOCATION(State)}}"
+✅ "Brujo {{LOCATION(City)}}"
+✅ "Amarres {{LOCATION(State)}}"
 
 ❌ NO usar "tu ciudad", "tu estado", etc.
 
 ════════════════════════════════════════════════════════════════
 """
         
-        description_instructions = DescriptionVariationEngine.get_varied_descriptions(
+        description_instructions = DescriptionVariationEngineV2.generate_unique_descriptions(
             keywords=rotated_keywords,
             num_descriptions=num_descriptions,
             variation_seed=ad_variation_seed,
@@ -1478,6 +1663,9 @@ Usar códigos LITERALES:
 # ============================================================================
 
 import logging
+
+# ✅ Logger global para debug
+logger = logging.getLogger(__name__)
 
 class CTROptimizer:
     """
@@ -2168,8 +2356,10 @@ __all__ = [
     'AdScoringSystemV6',
     'CTROptimizer',
     'SearchIntentPatterns',
-    'DescriptionVariationEngine',
+    'DescriptionVariationEngineV2',
     'AdPromptTemplates',
-    'MagneticAdPrompts'
-
+    'MagneticAdPrompts',
+    'build_enhanced_prompt',
+    'LOCATION_LEVELS',
+    'TONE_PRESETS'
 ]

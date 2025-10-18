@@ -2214,6 +2214,14 @@ def render_autopilot_tab():
                 else:
                     target_keywords_list = target_keywords if target_keywords else []
                 
+                # ✅ Determinar el flag global de use_location_insertion
+                final_use_location_insertion = False
+                if num_ad_groups > 1:
+                    # Si CUALQUIER grupo tiene inserción activada, se activa globalmente
+                    final_use_location_insertion = any(g.get('use_location_insertion', False) for g in ad_groups_config)
+                else:
+                    final_use_location_insertion = use_location_insertion_single
+
                 # Configurar parámetros para generación
                 generation_config = {
                     'business_description': business_description,
@@ -2227,7 +2235,7 @@ def render_autopilot_tab():
                     'use_magnetic': use_magnetic,
                     'ai_provider': ai_provider,
                     'ai_model': ai_model,
-                    'use_location_insertion': use_location_insertion_single if num_ad_groups == 1 else False  # ✅ Para grupo único
+                    'use_location_insertion': final_use_location_insertion  # ✅ AGREGAR AQUÍ
                 }
                 
                 # Generar grupos de anuncios

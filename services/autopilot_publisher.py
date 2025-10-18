@@ -178,7 +178,7 @@ class AutopilotPublisher:
                     logger.info(f"🔑 Agregando {len(ad_group_data['keywords'])} keywords al ad group")
                     keyword_results = self._add_keywords(
                         customer_id=customer_id,
-                        ad_group_resource_name=ad_group_resource,
+                        ad_group_resource=ad_group_resource,
                         keywords=ad_group_data['keywords'],
                         negative_keywords=ad_group_data.get('negative_keywords', [])
                     )
@@ -218,7 +218,7 @@ class AutopilotPublisher:
                         
                         ad_result = self._create_responsive_search_ad(
                             customer_id=customer_id,
-                            ad_group_resource_name=ad_group_resource,
+                            ad_group_resource=ad_group_resource,
                             headlines=ad_data.get('headlines', []),
                             descriptions=ad_data.get('descriptions', []),
                             final_url=ad_data.get('final_url', blueprint.get('business_url', 'https://example.com'))
@@ -565,7 +565,7 @@ class AutopilotPublisher:
     def _add_keywords(
         self,
         customer_id: str,
-        ad_group_resource_name: str,
+        ad_group_resource: str,
         keywords: List[str],
         negative_keywords: List[str] = None
     ) -> Dict[str, Any]:
@@ -638,7 +638,7 @@ class AutopilotPublisher:
                     operation = self.client.get_type("AdGroupCriterionOperation")
                     criterion = operation.create
                     
-                    criterion.ad_group = ad_group_resource_name
+                    criterion.ad_group = ad_group_resource
                     criterion.status = self.client.enums.AdGroupCriterionStatusEnum.ENABLED
                     criterion.keyword.text = kw
                     criterion.keyword.match_type = self.client.enums.KeywordMatchTypeEnum.BROAD
@@ -674,7 +674,7 @@ class AutopilotPublisher:
                     operation = self.client.get_type("AdGroupCriterionOperation")
                     criterion = operation.create
                     
-                    criterion.ad_group = ad_group_resource_name
+                    criterion.ad_group = ad_group_resource
                     criterion.negative = True
                     criterion.keyword.text = neg_kw
                     criterion.keyword.match_type = self.client.enums.KeywordMatchTypeEnum.BROAD
@@ -731,7 +731,8 @@ class AutopilotPublisher:
     path1: Optional[str] = None,
     path2: Optional[str] = None
     ) -> Optional[str]:
-        """Crea un Responsive Search Ad"""
+        """
+        Crea un Responsive Search Ad
         
         Returns:
             {
@@ -759,7 +760,7 @@ class AutopilotPublisher:
             operation = self.client.get_type("AdGroupAdOperation")
             ad_group_ad = operation.create
             
-            ad_group_ad.ad_group = ad_group_resource_name
+            ad_group_ad.ad_group = ad_group_resource
             ad_group_ad.status = self.client.enums.AdGroupAdStatusEnum.ENABLED
             
             # ✅ FIX: Usar final_url del parámetro (que viene de ad_data)
@@ -995,7 +996,7 @@ class AutopilotPublisher:
                 
                 keywords_result = self._add_keywords(
                     customer_id=customer_id,
-                    ad_group_resource_name=result['resource_name'],
+                    ad_group_resource=result['resource_name'],
                     keywords=ad_group_data['keywords']
                 )
                 
@@ -1011,7 +1012,7 @@ class AutopilotPublisher:
                 for idx, ad_data in enumerate(ad_group_data['ads']):
                     ad_result = self._create_responsive_search_ad(
                         customer_id=customer_id,
-                        ad_group_resource_name=result['resource_name'],
+                        ad_group_resource=result['resource_name'],
                         headlines=ad_data.get('headlines', []),
                         descriptions=ad_data.get('descriptions', []),
                         final_url=ad_data.get('final_url', '')
@@ -1045,7 +1046,7 @@ class AutopilotPublisher:
         Limpia símbolos prohibidos por Google Ads
         
         Símbolos problemáticos identificados:
-        - Comillas dobles (") - Causa POLICY_FINDING SYMBOLS
+        - Comillas dobles (causa POLICY_FINDING SYMBOLS)
         - Comillas simples excesivas
         - Caracteres especiales no permitidos
         """
@@ -1056,19 +1057,15 @@ class AutopilotPublisher:
         cleaned = text
         
         # Remover comillas dobles (principal causa del error)
-        cleaned = cleaned.replace('"', '')
+        cleaned = cleaned.replace(chr(34), '')
         
         # Remover comillas simples excesivas (mantener solo las necesarias)
-        cleaned = cleaned.replace("'", '')
+        cleaned = cleaned.replace(chr(39), '')
         
         # Remover otros símbolos problemáticos
         prohibited_symbols = [
-            '`', '´', ''', ''', '"', '"',  # Comillas tipográficas
+            '`', '´',  # Acentos graves
             '«', '»',  # Comillas angulares
-            '‹', '›',  # Comillas angulares simples
-            '„', '‚',  # Comillas bajas
-            '〈', '〉', '《', '》',  # Comillas asiáticas
-            '【', '】', '「', '」',  # Corchetes asiáticos
         ]
         
         for symbol in prohibited_symbols:
