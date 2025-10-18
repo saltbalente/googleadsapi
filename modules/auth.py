@@ -214,165 +214,97 @@ refresh_token: {st.secrets["google_ads"].get("refresh_token", "")}"""
     def get_auth_url(self) -> str:
         """Generate OAuth authorization URL"""
         try:
-            # Asegurarse de que el archivo existe (crearlo desde secrets si es necesario)
+            # Asegurarse de que el archivo existe
             if not os.path.exists(self.client_secrets_file):
                 self._setup_from_secrets()
                 
                 if not os.path.exists(self.client_secrets_file):
-                    raise FileNotFoundError(f"Archivo client_secret.json no encontrado: {self.client_secrets_file}")
-            
-            # Iniciar servidor solo si estamos en local
-            if self.oauth_server and not self._is_streamlit_cloud():
-                server_started = self.oauth_server.start()
-                if not server_started:
-                    logger.warning("No se pudo iniciar servidor OAuth, usando método manual")
-                    self.redirect_uri = "urn:ietf:wg:oauth:2.0:oob"
-                else:
-                    self.redirect_uri = self.oauth_server.get_redirect_uri()
+                    raise FileNotFoundError(f"Archivo client_secret.json no encontrado")
             
             # Crear flow OAuth
             flow = Flow.from_client_secrets_file(
                 self.client_secrets_file,
                 scopes=self.scopes
             )
-            flow.redirect_uri = self.redirect_uri
+            
+            # ✅ Usar localhost:8080 para el nuevo client web
+            flow.redirect_uri = "http://localhost:8080"
             
             auth_url, _ = flow.authorization_url(
                 access_type='offline',
                 include_granted_scopes='true',
-                prompt='consent'  # Force consent screen to ensure refresh token
+                prompt='consent'
             )
             
-            # Store flow in session for later use
+            # Store flow in session
             st.session_state.oauth_flow = flow
-            if self.oauth_server:
-                st.session_state.oauth_server = self.oauth_server
-            
-            # Información adicional para Streamlit Cloud
-            if self._is_streamlit_cloud():
-                st.info("📱 Estás en Streamlit Cloud. Después de autorizar, copia el código que aparece y pégalo aquí.")
-            elif self.oauth_server and self.oauth_server.port != 8080:
-                st.info(f"ℹ️ Servidor OAuth iniciado en puerto: {self.oauth_server.port}")
             
             return auth_url
             
-        except FileNotFoundError as e:
-            logger.error(f"Client secrets file not found: {e}")
-            st.error(f"""
-            ❌ **Archivo de configuración no encontrado**
-            
-            En Streamlit Cloud, asegúrate de configurar los secrets correctamente.
-            Ve a Settings → Secrets y agrega la configuración.
-            """)
-            return ""
         except Exception as e:
             logger.error(f"Error generating auth URL: {e}")
-            st.error(f"❌ Error al generar URL de autenticación:\n{str(e)}")
+            st.error(f"❌ Error: {str(e)}")
             return ""
-    
-    def handle_callback(self, authorization_code: str = None) -> bool:
-        """Handle OAuth callback and store credentials"""
+
+    def handle_callback(self, authorization_response: str = None) -> bool:
+        """Handle OAuth callback con el nuevo client"""
         try:
-            # En Streamlit Cloud, siempre usar código manual
-            if self._is_streamlit_cloud() and not authorization_code:
-                st.error("❌ Por favor, pega el código de autorización")
+            if not authorization_response:
+                st.error("❌ Por favor, pega la URL completa después de autorizar")
                 return False
             
-            # Si se proporciona código manualmente, usarlo directamente
-            if authorization_code:
-                logger.info("Usando código de autorización proporcionado manualmente")
-            else:
-                # Intentar obtener el código del servidor OAuth (solo local)
-                oauth_server = st.session_state.get('oauth_server')
-                if oauth_server and oauth_server.server:
-                    if hasattr(oauth_server.server, 'auth_received') and oauth_server.server.auth_received:
-                        if hasattr(oauth_server.server, 'auth_code') and oauth_server.server.auth_code:
-                            authorization_code = oauth_server.server.auth_code
-                            logger.info("Código de autorización obtenido del servidor OAuth")
-                        elif hasattr(oauth_server.server, 'auth_error') and oauth_server.server.auth_error:
-                            st.error(f"❌ Error en autenticación: {oauth_server.server.auth_error}")
-                            return False
-                
-                if not authorization_code:
-                    logger.warning("No se encontró código de autorización")
-                    st.error("❌ No se recibió código de autorización. Por favor, intenta el proceso nuevamente.")
-                    return False
-            
-            # Obtener o crear el flow OAuth
+            # Obtener el flow
             flow = st.session_state.get('oauth_flow')
             if not flow:
-                # Si no hay flow en session, intentar crear uno nuevo
-                if not os.path.exists(self.client_secrets_file):
-                    self._setup_from_secrets()
-                    
-                    if not os.path.exists(self.client_secrets_file):
-                        st.error("❌ Archivo client_secret.json no encontrado")
-                        return False
-                
                 flow = Flow.from_client_secrets_file(
                     self.client_secrets_file,
                     scopes=self.scopes
                 )
-                flow.redirect_uri = self.redirect_uri
-                logger.info("Flow OAuth creado desde archivo de configuración")
+                flow.redirect_uri = "http://localhost:8080"
             
-            # Handle both authorization code and full URL
-            if authorization_code and authorization_code.startswith('http'):
-                # Extract code from URL if user pasted the full redirect URL
+            # Si pegó la URL completa
+            if authorization_response.startswith('http'):
+                # Extraer el código de la URL
                 from urllib.parse import urlparse, parse_qs
-                parsed_url = urlparse(authorization_code)
+                parsed_url = urlparse(authorization_response)
                 query_params = parse_qs(parsed_url.query)
+                
                 if 'code' in query_params:
-                    authorization_code = query_params['code'][0]
+                    code = query_params['code'][0]
+                    flow.fetch_token(code=code)
                 else:
-                    st.error("No se encontró el código de autorización en la URL proporcionada.")
+                    st.error("❌ No se encontró código en la URL")
                     return False
+            else:
+                # Si pegó solo el código
+                flow.fetch_token(code=authorization_response)
             
-            # Handle code from "urn:ietf:wg:oauth:2.0:oob" flow (copy-paste method)
-            authorization_code = authorization_code.strip()
-            
-            if not authorization_code:
-                st.error("No se recibió código de autorización.")
-                return False
-            
-            flow.fetch_token(code=authorization_code)
-            
+            # Guardar credenciales
             credentials = flow.credentials
             st.session_state.credentials = credentials
             
-            # Save credentials
+            # Guardar en archivo
             self._save_credentials_to_file(credentials)
             
-            # Update Streamlit Secrets if possible
-            if self._is_streamlit_cloud() and credentials.refresh_token:
-                st.info(f"""
-                ✅ **Token obtenido exitosamente!**
-                
-                Para hacer permanente la autenticación, agrega este refresh_token a tus Streamlit Secrets:
-                
-                ```toml
-                [google_ads]
-                refresh_token = "{credentials.refresh_token}"
-                ```
-                """)
-            
-            # Limpiar servidor de session state
-            if 'oauth_server' in st.session_state:
-                del st.session_state['oauth_server']
-            
-            # Success message
             if credentials.refresh_token:
-                st.success("¡Autenticación exitosa! Token de actualización obtenido.")
-                logger.info("OAuth authentication completed successfully")
+                st.success("✅ ¡Autenticación exitosa!")
+                
+                # Mostrar el refresh token para guardarlo en secrets
+                st.code(f"""
+    # Guarda este refresh_token en tus Streamlit Secrets:
+
+    [google_ads]
+    refresh_token = "{credentials.refresh_token}"
+                """)
+                
+                return True
             else:
-                st.warning("Autenticación exitosa, pero no se obtuvo token de actualización.")
-            
-            return True
-            
+                st.warning("⚠️ Autenticación exitosa pero sin refresh token")
+                return True
+                
         except Exception as e:
-            logger.error(f"Error handling OAuth callback: {e}")
-            st.error(f"Error en la autenticación: {str(e)}")
-            st.info("Asegúrate de que el código de autorización sea correcto y no haya expirado.")
+            logger.error(f"Error en callback: {e}")
+            st.error(f"❌ Error: {str(e)}")
             return False
     
     def logout(self):
