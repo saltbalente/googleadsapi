@@ -1127,13 +1127,22 @@ def main():
         initialize_session_state()
         
         auth = GoogleAdsAuth()
-        # ✅ CAPTURAR CÓDIGO DE QUERY PARAMS AUTOMÁTICAMENTE
+        # ============================================================================
+        # ✅ CAPTURA AUTOMÁTICA DE CÓDIGO OAUTH
+        # ============================================================================
+        import time
+
         query_params = st.query_params
 
         if "code" in query_params and not auth.is_authenticated():
-            st.info("🔄 Procesando autenticación automáticamente...")
+            st.markdown("""
+            <div class="glass-card" style="text-align: center; padding: 3rem;">
+                <h1>🔄 Procesando Autenticación</h1>
+                <p style="color: var(--text-secondary);">Validando credenciales con Google Ads API...</p>
+            </div>
+            """, unsafe_allow_html=True)
             
-            with st.spinner("Procesando código de autorización..."):
+            with st.spinner("⏳ Procesando código de autorización..."):
                 # Obtener código
                 auth_code = query_params.get("code")
                 
@@ -1149,33 +1158,65 @@ def main():
                 # Procesar callback
                 try:
                     if auth.handle_callback(full_url):
+                        st.balloons()
                         st.success("✅ ¡Autenticación completada exitosamente!")
                         
                         # Mostrar refresh token
-                        if hasattr(st.session_state, 'credentials'):
+                        if 'credentials' in st.session_state:
                             creds = st.session_state.credentials
                             if hasattr(creds, 'refresh_token') and creds.refresh_token:
-                                with st.expander("📋 🔑 IMPORTANTE: Guarda este Refresh Token"):
-                                    st.code(f'refresh_token = "{creds.refresh_token}"', language='toml')
-                                    st.warning("""
-                                    **Para mantener la autenticación permanente:**
-                                    1. Copia el token de arriba
-                                    2. Ve a Settings → Secrets en Streamlit Cloud
-                                    3. Agrega la línea con el refresh_token en la sección [google_ads]
-                                    4. Guarda y reinicia la app
-                                    """)
+                                st.markdown("""
+                                <div class="glass-card">
+                                    <h2 style="color: #4facfe; text-align: center;">🔑 Refresh Token Obtenido</h2>
+                                    <p style="color: var(--text-secondary); text-align: center;">Guarda este token en tus Streamlit Secrets para mantener la autenticación permanente</p>
+                                </div>
+                                """, unsafe_allow_html=True)
+                                
+                                st.code(f'refresh_token = "{creds.refresh_token}"', language='toml')
+                                
+                                st.info("""
+                                **📋 Para mantener la autenticación permanente:**
+                                1. Ve a tu app en Streamlit Cloud
+                                2. Click en "⋮" → Settings → Secrets
+                                3. Busca la sección `[google_ads]`
+                                4. Actualiza o agrega la línea: `refresh_token = "..."`
+                                5. Click en "Save"
+                                6. Click en "Reboot app"
+                                """)
+                        
+                        # Esperar 3 segundos para que el usuario vea el token
+                        time.sleep(3)
                         
                         # Limpiar query params y recargar
                         st.query_params.clear()
-                        time.sleep(2)
                         st.rerun()
                     else:
                         st.error("❌ Error procesando la autenticación")
-                        st.info("Intenta copiar la URL completa y pegarla manualmente abajo")
+                        st.warning("Por favor, intenta el proceso de autenticación nuevamente")
+                        
+                        if st.button("🔄 Reintentar", type="primary"):
+                            st.query_params.clear()
+                            st.rerun()
+                            
                 except Exception as e:
-                    st.error(f"❌ Error: {str(e)}")
-                    import traceback
-                    st.code(traceback.format_exc())
+                    st.error(f"❌ Error durante la autenticación: {str(e)}")
+                    
+                    with st.expander("🔍 Ver detalles técnicos del error"):
+                        import traceback
+                        st.code(traceback.format_exc())
+                    
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        if st.button("🔄 Volver a intentar", type="primary"):
+                            st.query_params.clear()
+                            st.rerun()
+                    with col2:
+                        if st.button("🏠 Ir al inicio"):
+                            st.query_params.clear()
+                            st.switch_page("app.py")
+            
+            # Detener ejecución aquí para no mostrar el resto de la app
+            st.stop()
         if not auth.is_authenticated():
             # Auth screen
             st.markdown("""
