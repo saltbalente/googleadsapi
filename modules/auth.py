@@ -228,7 +228,7 @@ refresh_token: {st.secrets["google_ads"].get("refresh_token", "")}"""
             )
             
             # ✅ Usar localhost:8080 para el nuevo client web
-            flow.redirect_uri = "http://localhost:8080"
+            flow.redirect_uri = "http://localhost:8501"  # Puerto de Streamlit
             
             auth_url, _ = flow.authorization_url(
                 access_type='offline',
