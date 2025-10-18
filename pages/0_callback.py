@@ -52,15 +52,16 @@ if "code" in query_params:
         # Limpiar query params
         st.query_params.clear()
         
-        # Esperar un momento y redirigir
-        import time
-        time.sleep(2)
+        # Mostrar refresh token si existe
+        if 'credentials' in st.session_state:
+            creds = st.session_state.credentials
+            if hasattr(creds, 'refresh_token') and creds.refresh_token:
+                with st.expander("📋 Guardar Refresh Token"):
+                    st.code(f'refresh_token = "{creds.refresh_token}"')
+                    st.info("Agrega este token a tus Streamlit Secrets")
         
-        st.markdown("""
-        <meta http-equiv="refresh" content="0; url=/" />
-        """, unsafe_allow_html=True)
-        
-        st.info("Redirigiendo al dashboard...")
+        st.info("✅ Redirigiendo al dashboard...")
+        st.markdown('<meta http-equiv="refresh" content="2; url=/" />', unsafe_allow_html=True)
         
     else:
         st.error("❌ Error procesando la autenticación")
