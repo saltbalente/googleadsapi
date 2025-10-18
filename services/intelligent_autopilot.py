@@ -251,6 +251,11 @@ class IntelligentAutopilot:
                 # ✅ GENERAR ANUNCIOS CON IA
                 logger.info("🎨 Generando anuncios con IA...")
                 
+                # ✅ DEBUG: Verificar valor de use_location_insertion desde UI
+                location_flag = group_config.get('use_location_insertion', False)
+                logger.info(f"🔍 DEBUG: group_config.use_location_insertion = {location_flag}")
+                logger.info(f"🔍 DEBUG: group_config completo = {group_config}")
+                
                 ads_result = self._generate_real_ads_with_ai(
                     keywords=keywords,
                     business_description=business_description,
@@ -261,7 +266,7 @@ class IntelligentAutopilot:
                     tone='profesional',
                     creativity=creativity,
                     use_magnetic=use_magnetic,
-                    use_location_insertion=group_config.get('use_location_insertion', False)  # ✅ PASAR PARÁMETRO
+                    use_location_insertion=location_flag  # ✅ PASAR PARÁMETRO
                 )
                 
                 if not ads_result or len(ads_result) == 0:
