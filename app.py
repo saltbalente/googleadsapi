@@ -1127,7 +1127,55 @@ def main():
         initialize_session_state()
         
         auth = GoogleAdsAuth()
-        
+        # ✅ CAPTURAR CÓDIGO DE QUERY PARAMS AUTOMÁTICAMENTE
+        query_params = st.query_params
+
+        if "code" in query_params and not auth.is_authenticated():
+            st.info("🔄 Procesando autenticación automáticamente...")
+            
+            with st.spinner("Procesando código de autorización..."):
+                # Obtener código
+                auth_code = query_params.get("code")
+                
+                # Construir URL completa
+                base_url = "https://appadsapi-miynrefpxescytebdgkkng.streamlit.app"
+                full_url = f"{base_url}/?code={auth_code}"
+                
+                # Incluir scope si existe
+                if "scope" in query_params:
+                    scope = query_params.get("scope")
+                    full_url += f"&scope={scope}"
+                
+                # Procesar callback
+                try:
+                    if auth.handle_callback(full_url):
+                        st.success("✅ ¡Autenticación completada exitosamente!")
+                        
+                        # Mostrar refresh token
+                        if hasattr(st.session_state, 'credentials'):
+                            creds = st.session_state.credentials
+                            if hasattr(creds, 'refresh_token') and creds.refresh_token:
+                                with st.expander("📋 🔑 IMPORTANTE: Guarda este Refresh Token"):
+                                    st.code(f'refresh_token = "{creds.refresh_token}"', language='toml')
+                                    st.warning("""
+                                    **Para mantener la autenticación permanente:**
+                                    1. Copia el token de arriba
+                                    2. Ve a Settings → Secrets en Streamlit Cloud
+                                    3. Agrega la línea con el refresh_token en la sección [google_ads]
+                                    4. Guarda y reinicia la app
+                                    """)
+                        
+                        # Limpiar query params y recargar
+                        st.query_params.clear()
+                        time.sleep(2)
+                        st.rerun()
+                    else:
+                        st.error("❌ Error procesando la autenticación")
+                        st.info("Intenta copiar la URL completa y pegarla manualmente abajo")
+                except Exception as e:
+                    st.error(f"❌ Error: {str(e)}")
+                    import traceback
+                    st.code(traceback.format_exc())
         if not auth.is_authenticated():
             # Auth screen
             st.markdown("""
