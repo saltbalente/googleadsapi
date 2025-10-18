@@ -29,18 +29,23 @@ sys.path.insert(0, str(project_root))
 # ============================================================================
 # IMPORTS
 # ============================================================================
+    
+# CÓDIGO CORREGIDO:
+import logging
+
+# Definir logger ANTES del try
+logger = logging.getLogger(__name__)
 
 try:
     from modules.ai_ad_generator import AIAdGenerator
     from utils.ad_scorer import AdScorer
     from utils.user_storage import get_user_storage
     from services.intelligent_autopilot import CampaignOption, IntelligentAutopilot
-    logger = logging.getLogger(__name__)
     logger.info("✅ Módulos importados correctamente")
 except ImportError as e:
     st.error(f"❌ Error importando módulos: {e}")
-    logger.error(f"Error de importación: {e}")
-    # No usar st.stop() aquí para permitir que otras pestañas funcionen
+    logger.error(f"Error de importación: {e}")  # Ahora logger sí existe
+    st.warning("Algunas funcionalidades pueden no estar disponibles")
 
 # ============================================================================
 # CONFIGURACIÓN DE PÁGINA
