@@ -27,20 +27,26 @@ class GoogleAdsAuth:
         # Configurar archivos desde secrets si estamos en Streamlit Cloud
         self._setup_from_secrets()
         
-        # Configuración de OAuth según el entorno
+        # NO usar oauth_server en Streamlit Cloud
+        self.oauth_server = None
+        
+        # ✅ CONFIGURAR REDIRECT URI SEGÚN ENTORNO
         if self._is_streamlit_cloud():
-            # En Streamlit Cloud no podemos usar servidor local
-            self.redirect_uri = "urn:ietf:wg:oauth:2.0:oob"
-            self.oauth_server = None
+            self.redirect_uri = "https://appadsapi-miynrefpxescytebdgkkng.streamlit.app"
+            logger.info(f"☁️ Streamlit Cloud detectado - Redirect URI: {self.redirect_uri}")
         else:
-            # En local, usar el servidor OAuth
+            # En local - usar puerto de Streamlit
+            self.redirect_uri = "http://localhost:8501"
+            logger.info(f"💻 Entorno local detectado - Redirect URI: {self.redirect_uri}")
+            
+            # Intentar cargar oauth_server si existe
             try:
-                from .oauth_server import OAuthCallbackServer
+                from .oauth2_callback_server import OAuthCallbackServer
                 self.oauth_server = OAuthCallbackServer(port=8080)
-                self.redirect_uri = self.oauth_server.get_redirect_uri()
-            except:
-                # Si falla, usar método manual
-                self.redirect_uri = "urn:ietf:wg:oauth:2.0:oob"
+                # Pero NO cambiar redirect_uri a 8080 para evitar el error OOB
+                logger.info("📦 OAuth server disponible para callback automático")
+            except ImportError:
+                logger.info("ℹ️ OAuth server no disponible, usando método manual")
                 self.oauth_server = None
     
     def _is_streamlit_cloud(self) -> bool:
@@ -49,47 +55,49 @@ class GoogleAdsAuth:
             os.environ.get("STREAMLIT_RUNTIME_ENV") == "cloud" or
             "streamlit.app" in os.environ.get("STREAMLIT_APP_URL", "") or
             os.path.exists("/mount/src") or
-            "google_oauth" in st.secrets or
-            "google_ads" in st.secrets
+            "appadsapi" in os.environ.get("STREAMLIT_APP_URL", "")
         )
     
     def _setup_from_secrets(self):
-        """Configura archivos de credenciales desde Streamlit Secrets"""
-        if not self._is_streamlit_cloud():
-            return
-        
+        """Configura archivos desde Streamlit Secrets"""
         try:
-            # Crear directorio config si no existe
             config_dir = Path("config")
             config_dir.mkdir(exist_ok=True)
             
-            # Crear client_secret.json desde secrets
             if "google_oauth" in st.secrets:
-                logger.info("📝 Configurando client_secret.json desde Streamlit Secrets")
+                logger.info("📝 Creando client_secret.json desde Streamlit Secrets")
+                
+                # Todas las posibles redirect URIs
+                redirect_uris = [
+                    "https://appadsapi-miynrefpxescytebdgkkng.streamlit.app",
+                    "https://appadsapi-miynrefpxescytebdgkkng.streamlit.app/",
+                    "http://localhost:8501",
+                    "http://localhost:8501/",
+                    "http://localhost:8080",
+                    "http://localhost:8080/"
+                ]
                 
                 client_config = {
                     st.secrets["google_oauth"]["type"]: {
                         "client_id": st.secrets["google_oauth"]["client_id"],
                         "project_id": st.secrets["google_oauth"]["project_id"],
+                        "client_secret": st.secrets["google_oauth"]["client_secret"],
                         "auth_uri": st.secrets["google_oauth"]["auth_uri"],
                         "token_uri": st.secrets["google_oauth"]["token_uri"],
                         "auth_provider_x509_cert_url": st.secrets["google_oauth"]["auth_provider_x509_cert_url"],
-                        "client_secret": st.secrets["google_oauth"]["client_secret"],
-                        "redirect_uris": st.secrets["google_oauth"]["redirect_uris"]
+                        "redirect_uris": redirect_uris
                     }
                 }
                 
-                # Guardar temporalmente
+                # Guardar
                 client_secret_path = config_dir / "client_secret.json"
                 with open(client_secret_path, "w") as f:
                     json.dump(client_config, f, indent=2)
                 
                 logger.info("✅ client_secret.json creado desde secrets")
             
-            # Crear google-ads.yaml desde secrets
+            # Crear google-ads.yaml
             if "google_ads" in st.secrets:
-                logger.info("📝 Configurando google-ads.yaml desde Streamlit Secrets")
-                
                 yaml_content = f"""developer_token: {st.secrets["google_ads"]["developer_token"]}
 client_id: {st.secrets["google_ads"]["client_id"]}
 client_secret: {st.secrets["google_ads"]["client_secret"]}
@@ -103,23 +111,14 @@ refresh_token: {st.secrets["google_ads"].get("refresh_token", "")}"""
                 logger.info("✅ google-ads.yaml creado desde secrets")
             
             # Configurar variables de entorno también
-            if "GOOGLE_ADS_DEVELOPER_TOKEN" in st.secrets:
-                os.environ['GOOGLE_ADS_DEVELOPER_TOKEN'] = st.secrets["GOOGLE_ADS_DEVELOPER_TOKEN"]
-            if "GOOGLE_ADS_CLIENT_ID" in st.secrets:
-                os.environ['GOOGLE_ADS_CLIENT_ID'] = st.secrets["GOOGLE_ADS_CLIENT_ID"]
-            if "GOOGLE_ADS_CLIENT_SECRET" in st.secrets:
-                os.environ['GOOGLE_ADS_CLIENT_SECRET'] = st.secrets["GOOGLE_ADS_CLIENT_SECRET"]
-            if "GOOGLE_ADS_LOGIN_CUSTOMER_ID" in st.secrets:
-                os.environ['GOOGLE_ADS_LOGIN_CUSTOMER_ID'] = st.secrets["GOOGLE_ADS_LOGIN_CUSTOMER_ID"]
-            if "OPENAI_API_KEY" in st.secrets:
-                os.environ['OPENAI_API_KEY'] = st.secrets["OPENAI_API_KEY"]
-            if "GEMINI_API_KEY" in st.secrets:
-                os.environ['GEMINI_API_KEY'] = st.secrets["GEMINI_API_KEY"]
-                
-            logger.info("✅ Variables de entorno configuradas desde secrets")
-                
+            for key in ["GOOGLE_ADS_DEVELOPER_TOKEN", "GOOGLE_ADS_CLIENT_ID", 
+                       "GOOGLE_ADS_CLIENT_SECRET", "GOOGLE_ADS_LOGIN_CUSTOMER_ID",
+                       "OPENAI_API_KEY", "GEMINI_API_KEY"]:
+                if key in st.secrets:
+                    os.environ[key] = st.secrets[key]
+                    
         except Exception as e:
-            logger.error(f"❌ Error configurando desde secrets: {e}")
+            logger.error(f"Error configurando desde secrets: {e}")
     
     def get_credentials(self) -> Optional[Credentials]:
         """Get valid credentials from session state, saved file, environment, or secrets"""
@@ -214,12 +213,20 @@ refresh_token: {st.secrets["google_ads"].get("refresh_token", "")}"""
     def get_auth_url(self) -> str:
         """Generate OAuth authorization URL"""
         try:
-            # Asegurarse de que el archivo existe
+            # Asegurar que existe client_secret.json
             if not os.path.exists(self.client_secrets_file):
                 self._setup_from_secrets()
-                
                 if not os.path.exists(self.client_secrets_file):
-                    raise FileNotFoundError(f"Archivo client_secret.json no encontrado")
+                    raise FileNotFoundError("No se pudo crear client_secret.json")
+            
+            # Intentar iniciar servidor OAuth solo en local
+            if self.oauth_server and not self._is_streamlit_cloud():
+                try:
+                    server_started = self.oauth_server.start()
+                    if server_started:
+                        st.success(f"✅ Servidor OAuth iniciado en puerto {self.oauth_server.port}")
+                except Exception as e:
+                    logger.warning(f"No se pudo iniciar servidor OAuth: {e}")
             
             # Crear flow OAuth
             flow = Flow.from_client_secrets_file(
@@ -227,57 +234,115 @@ refresh_token: {st.secrets["google_ads"].get("refresh_token", "")}"""
                 scopes=self.scopes
             )
             
-            # ✅ Usar localhost:8080 para el nuevo client web
-            flow.redirect_uri = "http://localhost:8501"  # Puerto de Streamlit
+            # ✅ USAR REDIRECT URI CORRECTO SEGÚN ENTORNO
+            flow.redirect_uri = self.redirect_uri
             
-            auth_url, _ = flow.authorization_url(
+            logger.info(f"🔗 Generando URL de autorización con redirect_uri: {flow.redirect_uri}")
+            
+            auth_url, state = flow.authorization_url(
                 access_type='offline',
                 include_granted_scopes='true',
                 prompt='consent'
             )
             
-            # Store flow in session
+            # Guardar flow en sesión
             st.session_state.oauth_flow = flow
+            st.session_state.oauth_state = state
+            
+            # Mostrar instrucciones según entorno
+            if self._is_streamlit_cloud():
+                st.info("""
+                ### ☁️ Autenticación en Streamlit Cloud
+                
+                1. **Click en el enlace** de autorización abajo
+                2. **Autoriza el acceso** a tu cuenta de Google Ads
+                3. Serás redirigido pero verás un **error de página**
+                4. **Copia la URL completa** de la barra de direcciones
+                5. **Pégala en el campo** de abajo
+                
+                La URL debe verse así:
+                `https://appadsapi-miynrefpxescytebdgkkng.streamlit.app/?code=4/0AQ...`
+                """)
+            else:
+                st.info(f"""
+                ### 💻 Autenticación Local
+                
+                1. **Click en el enlace** de autorización
+                2. **Autoriza el acceso** a Google Ads
+                3. Serás redirigido a `{self.redirect_uri}`
+                4. Si ves "No se puede acceder", **copia la URL completa**
+                5. **Pega la URL** en el campo de abajo
+                
+                La URL debe verse así:
+                `http://localhost:8501/?code=4/0AQ...&scope=...`
+                """)
             
             return auth_url
             
         except Exception as e:
-            logger.error(f"Error generating auth URL: {e}")
-            st.error(f"❌ Error: {str(e)}")
+            logger.error(f"Error generando auth URL: {e}")
+            st.error(f"""
+            ❌ **Error al generar URL de autenticación**
+            
+            {str(e)}
+            
+            Por favor, verifica que los secrets estén configurados correctamente.
+            """)
             return ""
-
+    
     def handle_callback(self, authorization_response: str = None) -> bool:
-        """Handle OAuth callback con el nuevo client"""
+        """Handle OAuth callback"""
         try:
-            if not authorization_response:
-                st.error("❌ Por favor, pega la URL completa después de autorizar")
+            # En Streamlit Cloud, siempre requerir input manual
+            if self._is_streamlit_cloud() and not authorization_response:
+                st.warning("📋 Por favor, pega la URL completa después de autorizar")
                 return False
             
-            # Obtener el flow
+            # En local, intentar obtener del servidor si existe
+            if not self._is_streamlit_cloud() and not authorization_response:
+                if self.oauth_server and hasattr(self.oauth_server, 'server'):
+                    if hasattr(self.oauth_server.server, 'auth_received'):
+                        if self.oauth_server.server.auth_received:
+                            if hasattr(self.oauth_server.server, 'auth_code'):
+                                authorization_response = f"http://localhost:8501/?code={self.oauth_server.server.auth_code}"
+                                st.success("✅ Código obtenido automáticamente del servidor")
+            
+            if not authorization_response:
+                st.error("❌ No se recibió código de autorización")
+                return False
+            
+            # Obtener flow
             flow = st.session_state.get('oauth_flow')
             if not flow:
                 flow = Flow.from_client_secrets_file(
                     self.client_secrets_file,
                     scopes=self.scopes
                 )
-                flow.redirect_uri = "http://localhost:8080"
+                flow.redirect_uri = self.redirect_uri
             
-            # Si pegó la URL completa
+            # Procesar respuesta
+            authorization_response = authorization_response.strip()
+            
+            # Si es URL completa, extraer código
             if authorization_response.startswith('http'):
-                # Extraer el código de la URL
                 from urllib.parse import urlparse, parse_qs
                 parsed_url = urlparse(authorization_response)
                 query_params = parse_qs(parsed_url.query)
                 
                 if 'code' in query_params:
                     code = query_params['code'][0]
-                    flow.fetch_token(code=code)
+                    logger.info(f"✅ Código extraído de URL: {code[:20]}...")
                 else:
-                    st.error("❌ No se encontró código en la URL")
+                    st.error("❌ No se encontró código de autorización en la URL")
+                    st.info("La URL debe contener `?code=...`")
                     return False
             else:
-                # Si pegó solo el código
-                flow.fetch_token(code=authorization_response)
+                # Asumir que es solo el código
+                code = authorization_response
+                logger.info(f"✅ Usando código directo: {code[:20]}...")
+            
+            # Obtener token
+            flow.fetch_token(code=code)
             
             # Guardar credenciales
             credentials = flow.credentials
@@ -286,25 +351,48 @@ refresh_token: {st.secrets["google_ads"].get("refresh_token", "")}"""
             # Guardar en archivo
             self._save_credentials_to_file(credentials)
             
+            # Limpiar servidor si existe
+            if self.oauth_server:
+                try:
+                    self.oauth_server.stop()
+                except:
+                    pass
+            
             if credentials.refresh_token:
-                st.success("✅ ¡Autenticación exitosa!")
+                st.success("🎉 **¡Autenticación exitosa!** Refresh token obtenido.")
                 
-                # Mostrar el refresh token para guardarlo en secrets
-                st.code(f"""
-    # Guarda este refresh_token en tus Streamlit Secrets:
-
-    [google_ads]
-    refresh_token = "{credentials.refresh_token}"
-                """)
-                
-                return True
+                # Mostrar refresh token para guardar en secrets
+                with st.expander("📋 **IMPORTANTE: Guarda este Refresh Token**"):
+                    st.code(f"""
+[google_ads]
+refresh_token = "{credentials.refresh_token}"
+                    """)
+                    st.info("""
+                    **Para mantener la autenticación permanente:**
+                    1. Ve a tu app en Streamlit Cloud
+                    2. Settings → Secrets
+                    3. Agrega el refresh_token arriba
+                    4. Click Save
+                    """)
             else:
                 st.warning("⚠️ Autenticación exitosa pero sin refresh token")
-                return True
-                
+            
+            return True
+            
         except Exception as e:
             logger.error(f"Error en callback: {e}")
-            st.error(f"❌ Error: {str(e)}")
+            st.error(f"""
+            ❌ **Error procesando autorización**
+            
+            {str(e)}
+            
+            **Posibles causas:**
+            1. El código de autorización expiró (intenta de nuevo)
+            2. La URL no está completa
+            3. Redirect URI no coincide
+            
+            **Redirect URI esperado:** `{self.redirect_uri}`
+            """)
             return False
     
     def logout(self):
@@ -313,12 +401,13 @@ refresh_token: {st.secrets["google_ads"].get("refresh_token", "")}"""
             del st.session_state.credentials
         if 'oauth_flow' in st.session_state:
             del st.session_state.oauth_flow
-        st.success("Sesión cerrada exitosamente")
+        if 'oauth_state' in st.session_state:
+            del st.session_state.oauth_state
+        st.success("✅ Sesión cerrada exitosamente")
     
     def _save_credentials_to_file(self, credentials: Credentials):
-        """Save credentials to oauth_credentials.json file and update google-ads.yaml"""
+        """Save credentials to file"""
         try:
-            # Ensure config directory exists
             os.makedirs('config', exist_ok=True)
             
             # Save to oauth_credentials.json
@@ -333,16 +422,15 @@ refresh_token: {st.secrets["google_ads"].get("refresh_token", "")}"""
             with open('config/oauth_credentials.json', 'w') as f:
                 json.dump(creds_data, f, indent=2)
                 
-            logger.info("Credentials saved to oauth_credentials.json")
+            logger.info("✅ Credentials saved to oauth_credentials.json")
             
-            # Also update google-ads.yaml with the refresh token
+            # Update google-ads.yaml
             google_ads_yaml = 'config/google-ads.yaml'
             if os.path.exists(google_ads_yaml):
                 try:
                     with open(google_ads_yaml, 'r') as f:
                         config = yaml.safe_load(f) or {}
                     
-                    # Update credentials in the config
                     config['refresh_token'] = credentials.refresh_token
                     config['client_id'] = credentials.client_id
                     config['client_secret'] = credentials.client_secret
@@ -350,13 +438,13 @@ refresh_token: {st.secrets["google_ads"].get("refresh_token", "")}"""
                     with open(google_ads_yaml, 'w') as f:
                         yaml.dump(config, f, default_flow_style=False)
                     
-                    logger.info("Google Ads YAML config updated with new credentials")
+                    logger.info("✅ Google Ads YAML config updated")
                 except Exception as e:
                     logger.warning(f"Could not update google-ads.yaml: {e}")
             
         except Exception as e:
-            logger.error(f"Error saving credentials to file: {e}")
-
+            logger.error(f"Error saving credentials: {e}")
+    
     def get_token_info(self) -> Dict[str, Any]:
         """Get information about current token"""
         creds = self.get_credentials()
@@ -370,6 +458,7 @@ refresh_token: {st.secrets["google_ads"].get("refresh_token", "")}"""
             'scopes': creds.scopes
         }
 
+
 def require_auth(func):
     """Decorator to require authentication for Streamlit pages"""
     def wrapper(*args, **kwargs):
@@ -382,7 +471,6 @@ def require_auth(func):
     return wrapper
 
 
-# Función helper para obtener API keys desde secrets
 def get_api_key(provider: str) -> str:
     """Obtiene API key desde secrets o environment"""
     provider_lower = provider.lower()
