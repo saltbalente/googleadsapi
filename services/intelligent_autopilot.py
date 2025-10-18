@@ -213,6 +213,20 @@ class IntelligentAutopilot:
         logger.info("🚀 GENERANDO GRUPOS DESDE CONFIGURACIÓN ESPECÍFICA")
         logger.info(f"📦 Total de grupos configurados: {len(ad_groups_config)}")
         logger.info(f"⚙️ Config global: {generation_config}")
+        
+        # ✅ DEBUG: Verificar configuración completa desde UI
+        logger.info("🔍 DEBUG COMPLETO - CONFIGURACIÓN RECIBIDA:")
+        logger.info(f"   generation_config = {generation_config}")
+        logger.info(f"   ad_groups_config = {ad_groups_config}")
+        
+        # ✅ DEBUG: Verificar cada grupo individualmente
+        for i, group_config in enumerate(ad_groups_config):
+            logger.info(f"   Grupo #{i+1}: {group_config}")
+            if 'use_location_insertion' in group_config:
+                logger.info(f"   ✅ Grupo #{i+1} tiene use_location_insertion = {group_config['use_location_insertion']}")
+            else:
+                logger.warning(f"   ❌ Grupo #{i+1} NO tiene use_location_insertion")
+        
         logger.info("="*70)
         
         generated_groups = []

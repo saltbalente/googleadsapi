@@ -128,17 +128,19 @@ MEJORES PRÁCTICAS A APLICAR:
    Códigos disponibles para usar:
    {chr(10).join([f'   - {{{code}}}' for code in location_codes])}
    
-   EJEMPLOS DE USO CORRECTO:
-   - "Curandero en {{LOCATION(City)}}"
-   - "Brujos Efectivos {{LOCATION(State)}}"
-   - "Brujería Real {{LOCATION(State)}}"
-   - "Hacer Amarres {{LOCATION(Country)}}"
-   - "Amarre de Pareja {{LOCATION(State)}}"
+   EJEMPLOS DE USO CORRECTO (CORTOS Y EFECTIVOS):
+   - "Brujos {{LOCATION(City)}}"
+   - "Amarres {{LOCATION(State)}}"
+   - "Videntes {{LOCATION(City)}}"
+   - "Rituales {{LOCATION(State)}}"
+   - "Consulta {{LOCATION(City)}}"
    
-   REGLAS:
+   REGLAS CRÍTICAS:
    - Usar exactamente la sintaxis: {{LOCATION(City)}}, {{LOCATION(State)}}, {{LOCATION(Country)}}
    - Mínimo 3 títulos con inserción de ubicación
    - Máximo 5 títulos con inserción de ubicación
+   - ⚠️ CRÍTICO: Usar solo 1-2 PALABRAS antes de {{LOCATION()}} para evitar truncamiento
+   - ⚠️ CRÍTICO: Máximo 15 caracteres ANTES del código {{LOCATION()}}
    - Los títulos con ubicación NO deben exceder 30 caracteres (incluyendo el código)
    - Distribuir entre diferentes niveles de ubicación
    - Los títulos con ubicación deben ser naturales y específicos
@@ -1327,11 +1329,11 @@ Para CIUDAD: {{LOCATION(City)}}
 Para ESTADO: {{LOCATION(State)}}
 Para PAÍS: {{LOCATION(Country)}}
 
-✅ **EJEMPLOS CORRECTOS:**
-"Amarres De {{LOCATION(City)}}"
-"Brujos En {{LOCATION(State)}}"
+✅ **EJEMPLOS CORRECTOS (CORTOS):**
+"Amarres {{LOCATION(City)}}"
+"Brujos {{LOCATION(State)}}"
 "Hechizos {{LOCATION(Country)}}"
-"Brujo Profesional {{LOCATION(City)}}"
+"Videntes {{LOCATION(City)}}"
 
 ❌ **INCORRECTO (NO HACER):**
 "Brujos De Tu Ciudad" ← MAL (usar {{LOCATION(City)}})
@@ -1577,8 +1579,8 @@ Usar códigos LITERALES:
 - {{LOCATION(State)}} para estado
 - {{LOCATION(Country)}} para país
 
-✅ "Urgente Brujo {{LOCATION(City)}}"
-✅ "Amarres Garantizados {{LOCATION(State)}}"
+✅ "Brujo {{LOCATION(City)}}"
+✅ "Amarres {{LOCATION(State)}}"
 
 ❌ NO usar "tu ciudad", "tu estado", etc.
 
