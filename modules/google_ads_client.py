@@ -140,65 +140,74 @@ class GoogleAdsClientWrapper:
             
         return self._customer_ids
     
-    def get_customer_ids(self) -> List[str]:
-        """Get customer IDs from accounts.txt file"""
-        customer_ids = self.load_customer_ids()
-        if customer_ids:
-            logger.info(f"Loaded {len(customer_ids)} customer accounts from accounts.txt")
-            return customer_ids
-        
-        logger.warning("No customer IDs found in accounts.txt")
-        return []
-    
-    def get_account_descriptive_names(self, customer_ids: list) -> dict:
-        """
-        Obtiene los nombres descriptivos de las cuentas desde Google Ads API
-        
-        Args:
-            customer_ids: Lista de IDs de clientes
+    def get_customer_ids(self) -> list:
+        """Get accessible customer IDs - Solo cuentas con acceso"""
+        try:
+            client = self.get_client()
+            if not client:
+                logger.error("❌ Cliente no disponible")
+                return []
             
-        Returns:
-            Diccionario con {customer_id: descriptive_name}
-        """
-        account_names = {}
-        
-        if not self._client:
-            self.get_client()
-        
-        if not self._client:
-            logger.error("❌ Cliente no inicializado")
-            return account_names
-        
-        for customer_id in customer_ids:
-            try:
-                ga_service = self._client.get_service("GoogleAdsService")
-                
-                query = """
-                    SELECT
-                        customer.id,
-                        customer.descriptive_name
-                    FROM customer
-                    LIMIT 1
-                """
-                
-                response = ga_service.search(customer_id=customer_id, query=query)
-                
-                for row in response:
-                    name = row.customer.descriptive_name
-                    if name and name.strip():
-                        account_names[customer_id] = name
-                        logger.info(f"✅ API: {customer_id} -> {name}")
-                    else:
-                        account_names[customer_id] = f"Cuenta {customer_id}"
-                        logger.warning(f"⚠️ Sin nombre: {customer_id}")
-                    break
+            customer_service = client.get_service("CustomerService")
+            
+            # Obtener todas las cuentas accesibles
+            accessible_customers = customer_service.list_accessible_customers()
+            resource_names = accessible_customers.resource_names
+            
+            logger.info(f"📋 Encontradas {len(resource_names)} cuentas totales")
+            
+            # Extraer IDs
+            all_customer_ids = [
+                name.split('/')[-1] 
+                for name in resource_names
+            ]
+            
+            # Filtrar solo las cuentas con acceso real
+            valid_customer_ids = []
+            ga_service = client.get_service("GoogleAdsService")
+            
+            for customer_id in all_customer_ids:
+                try:
+                    # Intentar consultar la cuenta
+                    query = """
+                        SELECT
+                            customer.id,
+                            customer.descriptive_name,
+                            customer.manager
+                        FROM customer
+                        LIMIT 1
+                    """
                     
-            except Exception as e:
-                logger.warning(f"⚠️ Error obteniendo nombre para {customer_id}: {e}")
-                account_names[customer_id] = f"Cuenta {customer_id}"
-        
-        logger.info(f"✅ Total nombres obtenidos: {len(account_names)}")
-        return account_names
+                    response = ga_service.search(customer_id=customer_id, query=query)
+                    
+                    # Si podemos consultarla, agregarla
+                    for row in response:
+                        valid_customer_ids.append(customer_id)
+                        logger.info(f"✅ Cuenta accesible: {customer_id} - {row.customer.descriptive_name}")
+                        break
+                        
+                except Exception as e:
+                    error_msg = str(e)
+                    if "PERMISSION_DENIED" in error_msg:
+                        logger.warning(f"⚠️ Sin permisos para cuenta {customer_id}")
+                    elif "CUSTOMER_NOT_ENABLED" in error_msg:
+                        logger.warning(f"⚠️ Cuenta deshabilitada {customer_id}")
+                    else:
+                        logger.error(f"❌ Error en cuenta {customer_id}: {e}")
+                    continue
+            
+            if not valid_customer_ids:
+                logger.error("❌ No se encontraron cuentas con acceso válido")
+            else:
+                logger.info(f"✅ {len(valid_customer_ids)} cuentas con acceso válido")
+            
+            return valid_customer_ids
+            
+        except Exception as e:
+            logger.error(f"❌ Error obteniendo customer IDs: {e}")
+            import traceback
+            logger.error(traceback.format_exc())
+            return []
     
     def execute_query(self, customer_id: str, query: str) -> List[Any]:
         """Execute GAQL query and return results as protobuf objects"""
