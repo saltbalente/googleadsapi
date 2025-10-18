@@ -141,7 +141,7 @@ class GoogleAdsClientWrapper:
         return self._customer_ids
     
     def get_customer_ids(self) -> list:
-        """Get accessible customer IDs - Solo cuentas con acceso"""
+        """Get accessible customer IDs - Optimizado para cuentas MCC"""
         try:
             client = self.get_client()
             if not client:
@@ -162,25 +162,96 @@ class GoogleAdsClientWrapper:
                 for name in resource_names
             ]
             
-            # Filtrar solo las cuentas con acceso real
+            # Verificar si tenemos una cuenta MCC como login_customer_id
+            is_mcc = False
+            mcc_id = self.login_customer_id
+            
+            if mcc_id in all_customer_ids:
+                # Verificar si es MCC
+                try:
+                    ga_service = client.get_service("GoogleAdsService")
+                    query = """
+                        SELECT
+                            customer.manager
+                        FROM customer
+                        LIMIT 1
+                    """
+                    response = ga_service.search(customer_id=mcc_id, query=query)
+                    for row in response:
+                        is_mcc = row.customer.manager
+                        logger.info(f"🔍 Cuenta {mcc_id} - Es MCC: {is_mcc}")
+                        break
+                except Exception as e:
+                    logger.warning(f"⚠️ No se pudo verificar si {mcc_id} es MCC: {e}")
+            
+            if is_mcc:
+                logger.info(f"✅ Cuenta MCC detectada: {mcc_id}")
+                
+                # Para cuentas MCC, obtener todas las sub-cuentas
+                try:
+                    ga_service = client.get_service("GoogleAdsService")
+                    
+                    query = """
+                        SELECT
+                            customer_client.client_customer,
+                            customer_client.descriptive_name,
+                            customer_client.manager,
+                            customer_client.status,
+                            customer_client.hidden
+                        FROM customer_client
+                        WHERE customer_client.status = 'ENABLED'
+                        AND customer_client.hidden = FALSE
+                    """
+                    
+                    response = ga_service.search(customer_id=mcc_id, query=query)
+                    
+                    sub_account_ids = []
+                    for row in response:
+                        client_customer = row.customer_client.client_customer
+                        customer_id = client_customer.split('/')[-1]
+                        is_manager = row.customer_client.manager
+                        name = row.customer_client.descriptive_name
+                        
+                        # Incluir todas las sub-cuentas (tanto normales como sub-MCCs)
+                        sub_account_ids.append(customer_id)
+                        
+                        logger.info(f"✅ Sub-cuenta: {customer_id} - {name} {'(MCC)' if is_manager else ''}")
+                    
+                    # También incluir la MCC principal
+                    sub_account_ids.append(mcc_id)
+                    logger.info(f"✅ Agregada MCC principal: {mcc_id}")
+                    
+                    # Eliminar duplicados y ordenar
+                    unique_ids = sorted(set(sub_account_ids))
+                    
+                    logger.info(f"✅ Total de cuentas accesibles: {len(unique_ids)}")
+                    
+                    return unique_ids
+                    
+                except Exception as e:
+                    logger.error(f"❌ Error obteniendo sub-cuentas de MCC: {e}")
+                    import traceback
+                    logger.error(traceback.format_exc())
+                    
+                    # Fallback: devolver solo las cuentas accesibles directamente
+                    logger.warning("⚠️ Usando fallback: solo cuentas con acceso directo")
+            
+            # Si no es MCC o hubo error, filtrar cuentas con acceso directo
             valid_customer_ids = []
             ga_service = client.get_service("GoogleAdsService")
             
             for customer_id in all_customer_ids:
                 try:
-                    # Intentar consultar la cuenta
                     query = """
                         SELECT
                             customer.id,
-                            customer.descriptive_name,
-                            customer.manager
+                            customer.descriptive_name
                         FROM customer
                         LIMIT 1
                     """
                     
                     response = ga_service.search(customer_id=customer_id, query=query)
                     
-                    # Si podemos consultarla, agregarla
                     for row in response:
                         valid_customer_ids.append(customer_id)
                         logger.info(f"✅ Cuenta accesible: {customer_id} - {row.customer.descriptive_name}")
@@ -189,17 +260,17 @@ class GoogleAdsClientWrapper:
                 except Exception as e:
                     error_msg = str(e)
                     if "PERMISSION_DENIED" in error_msg:
-                        logger.warning(f"⚠️ Sin permisos para cuenta {customer_id}")
+                        logger.warning(f"⚠️ Sin permisos para {customer_id}")
                     elif "CUSTOMER_NOT_ENABLED" in error_msg:
                         logger.warning(f"⚠️ Cuenta deshabilitada {customer_id}")
                     else:
-                        logger.error(f"❌ Error en cuenta {customer_id}: {e}")
+                        logger.warning(f"⚠️ Error en {customer_id}: {str(e)[:100]}")
                     continue
             
             if not valid_customer_ids:
-                logger.error("❌ No se encontraron cuentas con acceso válido")
+                logger.error("❌ No se encontraron cuentas válidas")
             else:
-                logger.info(f"✅ {len(valid_customer_ids)} cuentas con acceso válido")
+                logger.info(f"✅ {len(valid_customer_ids)} cuentas válidas")
             
             return valid_customer_ids
             
