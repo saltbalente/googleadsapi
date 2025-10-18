@@ -1349,7 +1349,7 @@ Para PAÍS: {{LOCATION(Country)}}
 """
         
         # Generar instrucciones de descripción
-        description_instructions = DescriptionVariationEngineV2.get_varied_descriptions(
+        description_instructions = DescriptionVariationEngineV2.generate_unique_descriptions(
             keywords=rotated_keywords,
             num_descriptions=num_descriptions,
             variation_seed=ad_variation_seed,
@@ -1585,7 +1585,7 @@ Usar códigos LITERALES:
 ════════════════════════════════════════════════════════════════
 """
         
-        description_instructions = DescriptionVariationEngineV2.get_varied_descriptions(
+        description_instructions = DescriptionVariationEngineV2.generate_unique_descriptions(
             keywords=rotated_keywords,
             num_descriptions=num_descriptions,
             variation_seed=ad_variation_seed,
